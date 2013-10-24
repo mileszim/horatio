@@ -10,16 +10,17 @@ var Horatio = Horatio || {};
  * Horatio Parser
  */
 Horatio.Parser = {
+    /**
+   * Horatio Wordlists
+   * Holds syntax for parsing.
+   * 
+   * Loaded from lib/parser/wordlists/ at make
+   */
+    Wordlists: {},
     test: function() {
-        console.log(Horatio.Parser.Wordlists.characters);
+        console.log(Horatio.Parser.Wordlists.terminals);
     }
 };
-
-/**
- * Horatio Wordlists
- * Holds syntax for parsing.
- */
-Horatio.Parser.Wordlists = {};
 
 /** Act and Scene */
 Horatio.Parser.Wordlists.act_and_scene = [ "Act", "Scene" ];
