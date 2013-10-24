@@ -7,10 +7,15 @@
 var Horatio = Horatio || {};
 
 /**
+ * Horatio Parser
+ */
+Horatio.Parser = {};
+
+/**
  * Horatio Wordlists
  * Holds syntax for parsing.
  */
-Horatio.Wordlists = {
+Horatio.Parser.Wordlists = {
     /** Articles */
     articles: [ "a", "an", "the" ],
     /** Be */
@@ -44,5 +49,7 @@ Horatio.Wordlists = {
     /** Second Person Reflexive */
     second_person_reflexive: [ "thyself", "yourself" ],
     /** Third Person Possessive */
-    third_person_possessive: [ "his", "her", "its", "their" ]
+    third_person_possessive: [ "his", "her", "its", "their" ],
+    /** Terminals */
+    terminals: [ ":", ",", "[", ".", "?", "]" ]
 };

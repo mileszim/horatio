@@ -1,0 +1,4 @@
+/**
+ * Horatio Parser
+ */
+Horatio.Parser = {};

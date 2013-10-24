@@ -2,7 +2,7 @@
  * Horatio Wordlists
  * Holds syntax for parsing.
  */
-Horatio.Wordlists = {
+Horatio.Parser.Wordlists = {
   
   /** Articles */
   articles: [
@@ -380,6 +380,17 @@ Horatio.Wordlists = {
     'her',
     'its',
     'their'
+  ],
+  
+  
+  /** Terminals */
+  terminals: [
+    ':',
+    ',',
+    '[',
+    '.',
+    '?',
+    ']'
   ]
   
 };
