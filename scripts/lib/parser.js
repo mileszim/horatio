@@ -1,19 +1,29 @@
 /**
  * Horatio Parser
  */
-Horatio.Parser = {
+Horatio.Parser = function(input_text) {
+  
+  this.input_text = input_text;
+  this.input_array = null;
+  this.program = null;
+  
+};
+
+
+Horatio.Parser.prototype = {
   
   /**
-   * Horatio Wordlists
-   * Holds syntax for parsing.
-   * 
-   * Loaded from lib/parser/wordlists/ at make
+   * Main parsing function
    */
-  Wordlists: {},
+  parse: function() {
+    this.clean(this.input_text);
+    this.program = new Horatio.Program(this.getTitle());
+    this.addCharacters();
+  },
   
   
-  test: function() {
-    console.log(Horatio.Parser.Wordlists.terminals);
+  getTitle: function() {
+    return this.input_array.shift();
   }
   
 };

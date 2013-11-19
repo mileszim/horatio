@@ -1,5 +1,5 @@
 /** Be */
-Horatio.Parser.Wordlists.be = [
+Horatio.Wordlists.be = [
   'am',
   'are',
   'art',

@@ -1,5 +1,5 @@
 /** Nothing */
-Horatio.Parser.Wordlists.nothing = [
+Horatio.Wordlists.nothing = [
   'nothing',
   'zero'
 ];

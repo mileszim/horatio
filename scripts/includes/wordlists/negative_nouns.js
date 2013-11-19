@@ -1,5 +1,5 @@
 /** Negative Nouns */
-Horatio.Parser.Wordlists.negative_nouns = [
+Horatio.Wordlists.negative_nouns = [
   'Hell',
   'Microsoft',
   'bastard',

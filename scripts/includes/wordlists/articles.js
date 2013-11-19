@@ -1,5 +1,5 @@
 /** Articles **/
-Horatio.Parser.Wordlists.articles = [
+Horatio.Wordlists.articles = [
   'a',
   'an',
   'the'

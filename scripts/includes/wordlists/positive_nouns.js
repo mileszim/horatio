@@ -1,5 +1,5 @@
 /** Positive Nouns */
-Horatio.Parser.Wordlists.positive_nouns = [
+Horatio.Wordlists.positive_nouns = [
   'Heaven',
   'King',
   'Lord',

@@ -7,7 +7,14 @@
   <body>
     <script src="horatio.js"></script>
     <script>
-      Horatio.Parser.test();
+      var input = "Prime Number Computation in Copenhagen.\n\nRomeo, a young man of Verona.\nJuliet, a young woman.\nHamlet, a temporary variable from Denmark.\nThe Ghost, a limiting factor (and by a remarkable coincidence also\n        Hamlet's father).";
+    
+    
+      var p = new Horatio.Parser(input);
+      //console.log(p);
+      p.parse();
+      console.log(p);
+      
     </script>
   </body>
 </html>

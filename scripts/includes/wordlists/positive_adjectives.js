@@ -1,5 +1,5 @@
 /** Positive Adjectives */
-Horatio.Parser.Wordlists.positive_adjectives = [
+Horatio.Wordlists.positive_adjectives = [
   'amazing',
   'beautiful',
   'blossoming',

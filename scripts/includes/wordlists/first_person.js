@@ -1,5 +1,5 @@
 /** First Person */
-Horatio.Parser.Wordlists.first_person = [
+Horatio.Wordlists.first_person = [
   'I',
   'me'
 ];
