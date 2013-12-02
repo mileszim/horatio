@@ -1,9 +1,10 @@
 /** Positive Adjectives */
-Horatio.Parser.Wordlists.positive_adjectives = [
+Horatio.Wordlists.positive_adjectives = [
   'amazing',
   'beautiful',
   'blossoming',
   'bold',
+  'black',
   'brave',
   'charming',
   'clearest',
@@ -20,20 +21,24 @@ Horatio.Parser.Wordlists.positive_adjectives = [
   'happy',
   'healthy',
   'honest',
+  'little',
   'lovely',
   'loving',
   'mighty',
   'noble',
+  'old',
   'peaceful',
   'pretty',
   'prompt',
   'proud',
   'reddest',
   'rich',
+  'rural',
   'smooth',
   'sunny',
   'sweet',
   'sweetest',
   'trustworthy',
+  'tiny',
   'warm'
 ];

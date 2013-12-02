@@ -1,5 +1,5 @@
 /** Positive Comparatives */
-Horatio.Parser.Wordlists.positive_comparatives = [
+Horatio.Wordlists.positive_comparatives = [
   'better',
   'bigger',
   'fresher',

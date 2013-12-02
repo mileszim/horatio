@@ -1,5 +1,5 @@
 /** Roman Numerals */
-Horatio.Parser.Wordlists.roman_numerals = [
+Horatio.Wordlists.roman_numerals = [
   'I',
   'II',
   'III',

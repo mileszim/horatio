@@ -1,5 +1,5 @@
 /** Characters */
-Horatio.Parser.Wordlists.characters = [
+Horatio.Wordlists.characters = [
   'Achilles',
   'Adonis',
   'Adriana',

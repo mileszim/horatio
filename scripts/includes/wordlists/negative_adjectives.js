@@ -1,6 +1,7 @@
 /** Negative Adjective */
-Horatio.Parser.Wordlists.negative_adjectives = [
+Horatio.Wordlists.negative_adjectives = [
   'bad',
+  'big',
   'cowardly',
   'cursed',
   'damned',

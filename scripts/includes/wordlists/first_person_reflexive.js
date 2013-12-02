@@ -1,4 +1,4 @@
 /** First Person Reflexive */
-Horatio.Parser.Wordlists.first_person_reflexive = [
+Horatio.Wordlists.first_person_reflexive = [
   'myself'
 ];
