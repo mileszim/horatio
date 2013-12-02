@@ -5,6 +5,7 @@ full:
 	-o horatio.js \
 	scripts/horatio.js \
 	scripts/lib/*.js \
+	scripts/lib/line_parser/*.js \
 	scripts/lib/parser/*.js \
 	scripts/lib/program/*.js \
 	scripts/includes/wordlists/*.js
@@ -14,6 +15,7 @@ min:
 	-o horatio.min.js \
 	scripts/horatio.js \
 	scripts/lib/*.js \
+	scripts/lib/line_parser/*.js \
 	scripts/lib/parser/*.js \
 	scripts/lib/program/*.js \
 	scripts/includes/wordlists/*.js

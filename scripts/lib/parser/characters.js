@@ -15,7 +15,7 @@ Horatio.Parser.prototype.Characters = {
 
 Horatio.Parser.prototype.addCharacters = function() {
   var breaker = "Act I";
-  while(this.input_array[0] && this.input_array.indexOf(breaker) < 0) {
+  while(this.input_array[0] && this.input_array[0].indexOf(breaker) < 0) {
     var l = this.input_array.shift();
     this.program.createCharacter(this.Characters.parseCharacter(l));
   }

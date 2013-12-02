@@ -7,13 +7,18 @@
   <body>
     <script src="horatio.js"></script>
     <script>
-      var input = "Prime Number Computation in Copenhagen.\n\nRomeo, a young man of Verona.\nJuliet, a young woman.\nHamlet, a temporary variable from Denmark.\nThe Ghost, a limiting factor (and by a remarkable coincidence also\n        Hamlet's father).";
+      var input = "Prime Number Computation in Copenhagen.\n\nRomeo, a young man of Verona.\nJuliet, a young woman.\nHamlet, a temporary variable from Denmark.\nThe Ghost, a limiting factor (and by a remarkable coincidence also\n        Hamlet's father).\nAct I: Hamlet's insults and flattery.\nScene I: The insulting of Romeo.\n[Enter Hamlet and Romeo]\n\nHamlet:\nYou lying stupid fatherless big smelly half-witted coward!\nYou are as stupid as the difference between a handsome rich brave\nhero and thyself! Speak your mind!";
+      
+      var test_line = ["lying","stupid","fatherless","big","smelly","half-witted","coward"];
     
-    
-      var p = new Horatio.Parser(input);
+      var lp = new Horatio.LineParser(test_line);
+      lp.parse();
+      
+      console.log(lp);
+      //var p = new Horatio.Parser(input);
       //console.log(p);
-      p.parse();
-      console.log(p);
+      //p.parse();
+      //console.log(p);
       
     </script>
   </body>

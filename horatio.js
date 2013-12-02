@@ -7,6 +7,52 @@
 var Horatio = Horatio || {};
 
 /**
+ * Line Parser
+ */
+Horatio.LineParser = function(line_array) {
+    this.line_array = line_array;
+    this.type = null;
+    this.value = null;
+    this.multiplier = 1;
+    this.direction = 1;
+};
+
+Horatio.LineParser.prototype = {
+    parse: function() {
+        var self = this;
+        if (self.line_array.size === 0) {
+            console.log("size");
+            return null;
+        }
+        // get word to test
+        var str = self.line_array.shift();
+        // test and continue parsing if needed.
+        switch (true) {
+          // Is an adjective
+            case self.Expressions.adjectives().test(str):
+            console.log(str);
+            if (self.Expressions.negative_adjectives().test(str)) {
+                self.multiplier *= 2;
+                self.direction = -1;
+                self.parse();
+            }
+            if (self.Expressions.positive_adjectives().test(str)) {
+                self.multiplier *= 2;
+                self.direction = 1;
+                self.parse();
+            }
+            break;
+
+          // Is a noun
+            case self.Expressions.nouns().test(str):
+            self.value = self.direction * self.multiplier;
+            return null;
+            break;
+        }
+    }
+};
+
+/**
  * Horatio Parser
  */
 Horatio.Parser = function(input_text) {
@@ -23,6 +69,8 @@ Horatio.Parser.prototype = {
         this.clean(this.input_text);
         this.program = new Horatio.Program(this.getTitle());
         this.addCharacters();
+        var t = new Horatio.Tokenizer(this.input_array[2]);
+        console.log(t.parse());
     },
     getTitle: function() {
         return this.input_array.shift();
@@ -54,12 +102,88 @@ Horatio.Program.prototype = {
 };
 
 /**
+ * Tokenizer
+ */
+Horatio.Tokenizer = function(line) {
+    this.line = line;
+    this.type = null;
+    if (typeof line === "string") this.line = line.split(" ");
+};
+
+Horatio.Tokenizer.prototype = {
+    types: {
+        Act: function(line_array) {
+            return {
+                type: "act",
+                content: this.clean(line_array[1])
+            };
+        },
+        Scene: function(line_array) {
+            return {
+                type: "scene",
+                content: this.clean(line_array[1])
+            };
+        },
+        Enter: function(line_array) {
+            var characters = [ line_array[1] ];
+            if (line_array[2] === "and") characters.push(line_array[3]);
+            return {
+                type: "enter_characters",
+                content: characters
+            };
+        },
+        Exit: function(line_array) {
+            return "exit";
+        },
+        You: function(line_array) {}
+    },
+    clean: function(word) {
+        return word.trim().replace(/[:\[,]+/g, "");
+    },
+    parse: function() {
+        var check = this.line[0];
+        return this.types[this.clean(check)](this.line);
+    }
+};
+
+/**
  * Horatio Wordlists
  * Holds syntax for parsing.
  * 
  * Loaded from includes/wordlists/ at make
  */
 Horatio.Wordlists = {};
+
+Horatio.LineParser.prototype.Expressions = {
+    adjectives: function() {
+        var r = "(" + Horatio.Wordlists.negative_adjectives.join("|") + "|" + Horatio.Wordlists.positive_adjectives.join("|") + ")";
+        return new RegExp(r);
+    },
+    negative_adjectives: function() {
+        var r = "(" + Horatio.Wordlists.negative_adjectives.join("|") + ")";
+        return new RegExp(r);
+    },
+    positive_adjectives: function() {
+        var r = "(" + Horatio.Wordlists.positive_adjectives.join("|") + ")";
+        return new RegExp(r);
+    },
+    nouns: function() {
+        var r = "(" + Horatio.Wordlists.negative_nouns.join("|") + "|" + Horatio.Wordlists.positive_nouns.join("|") + ")";
+        return new RegExp(r);
+    },
+    negative_nouns: function() {
+        var r = "(" + Horatio.Wordlists.negative_nouns.join("|") + ")";
+        return new RegExp(r);
+    },
+    positive_nouns: function() {
+        var r = "(" + Horatio.Wordlists.positive_nouns.join("|") + ")";
+        return new RegExp(r);
+    },
+    will_compare: function() {
+        var r = "(are as|art as|as)";
+        return new RegExp(r);
+    }
+};
 
 Horatio.Parser.prototype.Characters = {
     parseCharacter: function(line) {
@@ -73,7 +197,7 @@ Horatio.Parser.prototype.Characters = {
 
 Horatio.Parser.prototype.addCharacters = function() {
     var breaker = "Act I";
-    while (this.input_array[0] && this.input_array.indexOf(breaker) < 0) {
+    while (this.input_array[0] && this.input_array[0].indexOf(breaker) < 0) {
         var l = this.input_array.shift();
         this.program.createCharacter(this.Characters.parseCharacter(l));
     }
@@ -117,7 +241,7 @@ Horatio.Program.Act = function(num) {
 };
 
 Horatio.Program.Act.prototype = {
-    addScene: function(num) {
+    createScene: function(num) {
         if (!this.scenes[num]) this.scenes[num] = new Scene(num);
     }
 };
@@ -168,7 +292,7 @@ Horatio.Wordlists.characters = [ "Achilles", "Adonis", "Adriana", "Aegeon", "Aem
 Horatio.Wordlists.enter_exit_exeunt = [ "Enter", "Exit", "Exeunt" ];
 
 /** First Person */
-Horatio.Wordlists.first_person = [ "I", "me" ];
+Horatio.Wordlists.first_person = [ "I", "i", "me" ];
 
 /** First Person Possessive */
 Horatio.Wordlists.first_person_possessive = [ "mine", "my" ];
@@ -177,7 +301,7 @@ Horatio.Wordlists.first_person_possessive = [ "mine", "my" ];
 Horatio.Wordlists.first_person_reflexive = [ "myself" ];
 
 /** Negative Adjective */
-Horatio.Wordlists.negative_adjectives = [ "bad", "cowardly", "cursed", "damned", "dirty", "disgusting", "distasteful", "dusty", "evil", "fat", "fat-kidneyed", "fatherless", "foul", "hairy", "half-witted", "horrible", "horrid", "infected", "lying", "miserable", "misused", "oozing", "rotten", "smelly", "snotty", "sorry", "stinking", "stuffed", "stupid", "vile", "villainous", "worried" ];
+Horatio.Wordlists.negative_adjectives = [ "bad", "big", "cowardly", "cursed", "damned", "dirty", "disgusting", "distasteful", "dusty", "evil", "fat", "fat-kidneyed", "fatherless", "foul", "hairy", "half-witted", "horrible", "horrid", "infected", "lying", "miserable", "misused", "oozing", "rotten", "smelly", "snotty", "sorry", "stinking", "stuffed", "stupid", "vile", "villainous", "worried" ];
 
 /** Negative Comparatives */
 Horatio.Wordlists.negative_comparatives = [ "punier", "smaller", "worse" ];

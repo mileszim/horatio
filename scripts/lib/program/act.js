@@ -9,7 +9,7 @@ Horatio.Program.Act = function(num) {
 
 Horatio.Program.Act.prototype = {
   
-  addScene: function(num) {
+  createScene: function(num) {
     if (!this.scenes[num]) this.scenes[num] = new Scene(num);
   }
   
