@@ -1,7 +1,7 @@
 horatio
 =======
 
-A javascript interpreter for the Shakespeare Programming Language
+A javascript compiler for the Shakespeare Programming Language
 
 http://mileszim.github.io/horatio
 
