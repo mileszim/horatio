@@ -1,25 +1,102 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A Javascript compiler for SPL">
+    <meta name="author" content="Miles Zimmerman">
+    
     <title>Horatio - A Javascript compiler for SPL</title>
+    
+    <link href="https://netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+      body {
+        min-height: 600px;
+      }
+
+      .navbar-static-top {
+        margin-bottom: 19px;
+      }
+      
+      .right-column {
+        height: 170px
+      }
+    </style>
+    
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
   </head>
   
   <body>
-    <script src="horatio.js"></script>
-    <script>
-      var input = "Prime Number Computation in Copenhagen.\n\nRomeo, a young man of Verona.\nJuliet, a young woman.\nHamlet, a temporary variable from Denmark.\nThe Ghost, a limiting factor (and by a remarkable coincidence also\n        Hamlet's father).\nAct I: Hamlet's insults and flattery.\nScene I: The insulting of Romeo.\n[Enter Hamlet and Romeo]\n\nHamlet:\nYou lying stupid fatherless big smelly half-witted coward!\nYou are as stupid as the difference between a handsome rich brave\nhero and thyself! Speak your mind!";
-      
-      var test_line = ["lying","stupid","fatherless","big","smelly","half-witted","coward"];
     
-      var lp = new Horatio.LineParser(test_line);
-      lp.parse();
+    <!-- Navbar -->
+    <div class="navbar navbar-default navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="/">Horatio</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="#">Home</a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="https://github.com/mileszim/horatio">Source</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+    
+    
+    <!-- Content -->
+    <div class="container">
       
-      console.log(lp);
-      //var p = new Horatio.Parser(input);
-      //console.log(p);
-      //p.parse();
-      //console.log(p);
+      <!-- Line parsing -->
+      <div class="page-header">
+        <h1>Line Parsing</h1>
+      </div>
       
-    </script>
+      <div class="row">
+        <div class="col-md-6">
+          <form role="form" id="line_parsing_form">
+            <div class="form-group">
+              <textarea id="line_parsing_input" class="form-control" rows="7">You are as rich as the difference between a bold brave mighty noble handsome mighty trustworthy King and a tiny little old rural black cat.</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg pull-right">Run</button>
+          </form>
+        </div>
+        <div class="col-md-6 right-column">
+          <div class="well right-column">
+            <p>> <span id="line_parsing_output"></span></p>
+          </div>
+        </div>
+      </div>
+      
+      
+      
+      <!-- <div class="page-header">
+              <h1>Basic program parsing</h1>
+            </div> -->
+      
+    </div>
+    
+    
+    
+    
+    
+    <!-- Bootstrap/Jquery -->
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
+    
+    <!-- Horatio JS -->
+    <script src="horatio.js"></script>
+    
+    <!-- Main js -->
+    <script src="main.js"></script>
+    
   </body>
 </html>

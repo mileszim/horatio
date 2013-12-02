@@ -7,11 +7,36 @@
 var Horatio = Horatio || {};
 
 /**
+ * Clean Lines
+ */
+Horatio.CleanLines = {
+    lineTerminals: function() {
+        var terminals = "[" + Horatio.Wordlists.line_terminals.join("") + "]";
+        return new RegExp(terminals);
+    },
+    cleanLine: function(line) {
+        return line.trim().replace(/[\s\n]+/g, " ");
+    },
+    clean: function(text) {
+        var lines = text.split(Horatio.CleanLines.lineTerminals());
+        return Horatio.CleanLines.cleanLines(lines);
+    },
+    cleanLines: function(lines) {
+        var cleaned = [];
+        for (var l in lines) {
+            var c = Horatio.CleanLines.cleanLine(lines[l]);
+            if (c != "") cleaned.push(c);
+        }
+        return cleaned;
+    }
+};
+
+/**
  * Line Parser
  */
 Horatio.LineParser = function(line_array) {
     this.line_array = line_array;
-    this.type = null;
+    this.type = "value";
     this.value = null;
     this.multiplier = 1;
     this.direction = 1;
@@ -20,17 +45,23 @@ Horatio.LineParser = function(line_array) {
 Horatio.LineParser.prototype = {
     parse: function() {
         var self = this;
-        if (self.line_array.size === 0) {
-            console.log("size");
+        if (self.line_array.length === 0) {
             return null;
         }
         // get word to test
         var str = self.line_array.shift();
-        // test and continue parsing if needed.
+        /**
+     * test and continue parsing if needed.
+     * this needs to be broken up/rewritten entirely
+     */
         switch (true) {
+          // Is an article/something
+            case self.Expressions.articles().test(str):
+            self.parse();
+            break;
+
           // Is an adjective
             case self.Expressions.adjectives().test(str):
-            console.log(str);
             if (self.Expressions.negative_adjectives().test(str)) {
                 self.multiplier *= 2;
                 self.direction = -1;
@@ -45,8 +76,31 @@ Horatio.LineParser.prototype = {
 
           // Is a noun
             case self.Expressions.nouns().test(str):
+            if (self.Expressions.negative_nouns().test(str)) self.direction = -1;
             self.value = self.direction * self.multiplier;
             return null;
+            break;
+
+          // Is an operator
+            case self.Expressions.operators().test(str):
+            var break_point = self.line_array.lastIndexOf("and");
+            var left_side = new Horatio.LineParser(self.line_array.slice(0, break_point));
+            var right_side = new Horatio.LineParser(self.line_array.slice(break_point + 1));
+            left_side.parse();
+            right_side.parse();
+            if (str === "sum") self.value = left_side.value + right_side.value;
+            if (str === "difference") self.value = left_side.value - right_side.value;
+            if (str === "quotient") self.value = left_side.value / right_side.value;
+            if (str === "product") self.value = left_side.value * right_side.value;
+            return null;
+            break;
+
+          // Is a comparison
+            case self.Expressions.comparisons().test(str):
+            self.line_array.shift();
+            self.line_array.shift();
+            self.line_array.shift();
+            self.parse();
             break;
         }
     }
@@ -135,7 +189,14 @@ Horatio.Tokenizer.prototype = {
         Exit: function(line_array) {
             return "exit";
         },
-        You: function(line_array) {}
+        You: function(line_array) {
+            var lp = new Horatio.LineParser(line_array.slice(1));
+            lp.parse();
+            return {
+                type: "value",
+                content: lp.value
+            };
+        }
     },
     clean: function(word) {
         return word.trim().replace(/[:\[,]+/g, "");
@@ -156,31 +217,39 @@ Horatio.Wordlists = {};
 
 Horatio.LineParser.prototype.Expressions = {
     adjectives: function() {
-        var r = "(" + Horatio.Wordlists.negative_adjectives.join("|") + "|" + Horatio.Wordlists.positive_adjectives.join("|") + ")";
+        var r = "^(" + Horatio.Wordlists.negative_adjectives.join("|") + "|" + Horatio.Wordlists.positive_adjectives.join("|") + ")$";
         return new RegExp(r);
     },
     negative_adjectives: function() {
-        var r = "(" + Horatio.Wordlists.negative_adjectives.join("|") + ")";
+        var r = "^(" + Horatio.Wordlists.negative_adjectives.join("|") + ")$";
         return new RegExp(r);
     },
     positive_adjectives: function() {
-        var r = "(" + Horatio.Wordlists.positive_adjectives.join("|") + ")";
+        var r = "^(" + Horatio.Wordlists.positive_adjectives.join("|") + ")$";
         return new RegExp(r);
     },
     nouns: function() {
-        var r = "(" + Horatio.Wordlists.negative_nouns.join("|") + "|" + Horatio.Wordlists.positive_nouns.join("|") + ")";
+        var r = "^(" + Horatio.Wordlists.negative_nouns.join("|") + "|" + Horatio.Wordlists.positive_nouns.join("|") + ")$";
         return new RegExp(r);
     },
     negative_nouns: function() {
-        var r = "(" + Horatio.Wordlists.negative_nouns.join("|") + ")";
+        var r = "^(" + Horatio.Wordlists.negative_nouns.join("|") + ")$";
         return new RegExp(r);
     },
     positive_nouns: function() {
-        var r = "(" + Horatio.Wordlists.positive_nouns.join("|") + ")";
+        var r = "^(" + Horatio.Wordlists.positive_nouns.join("|") + ")$";
         return new RegExp(r);
     },
-    will_compare: function() {
-        var r = "(are as|art as|as)";
+    comparisons: function() {
+        var r = "^(are|art|as)$";
+        return new RegExp(r);
+    },
+    operators: function() {
+        var r = "^(sum|difference|product|quotient)$";
+        return new RegExp(r);
+    },
+    articles: function() {
+        var r = "^(of|between|the|a|an|your|my|mine|thy|thine)$";
         return new RegExp(r);
     }
 };
@@ -313,13 +382,13 @@ Horatio.Wordlists.negative_nouns = [ "Hell", "Microsoft", "bastard", "beggar", "
 Horatio.Wordlists.nothing = [ "nothing", "zero" ];
 
 /** Positive Adjectives */
-Horatio.Wordlists.positive_adjectives = [ "amazing", "beautiful", "blossoming", "bold", "brave", "charming", "clearest", "cunning", "cute", "delicious", "embroidered", "fair", "fine", "gentle", "golden", "good", "handsome", "happy", "healthy", "honest", "lovely", "loving", "mighty", "noble", "peaceful", "pretty", "prompt", "proud", "reddest", "rich", "smooth", "sunny", "sweet", "sweetest", "trustworthy", "warm" ];
+Horatio.Wordlists.positive_adjectives = [ "amazing", "beautiful", "blossoming", "bold", "black", "brave", "charming", "clearest", "cunning", "cute", "delicious", "embroidered", "fair", "fine", "gentle", "golden", "good", "handsome", "happy", "healthy", "honest", "little", "lovely", "loving", "mighty", "noble", "old", "peaceful", "pretty", "prompt", "proud", "reddest", "rich", "rural", "smooth", "sunny", "sweet", "sweetest", "trustworthy", "tiny", "warm" ];
 
 /** Positive Comparatives */
 Horatio.Wordlists.positive_comparatives = [ "better", "bigger", "fresher", "friendlier", "nicer", "jollier" ];
 
 /** Positive Nouns */
-Horatio.Wordlists.positive_nouns = [ "Heaven", "King", "Lord", "angel", "flower", "happiness", "joy", "plum", "summer's day", "hero", "rose", "kingdom", "pony" ];
+Horatio.Wordlists.positive_nouns = [ "Heaven", "King", "Lord", "angel", "flower", "happiness", "joy", "plum", "summer's day", "hero", "rose", "kingdom", "pony", "cat" ];
 
 /** Roman Numerals */
 Horatio.Wordlists.roman_numerals = [ "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX" ];

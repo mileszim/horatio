@@ -25,7 +25,7 @@ Horatio.Tokenizer.prototype = {
     "Enter": function(line_array) {
       var characters = [line_array[1]];
       if (line_array[2]==="and") characters.push(line_array[3]);
-      return { type: "enter_characters", content: characters }
+      return { type: "enter_characters", content: characters };
     },
     
     
@@ -35,7 +35,9 @@ Horatio.Tokenizer.prototype = {
     
     
     "You":    function(line_array) {
-      
+      var lp = new Horatio.LineParser(line_array.slice(1));
+      lp.parse();
+      return { type: "value", content: lp.value };
     }
   },
   
