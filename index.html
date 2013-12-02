@@ -20,9 +20,6 @@
         margin-bottom: 19px;
       }
       
-      .right-column {
-        height: 170px
-      }
     </style>
     
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -64,23 +61,159 @@
         <div class="col-md-6">
           <form role="form" id="line_parsing_form">
             <div class="form-group">
-              <textarea id="line_parsing_input" class="form-control" rows="7">You are as rich as the difference between a bold brave mighty noble handsome mighty trustworthy King and a tiny little old rural black cat.</textarea>
+              <textarea id="line_parsing_input" class="form-control" rows="7">You are as rich as the sum of a bold brave mighty noble handsome mighty trustworthy King and a tiny little old rural black cat.</textarea>
             </div>
             <button type="submit" class="btn btn-primary btn-lg pull-right">Run</button>
           </form>
         </div>
-        <div class="col-md-6 right-column">
-          <div class="well right-column">
+        <div class="col-md-6" style="height: 170px;">
+          <div class="well" style="height: 170px;">
             <p>> <span id="line_parsing_output"></span></p>
           </div>
         </div>
       </div>
       
       
+      <br/><br/>
       
-      <!-- <div class="page-header">
-              <h1>Basic program parsing</h1>
-            </div> -->
+      
+      <!-- Program Parsing -->
+      <div class="page-header">
+        <h1>Basic Program Parsing</h1>
+      </div>
+      
+      <div class="row">
+        <div class="col-md-6">
+          <form role="form" id="program_parsing_form">
+            <div class="form-group">
+              <textarea id="program_parsing_input" class="form-control" rows="15">
+Prime Number Computation in Copenhagen.
+
+Romeo, a young man of Verona.
+Juliet, a young woman.
+Hamlet, a temporary variable from Denmark.
+The Ghost, a limiting factor (and by a remarkable coincidence also Hamlet's father).
+
+
+          Act I: Interview with the other side.
+
+          Scene I: At the last hour before dawn.
+
+[Enter the Ghost and Juliet]
+
+The Ghost:
+  You pretty little warm thing! Thou art as prompt as the difference
+  between the square of thyself and your golden hair. Speak your mind.
+
+Juliet:
+  Listen to your heart!
+
+[Exit the Ghost]
+
+[Enter Romeo]
+
+Juliet:
+  Thou art as sweet as a sunny summer's day!
+
+
+          Act II: Determining divisibility.
+
+          Scene I: A private conversation.
+
+Juliet:
+  Art thou more cunning than the Ghost?
+
+Romeo:
+  If so, let us proceed to scene V.
+
+[Exit Romeo]
+
+[Enter Hamlet]
+
+Juliet:
+  You are as villainous as the square root of Romeo!
+
+Hamlet:
+  You are as lovely as a red rose.
+
+
+          Scene II: Questions and the consequences thereof.
+
+Juliet:
+  Am I better than you?
+
+Hamlet:
+  If so, let us proceed to scene III.
+
+Juliet:
+  Is the remainder of the quotient between Romeo and me as good as
+  nothing?
+
+Hamlet:
+  If so, let us proceed to scene IV.
+  Thou art as bold as the sum of thyself and a roman.
+
+Juliet:
+  Let us return to scene II.
+
+
+          Scene III: Romeo must die!
+
+[Exit Hamlet]
+
+[Enter Romeo]
+
+Juliet:
+  Open your heart.
+
+[Exit Juliet]
+
+[Enter Hamlet]
+
+Romeo:
+  Thou art as rotten as the difference between nothing and the sum of a
+  snotty stinking half-witted hog and a small toad!
+  Speak your mind!
+
+[Exit Romeo]
+
+[Enter Juliet]
+
+
+          Scene IV: One small dog at a time.
+
+[Exit Hamlet]
+
+[Enter Romeo]
+
+Juliet:
+  Thou art as handsome as the sum of thyself and my chihuahua!
+  Let us return to scene I.
+
+
+          Scene V: Fin.
+
+[Exeunt]
+              </textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg pull-right">Parse</button>
+          </form>
+        </div>
+        <div class="col-md-6">
+          <div class="well" style="height: 330px;">
+            <dl class="dl-horizontal">
+              <dt>Title</dt>
+              <dd id="program_title"></dd>
+              <dt>Characters</dt>
+              <dd id="program_characters"></dd>
+              <dt>Acts</dt>
+              <dd id="program_acts"></dd>
+              <dt>Scenes</dt>
+              <dd id="program_scenes"></dd>
+            </dl>
+          </div>
+        </div>
+      </div>
       
     </div>
     
@@ -93,10 +226,10 @@
     <script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
     
     <!-- Horatio JS -->
-    <script src="horatio.js"></script>
+    <script src="./horatio.min.js"></script>
     
     <!-- Main js -->
-    <script src="main.js"></script>
+    <script src="./main.js"></script>
     
   </body>
 </html>

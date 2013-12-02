@@ -1,12 +1,3 @@
-//var input = "Prime Number Computation in Copenhagen.\n\nRomeo, a young man of Verona.\nJuliet, a young woman.\nHamlet, a temporary variable from Denmark.\nThe Ghost, a limiting factor (and by a remarkable coincidence also\n        Hamlet's father).\nAct I: Hamlet's insults and flattery.\nScene I: The insulting of Romeo.\n[Enter Hamlet and Romeo]\n\nHamlet:\nYou lying stupid fatherless big smelly half-witted coward!\nYou are as stupid as the difference between a handsome rich brave\nhero and thyself! Speak your mind!";
-//var p = new Horatio.Parser(input);
-//console.log(p);
-//p.parse();
-//console.log(p);
-
-
-
-
 var Main = Main || {};
 
 Main.LineParser = function(input) {
@@ -15,16 +6,36 @@ Main.LineParser = function(input) {
   this.parsed    = this.tokenized.parse();
 };
 
+Main.ProgramParser = function(input) {
+  var parser = new Horatio.Parser(input);
+  parser.parse();
+  this.program = parser.program;
+}
+
 
 $(function() {
   
-  // Line parsing submitted
+  // Line parsing
   $("#line_parsing_form").submit(function(event) {
     event.preventDefault();
     var line_input = $("#line_parsing_input").val();
     var response = new Main.LineParser(line_input).parsed;
     
     if (response.content) $("#line_parsing_output").text(response.content);
+  });
+  
+  // Program parsing
+  $('#program_parsing_form').submit(function(event) {
+    event.preventDefault();
+    var program_input = $('#program_parsing_input').val();
+    var response = new Main.ProgramParser(program_input);
+    var program = response.program;
+    
+    $("#program_title").text(program.title);
+    $("#program_characters").text(program.listCharacters());
+    $("#program_acts").text(program.num_acts);
+    $("#program_scenes").text(program.num_scenes);
+    
   });
   
 });

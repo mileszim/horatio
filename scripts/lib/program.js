@@ -7,6 +7,9 @@ Horatio.Program = function(title) {
   this.characters = {};
   this.acts = {};
   
+  this.num_acts = 0;
+  this.num_scenes = 0;
+  
 };
 
 
@@ -26,6 +29,10 @@ Horatio.Program.prototype = {
   
   createAct: function(act_num) {
     this.acts[act_num] = new Horatio.Program.Act(act_num);
+  },
+  
+  listCharacters: function() {
+    return Object.keys(this.characters).join(", ");
   }
   
 };

@@ -13,12 +13,12 @@ Horatio.Tokenizer.prototype = {
   
   types: {
     "Act":    function(line_array) {
-      return { type: "act", content: this.clean(line_array[1]) };
+      return { type: "act", content: line_array[1].trim().replace(/[:\[,]+/g, "") };
     },
     
     
     "Scene":  function(line_array) {
-      return { type: "scene", content: this.clean(line_array[1]) };
+      return { type: "scene", content: line_array[1].trim().replace(/[:\[,]+/g, "") };
     },
     
     
@@ -31,6 +31,11 @@ Horatio.Tokenizer.prototype = {
     
     "Exit":  function(line_array) {
       return "exit";
+    },
+    
+    
+    "Exeunt":  function(line_array) {
+      return "exeunt";
     },
     
     
@@ -51,7 +56,11 @@ Horatio.Tokenizer.prototype = {
   
   parse: function() {
     var check = this.line[0];
-    return this.types[this.clean(check)](this.line);
+    if (check==="Act"||check==="Scene"||check==="You") {
+      return this.types[this.clean(check)](this.line);
+    } else {
+      return { type: null }
+    }
   }
   
 };

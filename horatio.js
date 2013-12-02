@@ -120,11 +120,14 @@ Horatio.Parser.prototype = {
    * Main parsing function
    */
     parse: function() {
-        this.clean(this.input_text);
+        this.input_array = this.clean();
         this.program = new Horatio.Program(this.getTitle());
         this.addCharacters();
-        var t = new Horatio.Tokenizer(this.input_array[2]);
-        console.log(t.parse());
+        for (var line in this.input_array) {
+            var t = new Horatio.Tokenizer(this.input_array[line]).parse();
+            if (t.type === "act") this.program.num_acts += 1;
+            if (t.type === "scene") this.program.num_scenes += 1;
+        }
     },
     getTitle: function() {
         return this.input_array.shift();
@@ -138,6 +141,8 @@ Horatio.Program = function(title) {
     this.title = title;
     this.characters = {};
     this.acts = {};
+    this.num_acts = 0;
+    this.num_scenes = 0;
 };
 
 Horatio.Program.prototype = {
@@ -152,6 +157,9 @@ Horatio.Program.prototype = {
     },
     createAct: function(act_num) {
         this.acts[act_num] = new Horatio.Program.Act(act_num);
+    },
+    listCharacters: function() {
+        return Object.keys(this.characters).join(", ");
     }
 };
 
@@ -169,13 +177,13 @@ Horatio.Tokenizer.prototype = {
         Act: function(line_array) {
             return {
                 type: "act",
-                content: this.clean(line_array[1])
+                content: line_array[1].trim().replace(/[:\[,]+/g, "")
             };
         },
         Scene: function(line_array) {
             return {
                 type: "scene",
-                content: this.clean(line_array[1])
+                content: line_array[1].trim().replace(/[:\[,]+/g, "")
             };
         },
         Enter: function(line_array) {
@@ -188,6 +196,9 @@ Horatio.Tokenizer.prototype = {
         },
         Exit: function(line_array) {
             return "exit";
+        },
+        Exeunt: function(line_array) {
+            return "exeunt";
         },
         You: function(line_array) {
             var lp = new Horatio.LineParser(line_array.slice(1));
@@ -203,7 +214,13 @@ Horatio.Tokenizer.prototype = {
     },
     parse: function() {
         var check = this.line[0];
-        return this.types[this.clean(check)](this.line);
+        if (check === "Act" || check === "Scene" || check === "You") {
+            return this.types[this.clean(check)](this.line);
+        } else {
+            return {
+                type: null
+            };
+        }
     }
 };
 
@@ -297,8 +314,8 @@ Horatio.Parser.prototype.Clean = {
     }
 };
 
-Horatio.Parser.prototype.clean = function() {
-    this.input_array = this.Clean.splitLines(this.input_text);
+Horatio.Parser.prototype.clean = function(callback) {
+    return this.Clean.splitLines(this.input_text);
 };
 
 /**

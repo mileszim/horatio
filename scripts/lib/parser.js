@@ -16,11 +16,15 @@ Horatio.Parser.prototype = {
    * Main parsing function
    */
   parse: function() {
-    this.clean(this.input_text);
+    this.input_array = this.clean();
     this.program = new Horatio.Program(this.getTitle());
     this.addCharacters();
-    var t = new Horatio.Tokenizer(this.input_array[2]);
-    console.log(t.parse());
+    
+    for (var line in this.input_array) {
+      var t = (new Horatio.Tokenizer(this.input_array[line])).parse();
+      if (t.type==="act")   this.program.num_acts   += 1;
+      if (t.type==="scene") this.program.num_scenes += 1;
+    }
   },
   
   

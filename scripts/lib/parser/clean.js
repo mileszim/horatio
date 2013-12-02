@@ -28,6 +28,6 @@ Horatio.Parser.prototype.Clean = {
   
 };
 
-Horatio.Parser.prototype.clean = function() {
-  this.input_array = this.Clean.splitLines(this.input_text);
+Horatio.Parser.prototype.clean = function(callback) {
+  return this.Clean.splitLines(this.input_text);
 };
