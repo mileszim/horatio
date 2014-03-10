@@ -237,7 +237,7 @@ Horatio.Tokenizer.prototype = {
         wl.return.forEach(function(w) {
             self.dictionary[w] = 13;
         });
-        wl.postive_comparatives.forEach(function(w) {
+        wl.positive_comparatives.forEach(function(w) {
             self.dictionary[w] = 14;
         });
         wl.negative_comparatives.forEach(function(w) {
@@ -282,7 +282,7 @@ Horatio.Tokenizer.prototype = {
         wl.negative_adjectives.forEach(function(w) {
             self.dictionary[w] = 28;
         });
-        wl.postive_nouns.forEach(function(w) {
+        wl.positive_nouns.forEach(function(w) {
             self.dictionary[w] = 29;
         });
         wl.neutral_nouns.forEach(function(w) {
@@ -309,7 +309,7 @@ Horatio.Tokenizer.prototype = {
         wl.question_mark.forEach(function(w) {
             self.dictionary[w] = 37;
         });
-        wl.ampsersand.forEach(function(w) {
+        wl.ampersand.forEach(function(w) {
             self.dictionary[w] = 38;
         });
         wl.and.forEach(function(w) {
@@ -462,7 +462,7 @@ Horatio.Wordlists.ampersand = [ "&" ];
 
 Horatio.Wordlists.left_bracket = [ "LEFT_BRACKET" ];
 
-Horatio.Wordlists.right_brakcet = [ "RIGHT_BRAKCET" ];
+Horatio.Wordlists.right_bracket = [ "RIGHT_BRACKET" ];
 
 /** Third Person Possessive */
 Horatio.Wordlists.third_person_possessive = [ "his", "her", "its", "their" ];
