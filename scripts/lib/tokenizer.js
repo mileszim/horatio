@@ -29,9 +29,33 @@ Horatio.Tokenizer.prototype = {
     
     // Split into array by spaces
     var input_array = input.split(" ");
-    console.log(input_array);
+    
+    // tokenize
+    while (input_array.length > 0) {
+      var current = input_array.shift();
+      if (this.dictionary[current]) {
+        this.tokens.push(new Horatio.Token(this.dictionary[current], current));
+      } else {
+        
+        // check if further appends will find match
+        var br = 0;
+        var orig = current;
+        while (!this.dictionary[current] && br < 6) {
+          current = current + " " + input_array[br];
+          
+          if (this.dictionary[current]) {
+            this.tokens.push(new Horatio.Token(this.dictionary[current], current));
+            input_array.splice(0,br+1);
+          }
+          br += 1;
+        }
+        
+        // comment
+        if (br===6) this.tokens.push(new Horatio.Token(42, orig));
+      }
+    }
+    console.log(this.tokens);
   },
-  
   
   
   
