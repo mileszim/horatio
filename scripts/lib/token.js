@@ -1,64 +1,63 @@
 /**
  * Tokens
  */
-Horatio.Token = function(token, sequence) {
-  this.token    = token;
+Horatio.Token = function(kind, sequence) {
+  this.kind     = kind;
   this.sequence = sequence;
 }
 
-Horatio.Token.prototype = {
+
   
-  /**
-   * Token Constants
-   */
-  CHARACTER:             function() { return this.token === 1;  },
-  ARTICLE:               function() { return this.token === 2;  },
-  BE:                    function() { return this.token === 3;  },
-  ACT:                   function() { return this.token === 4;  },
-  SCENE:                 function() { return this.token === 5;  },
-  ENTER:                 function() { return this.token === 6;  },
-  EXIT:                  function() { return this.token === 7;  },
-  EXEUNT:                function() { return this.token === 8;  },
-  INPUT:                 function() { return this.token === 9;  },
-  OUTPUT:                function() { return this.token === 10; },
+/**
+ * Token Constants
+ */
+Horatio.Token.CHARACTER             = 1;
+Horatio.Token.ARTICLE               = 2;
+Horatio.Token.BE                    = 3;
+Horatio.Token.ACT                   = 4;
+Horatio.Token.SCENE                 = 5;
+Horatio.Token.ENTER                 = 6;
+Horatio.Token.EXIT                  = 7;
+Horatio.Token.EXEUNT                = 8;
+Horatio.Token.INPUT                 = 9;
+Horatio.Token.OUTPUT                = 10;
   
-  IMPERATIVE:            function() { return this.token === 11; },
-  TO:                    function() { return this.token === 12; },
-  RETURN:                function() { return this.token === 13; },
+Horatio.Token.IMPERATIVE            = 11;
+Horatio.Token.TO                    = 12;
+Horatio.Token.RETURN                = 13;
   
-  POSITIVE_COMPARATIVE:  function() { return this.token === 14; },
-  NEGATIVE_COMPARATIVE:  function() { return this.token === 15; },
-  AS:                    function() { return this.token === 16; },
-  NOT:                   function() { return this.token === 17; },
-  THAN:                  function() { return this.token === 18; },
-  IF_SO:                 function() { return this.token === 19; },
+Horatio.Token.POSITIVE_COMPARATIVE  = 14;
+Horatio.Token.NEGATIVE_COMPARATIVE  = 15;
+Horatio.Token.AS                    = 16;
+Horatio.Token.NOT                   = 17;
+Horatio.Token.THAN                  = 18;
+Horatio.Token.IF_SO                 = 19;
+Horatio.Token.BE_COMPARATIVE        = 20;
   
-  UNARY_OPERATOR:        function() { return this.token === 20; },
-  ARITHMETIC_OPERATOR:   function() { return this.token === 21; },
+Horatio.Token.UNARY_OPERATOR        = 21;
+Horatio.Token.ARITHMETIC_OPERATOR   = 22;
   
-  REMEMBER:              function() { return this.token === 22; },
-  RECALL:                function() { return this.token === 23; },
+Horatio.Token.REMEMBER              = 23;
+Horatio.Token.RECALL                = 24;
   
-  FIRST_PERSON_PRONOUN:  function() { return this.token === 24; },
-  SECOND_PERSON_PRONOUN: function() { return this.token === 25; },
-  POSITIVE_ADJECTIVE:    function() { return this.token === 26; },
-  NEUTRAL_ADJECTIVE:     function() { return this.token === 27; },
-  NEGATIVE_ADJECTIVE:    function() { return this.token === 28; },
-  POSITIVE_NOUN:         function() { return this.token === 29; },
-  NEUTRAL_NOUN:          function() { return this.token === 30; },
-  NEGATIVE_NOUN:         function() { return this.token === 31; },
-  ROMAN_NUMERAL:         function() { return this.token === 32; },
+Horatio.Token.FIRST_PERSON_PRONOUN  = 25;
+Horatio.Token.SECOND_PERSON_PRONOUN = 26;
+Horatio.Token.POSITIVE_ADJECTIVE    = 27;
+Horatio.Token.NEUTRAL_ADJECTIVE     = 28;
+Horatio.Token.NEGATIVE_ADJECTIVE    = 29;
+Horatio.Token.POSITIVE_NOUN         = 30;
+Horatio.Token.NEUTRAL_NOUN          = 31;
+Horatio.Token.NEGATIVE_NOUN         = 32;
+Horatio.Token.ROMAN_NUMERAL         = 33;
   
-  COLON:                 function() { return this.token === 33; },
-  COMMA:                 function() { return this.token === 34; },
-  PERIOD:                function() { return this.token === 35; },
-  EXCLAMATION_POINT:     function() { return this.token === 36; },
-  QUESTION_MARK:         function() { return this.token === 37; },
-  AMPERSAND:             function() { return this.token === 38; },
-  AND:                   function() { return this.token === 39; },
-  LEFT_BRACKET:          function() { return this.token === 40; },
-  RIGHT_BRACKET:         function() { return this.token === 41; },
+Horatio.Token.COLON                 = 34;
+Horatio.Token.COMMA                 = 35;
+Horatio.Token.PERIOD                = 36;
+Horatio.Token.EXCLAMATION_POINT     = 37;
+Horatio.Token.QUESTION_MARK         = 38;
+Horatio.Token.AMPERSAND             = 39;
+Horatio.Token.AND                   = 40;
+Horatio.Token.LEFT_BRACKET          = 41;
+Horatio.Token.RIGHT_BRACKET         = 42;
   
-  COMMENT:               function() { return this.token === 42; }
-  
-};
+Horatio.Token.COMMENT               = 43;

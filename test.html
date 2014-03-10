@@ -2,9 +2,8 @@
   <head>
     <script src="./horatio.js"></script>
     <script>
-      var t = new Horatio.Tokenizer();
-      console.log(t);
-      t.tokenize("Act I: test test.");
+      var p = new Horatio.Parser("Some test comment here. Romeo, a test character. Juliet, another test character.");
+      p.parse();
     </script>
   </head>
 </html>

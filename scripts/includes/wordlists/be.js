@@ -9,3 +9,9 @@ Horatio.Wordlists.be = [
   //'be',
   //'is'
 ];
+
+Horatio.Wordlists.be_comparatives = [
+  'Art thou',
+  'Are you',
+  'Am I'
+];

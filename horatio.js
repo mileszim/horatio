@@ -7,155 +7,384 @@
 var Horatio = Horatio || {};
 
 /**
- * Tokens
+ * Parser
  */
-Horatio.Token = function(token, sequence) {
-    this.token = token;
-    this.sequence = sequence;
+Horatio.Parser = function(input) {
+    this.tokenizer = new Horatio.Tokenizer(input);
+    this.currentToken = null;
 };
 
-Horatio.Token.prototype = {
+Horatio.Parser.prototype = {
+    accept: function(expectedKind) {
+        if (this.currentToken.kind === expectedKind) {
+            this.currentToken = this.tokenizer.nextToken();
+        } else {
+            throw new Error("Syntax Error - Unexpected Token: " + JSON.stringify(this.currentToken));
+        }
+    },
+    acceptIt: function() {
+        this.currentToken = this.tokenizer.nextToken();
+    },
+    parse: function() {
+        this.currentToken = this.tokenizer.nextToken();
+        this.parseProgram();
+        if (this.currentToken !== -1) {
+            throw new Error("Syntax Error - unexpected end of program");
+        }
+        console.log("Valid!");
+    },
     /**
-   * Token Constants
+   * Parsers
    */
-    CHARACTER: function() {
-        return this.token === 1;
+    parseProgram: function() {
+        this.parseComment();
+        this.accept(Horatio.Token.PERIOD);
+        this.parseDeclaration();
+        while (this.currentToken.kind === Horatio.Token.CHARACTER) {
+            this.parseDeclaration();
+        }
+        this.parsePart();
+        while (this.currentToken.kind === Horatio.Token.ACT) {
+            this.parsePart();
+        }
     },
-    ARTICLE: function() {
-        return this.token === 2;
+    parseComment: function() {
+        while (this.currentToken.kind !== Horatio.Token.PERIOD) {
+            this.acceptIt();
+        }
     },
-    BE: function() {
-        return this.token === 3;
+    parseDeclaration: function() {
+        this.accept(Horatio.Token.CHARACTER);
+        this.accept(Horatio.Token.COMMA);
+        this.parseComment();
+        this.accept(Horatio.Token.PERIOD);
     },
-    ACT: function() {
-        return this.token === 4;
+    parsePart: function() {
+        this.accept(Horatio.Token.ACT);
+        this.accept(Horatio.Token.ROMAN_NUMERAL);
+        this.accept(Horatio.Token.COLON);
+        while (this.currentToken.kind !== Horatio.Token.PERIOD) {
+            this.acceptIt();
+        }
+        this.accept(Horatio.Token.PERIOD);
+        this.parseSubPart();
+        while (this.currentToken.kind === Horatio.Token.SCENE) {
+            this.parseSubPart();
+        }
     },
-    SCENE: function() {
-        return this.token === 5;
+    parseSubPart: function() {
+        this.accept(Horatio.Token.SCENE);
+        this.accept(Horatio.Token.ROMAN_NUMERAL);
+        this.accept(Horatio.Token.COLON);
+        while (this.currentToken.kind !== Horatio.Token.PERIOD) {
+            this.acceptIt();
+        }
+        this.accept(Horatio.Token.PERIOD);
+        this.parseStage();
     },
-    ENTER: function() {
-        return this.token === 6;
+    parseStage: function() {
+        if (this.currentToken.kind === Horatio.Token.LEFT_BRACKET) {
+            this.parsePresence();
+        }
+        this.parseDialogue();
+        if (this.currentToken.kind === Horatio.Token.LEFT_BRACKET) {
+            this.parsePresence();
+        }
     },
-    EXIT: function() {
-        return this.token === 7;
+    parsePresence: function() {
+        this.accept(Horatio.Token.LEFT_BRACKET);
+        switch (this.currentToken.kind) {
+          case Horatio.Token.ENTER:
+            this.acceptIt();
+            this.accept(Horatio.Token.CHARACTER);
+            if (this.currentToken.kind === Horatio.Token.AMPERSAND) {
+                this.acceptIt();
+                this.accept(Horatio.Token.CHARACTER);
+            }
+            break;
+
+          case Horatio.Token.EXIT:
+            this.acceptIt();
+            this.accept(Horatio.Token.CHARACTER);
+            break;
+
+          case Horatio.Token.EXEUNT:
+            this.acceptIt();
+            if (this.currentToken.kind === Horatio.Token.CHARACTER) {
+                this.acceptIt();
+                this.accept(Horatio.Token.AMPERSAND);
+                this.accept(Horatio.Token.CHARACTER);
+            }
+        }
+        this.accept(Horatio.Token.RIGHT_BRACKET);
     },
-    EXEUNT: function() {
-        return this.token === 8;
+    parseDialogue: function() {
+        while (this.currentToken.kind === Horatio.Token.CHARACTER) {
+            this.parseLine();
+        }
     },
-    INPUT: function() {
-        return this.token === 9;
+    parseLine: function() {
+        this.accept(Horatio.Token.CHARACTER);
+        this.accept(Horatio.Token.COLON);
+        this.parseSentence();
+        while (this.currentToken.kind !== Horatio.Token.PERIOD && this.currentToken.kind !== Horatio.Token.EXCLAMATION_POINT && this.currentToken.kind !== Horatio.Token.QUESTION_MARK) {
+            this.parseSentence();
+        }
     },
-    OUTPUT: function() {
-        return this.token === 10;
+    parseSentence: function() {
+        switch (this.currentToken.kind) {
+          case Horatio.Token.BE:
+            this.parseAssignment();
+            this.accept(Horatio.Token.PERIOD);
+            break;
+
+          case Horatio.Token.BE_COMPARATIVE:
+            this.parseComparative();
+            this.accept(Horatio.Token.QUESTION_MARK);
+            break;
+
+          case Horatio.Token.IF_SO:
+            this.parseResponse();
+            this.accept(Horatio.Token.PERIOD);
+            break;
+
+          case Horatio.Token.IMPERATIVE:
+            this.parseGoto();
+            this.accept(Horatio.Token.PERIOD);
+            break;
+
+          case Horatio.Token.INPUT:
+            this.parseInput();
+            this.accept(Horatio.Token.EXCLAMATION_POINT);
+            break;
+
+          case Horatio.Token.OUTPUT:
+            this.parseOutput();
+            this.accept(Horatio.Token.EXCLAMATION_POINT);
+            break;
+
+          case Horatio.Token.REMEMBER:
+            this.parseRemember();
+            this.accept(Horatio.Token.EXCLAMATION_POINT);
+            break;
+
+          case Horatio.Token.RECALL:
+            this.parseRecall();
+            this.accept(Horatio.Token.EXCLAMATION_POINT);
+            break;
+        }
     },
-    IMPERATIVE: function() {
-        return this.token === 11;
+    parseAssignment: function() {
+        this.accept(Horatio.Token.BE);
+        if (this.currentToken.kind === Horatio.Token.AS) {
+            this.acceptIt();
+            this.parseAdjective();
+            this.accept(Horatio.Token.AS);
+        }
+        this.parseValue();
     },
-    TO: function() {
-        return this.token === 12;
+    parseValue: function() {
+        switch (this.currentToken.kind) {
+          case Horatio.Token.UNARY_OPERATOR:
+            this.parseUnaryOperation();
+            break;
+
+          case Horatio.Token.ARITHMETIC_OPERATOR:
+            this.parseArithmeticOperation();
+            break;
+
+          case Horatio.Token.POSITIVE_NOUN:
+          case Horatio.Token.NEUTRAL_NOUN:
+          case Horatio.Token.NEGATIVE_NOUN:
+          case Horatio.Token.ARTICLE:
+            this.parseConstant();
+            break;
+
+          case Horatio.Token.FIRST_PERSON_PRONOUN:
+          case Horatio.Token.SECOND_PERSON_PRONOUN:
+            this.acceptIt();
+            break;
+        }
     },
-    RETURN: function() {
-        return this.token === 13;
+    parseUnaryOperation: function() {
+        this.accept(Horatio.Token.UNARY_OPERATOR);
+        this.parseValue();
     },
-    POSITIVE_COMPARATIVE: function() {
-        return this.token === 14;
+    parseArithmeticOperation: function() {
+        this.accept(Horatio.Token.ARITHMETIC_OPERATOR);
+        this.parseValue();
+        this.accept(Horatio.Token.AND);
+        this.parseValue();
     },
-    NEGATIVE_COMPARATIVE: function() {
-        return this.token === 15;
+    parseConstant: function() {
+        if (this.currentToken.kind === Horatio.Token.ARTICLE) {
+            this.acceptIt();
+        }
+        switch (this.currentToken.kind) {
+          case Horatio.Token.POSITIVE_ADJECTIVE:
+          case Horatio.Token.POSITIVE_NOUN:
+            this.parsePositiveConstant();
+            break;
+
+          case Horatio.Token.NEGATIVE_ADJECTIVE:
+          case Horatio.Token.NEGATIVE_NOUN:
+            this.parseNegativeConstant();
+            break;
+        }
     },
-    AS: function() {
-        return this.token === 16;
+    parsePositiveConstant: function() {
+        while (this.currentToken.kind !== Horatio.Token.POSITIVE_NOUN) {
+            switch (this.currentToken.kind) {
+              case Horatio.Token.POSITIVE_ADJECTIVE:
+              case Horatio.Token.NEUTRAL_ADJECTIVE:
+                this.acceptIt();
+            }
+        }
+        this.accept(Horatio.Token.POSITIVE_NOUN);
     },
-    NOT: function() {
-        return this.token === 17;
+    parseNegativeConstant: function() {
+        while (this.currentToken.kind !== Horatio.Token.NEGATIVE_NOUN) {
+            switch (this.currentToken.kind) {
+              case Horatio.Token.NEGATIVE_ADJECTIVE:
+              case Horatio.Token.NEUTRAL_ADJECTIVE:
+                this.acceptIt();
+            }
+        }
+        this.accept(Horatio.Token.NEGATIVE_NOUN);
     },
-    THAN: function() {
-        return this.token === 18;
-    },
-    IF_SO: function() {
-        return this.token === 19;
-    },
-    UNARY_OPERATOR: function() {
-        return this.token === 20;
-    },
-    ARITHMETIC_OPERATOR: function() {
-        return this.token === 21;
-    },
-    REMEMBER: function() {
-        return this.token === 22;
-    },
-    RECALL: function() {
-        return this.token === 23;
-    },
-    FIRST_PERSON_PRONOUN: function() {
-        return this.token === 24;
-    },
-    SECOND_PERSON_PRONOUN: function() {
-        return this.token === 25;
-    },
-    POSITIVE_ADJECTIVE: function() {
-        return this.token === 26;
-    },
-    NEUTRAL_ADJECTIVE: function() {
-        return this.token === 27;
-    },
-    NEGATIVE_ADJECTIVE: function() {
-        return this.token === 28;
-    },
-    POSITIVE_NOUN: function() {
-        return this.token === 29;
-    },
-    NEUTRAL_NOUN: function() {
-        return this.token === 30;
-    },
-    NEGATIVE_NOUN: function() {
-        return this.token === 31;
-    },
-    ROMAN_NUMERAL: function() {
-        return this.token === 32;
-    },
-    COLON: function() {
-        return this.token === 33;
-    },
-    COMMA: function() {
-        return this.token === 34;
-    },
-    PERIOD: function() {
-        return this.token === 35;
-    },
-    EXCLAMATION_POINT: function() {
-        return this.token === 36;
-    },
-    QUESTION_MARK: function() {
-        return this.token === 37;
-    },
-    AMPERSAND: function() {
-        return this.token === 38;
-    },
-    AND: function() {
-        return this.token === 39;
-    },
-    LEFT_BRACKET: function() {
-        return this.token === 40;
-    },
-    RIGHT_BRACKET: function() {
-        return this.token === 41;
-    },
-    COMMENT: function() {
-        return this.token === 42;
+    parseComparative: function() {},
+    parseResponse: function() {},
+    parseGoto: function() {},
+    parseInput: function() {},
+    parseOutput: function() {},
+    parseRemember: function() {},
+    parseRecall: function() {},
+    parseAdjective: function() {
+        switch (this.currentToken.kind) {
+          case Horatio.Token.POSITIVE_ADJECTIVE:
+          case Horatio.Token.NEUTRAL_ADJECTIVE:
+          case Horatio.Token.NEGATIVE_ADJECTIVE:
+            this.acceptIt();
+            break;
+        }
     }
 };
 
 /**
+ * Tokens
+ */
+Horatio.Token = function(kind, sequence) {
+    this.kind = kind;
+    this.sequence = sequence;
+};
+
+/**
+ * Token Constants
+ */
+Horatio.Token.CHARACTER = 1;
+
+Horatio.Token.ARTICLE = 2;
+
+Horatio.Token.BE = 3;
+
+Horatio.Token.ACT = 4;
+
+Horatio.Token.SCENE = 5;
+
+Horatio.Token.ENTER = 6;
+
+Horatio.Token.EXIT = 7;
+
+Horatio.Token.EXEUNT = 8;
+
+Horatio.Token.INPUT = 9;
+
+Horatio.Token.OUTPUT = 10;
+
+Horatio.Token.IMPERATIVE = 11;
+
+Horatio.Token.TO = 12;
+
+Horatio.Token.RETURN = 13;
+
+Horatio.Token.POSITIVE_COMPARATIVE = 14;
+
+Horatio.Token.NEGATIVE_COMPARATIVE = 15;
+
+Horatio.Token.AS = 16;
+
+Horatio.Token.NOT = 17;
+
+Horatio.Token.THAN = 18;
+
+Horatio.Token.IF_SO = 19;
+
+Horatio.Token.BE_COMPARATIVE = 20;
+
+Horatio.Token.UNARY_OPERATOR = 21;
+
+Horatio.Token.ARITHMETIC_OPERATOR = 22;
+
+Horatio.Token.REMEMBER = 23;
+
+Horatio.Token.RECALL = 24;
+
+Horatio.Token.FIRST_PERSON_PRONOUN = 25;
+
+Horatio.Token.SECOND_PERSON_PRONOUN = 26;
+
+Horatio.Token.POSITIVE_ADJECTIVE = 27;
+
+Horatio.Token.NEUTRAL_ADJECTIVE = 28;
+
+Horatio.Token.NEGATIVE_ADJECTIVE = 29;
+
+Horatio.Token.POSITIVE_NOUN = 30;
+
+Horatio.Token.NEUTRAL_NOUN = 31;
+
+Horatio.Token.NEGATIVE_NOUN = 32;
+
+Horatio.Token.ROMAN_NUMERAL = 33;
+
+Horatio.Token.COLON = 34;
+
+Horatio.Token.COMMA = 35;
+
+Horatio.Token.PERIOD = 36;
+
+Horatio.Token.EXCLAMATION_POINT = 37;
+
+Horatio.Token.QUESTION_MARK = 38;
+
+Horatio.Token.AMPERSAND = 39;
+
+Horatio.Token.AND = 40;
+
+Horatio.Token.LEFT_BRACKET = 41;
+
+Horatio.Token.RIGHT_BRACKET = 42;
+
+Horatio.Token.COMMENT = 43;
+
+/**
  * Tokenizer
  */
-Horatio.Tokenizer = function() {
+Horatio.Tokenizer = function(input) {
     this.tokens = [];
     this.dictionary = {};
     this.buildDictionary();
+    this.tokenize(input);
 };
 
 Horatio.Tokenizer.prototype = {
+    nextToken: function() {
+        if (this.tokens.length > 0) {
+            return this.tokens.shift();
+        } else {
+            return -1;
+        }
+    },
     tokenize: function(input) {
         // strip all newlines/extra whitespace
         input = input.trim().replace(/[\s\n]+/g, " ");
@@ -211,10 +440,9 @@ Horatio.Tokenizer.prototype = {
                     br += 1;
                 }
                 // comment
-                if (br === 6) this.tokens.push(new Horatio.Token(42, orig));
+                if (br === 6) this.tokens.push(new Horatio.Token(43, orig));
             }
         }
-        console.log(this.tokens);
     },
     buildDictionary: function() {
         var self = this;
@@ -276,71 +504,74 @@ Horatio.Tokenizer.prototype = {
         wl.if_so.forEach(function(w) {
             self.dictionary[w] = 19;
         });
-        wl.unary_operators.forEach(function(w) {
+        wl.be_comparatives.forEach(function(w) {
             self.dictionary[w] = 20;
         });
-        wl.arithmetic_operators.forEach(function(w) {
+        wl.unary_operators.forEach(function(w) {
             self.dictionary[w] = 21;
         });
-        wl.remember.forEach(function(w) {
+        wl.arithmetic_operators.forEach(function(w) {
             self.dictionary[w] = 22;
         });
-        wl.recall.forEach(function(w) {
+        wl.remember.forEach(function(w) {
             self.dictionary[w] = 23;
         });
-        wl.first_person_pronouns.forEach(function(w) {
+        wl.recall.forEach(function(w) {
             self.dictionary[w] = 24;
         });
-        wl.second_person_pronouns.forEach(function(w) {
+        wl.first_person_pronouns.forEach(function(w) {
             self.dictionary[w] = 25;
         });
-        wl.positive_adjectives.forEach(function(w) {
+        wl.second_person_pronouns.forEach(function(w) {
             self.dictionary[w] = 26;
         });
-        wl.neutral_adjectives.forEach(function(w) {
+        wl.positive_adjectives.forEach(function(w) {
             self.dictionary[w] = 27;
         });
-        wl.negative_adjectives.forEach(function(w) {
+        wl.neutral_adjectives.forEach(function(w) {
             self.dictionary[w] = 28;
         });
-        wl.positive_nouns.forEach(function(w) {
+        wl.negative_adjectives.forEach(function(w) {
             self.dictionary[w] = 29;
         });
-        wl.neutral_nouns.forEach(function(w) {
+        wl.positive_nouns.forEach(function(w) {
             self.dictionary[w] = 30;
         });
-        wl.negative_nouns.forEach(function(w) {
+        wl.neutral_nouns.forEach(function(w) {
             self.dictionary[w] = 31;
         });
-        wl.roman_numerals.forEach(function(w) {
+        wl.negative_nouns.forEach(function(w) {
             self.dictionary[w] = 32;
         });
-        wl.colon.forEach(function(w) {
+        wl.roman_numerals.forEach(function(w) {
             self.dictionary[w] = 33;
         });
-        wl.comma.forEach(function(w) {
+        wl.colon.forEach(function(w) {
             self.dictionary[w] = 34;
         });
-        wl.period.forEach(function(w) {
+        wl.comma.forEach(function(w) {
             self.dictionary[w] = 35;
         });
-        wl.exclamation_point.forEach(function(w) {
+        wl.period.forEach(function(w) {
             self.dictionary[w] = 36;
         });
-        wl.question_mark.forEach(function(w) {
+        wl.exclamation_point.forEach(function(w) {
             self.dictionary[w] = 37;
         });
-        wl.ampersand.forEach(function(w) {
+        wl.question_mark.forEach(function(w) {
             self.dictionary[w] = 38;
         });
-        wl.and.forEach(function(w) {
+        wl.ampersand.forEach(function(w) {
             self.dictionary[w] = 39;
         });
-        wl.left_bracket.forEach(function(w) {
+        wl.and.forEach(function(w) {
             self.dictionary[w] = 40;
         });
-        wl.right_bracket.forEach(function(w) {
+        wl.left_bracket.forEach(function(w) {
             self.dictionary[w] = 41;
+        });
+        wl.right_bracket.forEach(function(w) {
+            self.dictionary[w] = 42;
         });
     }
 };
@@ -365,6 +596,8 @@ Horatio.Wordlists.articles = [ "a", "an", "the" ];
 
 /** Be */
 Horatio.Wordlists.be = [ "Thou art", "You are", "I am" ];
+
+Horatio.Wordlists.be_comparatives = [ "Art thou", "Are you", "Am I" ];
 
 /** Characters */
 Horatio.Wordlists.characters = [ "Achilles", "Adonis", "Adriana", "Aegeon", "Aemilia", "Agamemnon", "Agrippa", "Ajax", "Alonso", "Andromache", "Angelo", "Antiochus", "Antonio", "Arthur", "Autolycus", "Balthazar", "Banquo", "Beatrice", "Benedick", "Benvolio", "Bianca", "Brabantio", "Brutus", "Capulet", "Cassandra", "Cassius", "Christopher Sly", "Cicero", "Claudio", "Claudius", "Cleopatra", "Cordelia", "Cornelius", "Cressida", "Cymberline", "Demetrius", "Desdemona", "Dionyza", "Doctor Caius", "Dogberry", "Don John", "Don Pedro", "Donalbain", "Dorcas", "Duncan", "Egeus", "Emilia", "Escalus", "Falstaff", "Fenton", "Ferdinand", "Ford", "Fortinbras", "Francisca", "Friar John", "Friar Laurence", "Gertrude", "Goneril", "Hamlet", "Hecate", "Hector", "Helen", "Helena", "Hermia", "Hermonie", "Hippolyta", "Horatio", "Imogen", "Isabella", "John of Gaunt", "John of Lancaster", "Julia", "Juliet", "Julius Caesar", "King Henry", "King John", "King Lear", "King Richard", "Lady Capulet", "Lady Macbeth", "Lady Macduff", "Lady Montague", "Lennox", "Leonato", "Luciana", "Lucio", "Lychorida", "Lysander", "Macbeth", "Macduff", "Malcolm", "Mariana", "Mark Antony", "Mercutio", "Miranda", "Mistress Ford", "Mistress Overdone", "Mistress Page", "Montague", "Mopsa", "Oberon", "Octavia", "Octavius Caesar", "Olivia", "Ophelia", "Orlando", "Orsino", "Othello", "Page", "Pantino", "Paris", "Pericles", "Pinch", "Polonius", "Pompeius", "Portia", "Priam", "Prince Henry", "Prospero", "Proteus", "Publius", "Puck", "Queen Elinor", "Regan", "Robin", "Romeo", "Rosalind", "Sebastian", "Shallow", "Shylock", "Slender", "Solinus", "Stephano", "Thaisa", "The Abbot of Westminster", "The Apothecary", "The Archbishop of Canterbury", "The Duke of Milan", "The Duke of Venice", "The Ghost", "Theseus", "Thurio", "Timon", "Titania", "Titus", "Troilus", "Tybalt", "Ulysses", "Valentine", "Venus", "Vincentio", "Viola" ];

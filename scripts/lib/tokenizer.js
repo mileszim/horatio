@@ -1,14 +1,25 @@
 /**
  * Tokenizer
  */
-Horatio.Tokenizer = function() {
+Horatio.Tokenizer = function(input) {
   this.tokens = [];
   this.dictionary = {};
   this.buildDictionary();
+  this.tokenize(input);
 }
 
 
 Horatio.Tokenizer.prototype = {
+  
+  nextToken: function() {
+    if (this.tokens.length > 0) {
+      return this.tokens.shift();
+    } else {
+      return -1;
+    }
+  },
+  
+  
   
   tokenize: function(input) {
     // strip all newlines/extra whitespace
@@ -51,10 +62,9 @@ Horatio.Tokenizer.prototype = {
         }
         
         // comment
-        if (br===6) this.tokens.push(new Horatio.Token(42, orig));
+        if (br===6) this.tokens.push(new Horatio.Token(43, orig));
       }
     }
-    console.log(this.tokens);
   },
   
   
@@ -82,28 +92,29 @@ Horatio.Tokenizer.prototype = {
     wl.not                   .forEach(function(w) { self.dictionary[w] = 17; });
     wl.than                  .forEach(function(w) { self.dictionary[w] = 18; });
     wl.if_so                 .forEach(function(w) { self.dictionary[w] = 19; });
-    wl.unary_operators       .forEach(function(w) { self.dictionary[w] = 20; });
-    wl.arithmetic_operators  .forEach(function(w) { self.dictionary[w] = 21; });
-    wl.remember              .forEach(function(w) { self.dictionary[w] = 22; });
-    wl.recall                .forEach(function(w) { self.dictionary[w] = 23; });
-    wl.first_person_pronouns .forEach(function(w) { self.dictionary[w] = 24; });
-    wl.second_person_pronouns.forEach(function(w) { self.dictionary[w] = 25; });
-    wl.positive_adjectives   .forEach(function(w) { self.dictionary[w] = 26; });
-    wl.neutral_adjectives    .forEach(function(w) { self.dictionary[w] = 27; });
-    wl.negative_adjectives   .forEach(function(w) { self.dictionary[w] = 28; });
-    wl.positive_nouns        .forEach(function(w) { self.dictionary[w] = 29; });
-    wl.neutral_nouns         .forEach(function(w) { self.dictionary[w] = 30; });
-    wl.negative_nouns        .forEach(function(w) { self.dictionary[w] = 31; });
-    wl.roman_numerals        .forEach(function(w) { self.dictionary[w] = 32; });
-    wl.colon                 .forEach(function(w) { self.dictionary[w] = 33; });
-    wl.comma                 .forEach(function(w) { self.dictionary[w] = 34; });
-    wl.period                .forEach(function(w) { self.dictionary[w] = 35; });
-    wl.exclamation_point     .forEach(function(w) { self.dictionary[w] = 36; });
-    wl.question_mark         .forEach(function(w) { self.dictionary[w] = 37; });
-    wl.ampersand             .forEach(function(w) { self.dictionary[w] = 38; });
-    wl.and                   .forEach(function(w) { self.dictionary[w] = 39; });
-    wl.left_bracket          .forEach(function(w) { self.dictionary[w] = 40; });
-    wl.right_bracket         .forEach(function(w) { self.dictionary[w] = 41; });
+    wl.be_comparatives       .forEach(function(w) { self.dictionary[w] = 20; });
+    wl.unary_operators       .forEach(function(w) { self.dictionary[w] = 21; });
+    wl.arithmetic_operators  .forEach(function(w) { self.dictionary[w] = 22; });
+    wl.remember              .forEach(function(w) { self.dictionary[w] = 23; });
+    wl.recall                .forEach(function(w) { self.dictionary[w] = 24; });
+    wl.first_person_pronouns .forEach(function(w) { self.dictionary[w] = 25; });
+    wl.second_person_pronouns.forEach(function(w) { self.dictionary[w] = 26; });
+    wl.positive_adjectives   .forEach(function(w) { self.dictionary[w] = 27; });
+    wl.neutral_adjectives    .forEach(function(w) { self.dictionary[w] = 28; });
+    wl.negative_adjectives   .forEach(function(w) { self.dictionary[w] = 29; });
+    wl.positive_nouns        .forEach(function(w) { self.dictionary[w] = 30; });
+    wl.neutral_nouns         .forEach(function(w) { self.dictionary[w] = 31; });
+    wl.negative_nouns        .forEach(function(w) { self.dictionary[w] = 32; });
+    wl.roman_numerals        .forEach(function(w) { self.dictionary[w] = 33; });
+    wl.colon                 .forEach(function(w) { self.dictionary[w] = 34; });
+    wl.comma                 .forEach(function(w) { self.dictionary[w] = 35; });
+    wl.period                .forEach(function(w) { self.dictionary[w] = 36; });
+    wl.exclamation_point     .forEach(function(w) { self.dictionary[w] = 37; });
+    wl.question_mark         .forEach(function(w) { self.dictionary[w] = 38; });
+    wl.ampersand             .forEach(function(w) { self.dictionary[w] = 39; });
+    wl.and                   .forEach(function(w) { self.dictionary[w] = 40; });
+    wl.left_bracket          .forEach(function(w) { self.dictionary[w] = 41; });
+    wl.right_bracket         .forEach(function(w) { self.dictionary[w] = 42; });
   }
 
   
