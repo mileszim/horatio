@@ -33,7 +33,7 @@ Horatio.Tokenizer.prototype = {
         case ".": return " PERIOD";            break;
         case "!": return " EXCLAMATION_POINT"; break;
         case "?": return " QUESTION_MARK";     break;
-        case "[": return " LEFT_BRACKET";      break;
+        case "[": return "LEFT_BRACKET ";      break;
         case "]": return " RIGHT_BRACKET";     break;
       }
     });

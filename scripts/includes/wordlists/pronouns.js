@@ -1,5 +1,5 @@
 Horatio.Wordlists.first_person_pronouns = [
-  'I',
+  //'I',
   'myself',
   'me'
 ];

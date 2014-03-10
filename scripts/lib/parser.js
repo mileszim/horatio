@@ -142,9 +142,14 @@ Horatio.Parser.prototype = {
     this.accept(Horatio.Token.CHARACTER);
     this.accept(Horatio.Token.COLON);
     this.parseSentence();
-    while (this.currentToken.kind!==Horatio.Token.PERIOD
-        && this.currentToken.kind!==Horatio.Token.EXCLAMATION_POINT
-        && this.currentToken.kind!==Horatio.Token.QUESTION_MARK) {
+    while (this.currentToken.kind===Horatio.Token.BE
+        || this.currentToken.kind===Horatio.Token.BE_COMPARATIVE
+        || this.currentToken.kind===Horatio.Token.IF_SO
+        || this.currentToken.kind===Horatio.Token.IMPERATIVE
+        || this.currentToken.kind===Horatio.Token.INPUT
+        || this.currentToken.kind===Horatio.Token.OUTPUT
+        || this.currentToken.kind===Horatio.Token.REMEMBER
+        || this.currentToken.kind===Horatio.Token.RECALL) {
       this.parseSentence();
     }
     
@@ -160,7 +165,7 @@ Horatio.Parser.prototype = {
         break;
         
       case Horatio.Token.BE_COMPARATIVE:
-        this.parseComparative();
+        this.parseQuestion();
         this.accept(Horatio.Token.QUESTION_MARK);
         break;
       
@@ -292,25 +297,85 @@ Horatio.Parser.prototype = {
   },
   
   
-  parseComparative: function() {},
+  parseQuestion: function() {
+    this.accept(Horatio.Token.BE_COMPARATIVE);
+    this.parseComparative();
+    this.parseValue();
+  },
   
   
-  parseResponse: function() {},
+  parseComparative: function() {
+    switch (this.currentToken.kind) {
+      
+      case Horatio.Token.POSITIVE_COMPARATIVE:
+      case Horatio.Token.NEGATIVE_COMPARATIVE:
+        this.acceptIt();
+        this.accept(Horatio.Token.THAN);
+        break;
+        
+      case Horatio.Token.AS:
+        this.acceptIt();
+        this.parseAdjective();
+        this.accept(Horatio.Token.AS);
+        break;
+      
+      case Horatio.Token.NOT:
+        this.acceptIt();
+        switch (this.currentToken.kind) {
+          case Horatio.Token.POSITIVE_COMPARATIVE:
+          case Horatio.Token.NEGATIVE_COMPARATIVE:
+            this.acceptIt();
+            this.accept(Horatio.Token.THAN);
+            break;
+        }
+        break;
+    }
+  },
   
   
-  parseGoto: function() {},
+  parseResponse: function() {
+    this.accept(Horatio.Token.IF_SO);
+    this.accept(Horatio.Token.COMMA);
+    this.parseGoto();
+  },
   
   
-  parseInput: function() {},
+  parseGoto: function() {
+    this.accept(Horatio.Token.IMPERATIVE);
+    this.accept(Horatio.Token.RETURN);
+    this.accept(Horatio.Token.TO);
+    this.accept(Horatio.Token.SCENE);
+    this.accept(Horatio.Token.ROMAN_NUMERAL);
+  },
   
   
-  parseOutput: function() {},
+  parseInput: function() {
+    this.accept(Horatio.Token.INPUT);
+  },
   
   
-  parseRemember: function() {},
+  parseOutput: function() {
+    this.accept(Horatio.Token.OUTPUT);
+  },
   
   
-  parseRecall: function() {},
+  parseRemember: function() {
+    this.accept(Horatio.Token.REMEMBER);
+    switch (this.currentToken.kind) {
+      case Horatio.Token.FIRST_PERSON_PRONOUN:
+      case Horatio.Token.SECOND_PERSON_PRONOUN:
+        this.acceptIt();
+    }
+  },
+  
+  
+  parseRecall: function() {
+    this.accept(Horatio.Token.RECALL);
+    this.accept(Horatio.Token.COMMA);
+    while (this.currentToken.kind!==Horatio.Token.EXCLAMATION_POINT) {
+      this.acceptIt();
+    }
+  },
   
   
   parseAdjective: function() {
