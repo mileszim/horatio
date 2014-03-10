@@ -1,5 +1,3 @@
 /** Act and Scene */
-Horatio.Wordlists.act_and_scene = [
-  'Act',
-  'Scene'
-];
+Horatio.Wordlists.act   = ['Act'];
+Horatio.Wordlists.scene = ['Scene'];

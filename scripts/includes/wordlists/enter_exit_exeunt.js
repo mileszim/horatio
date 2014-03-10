@@ -1,6 +1,4 @@
 /** Enter, Exit, and Exeunt */
-Horatio.Wordlists.enter_exit_exeunt = [
-  'Enter',
-  'Exit',
-  'Exeunt'
-];
+Horatio.Wordlists.enter  = ['Enter'];
+Horatio.Wordlists.exit   = ['Exit'];
+Horatio.Wordlists.exeunt = ['Exeunt'];

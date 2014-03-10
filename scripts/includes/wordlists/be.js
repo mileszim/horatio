@@ -1,8 +1,11 @@
 /** Be */
 Horatio.Wordlists.be = [
-  'am',
-  'are',
-  'art',
-  'be',
-  'is'
+  'Thou art',
+  'You are',
+  'I am'
+  //'am',
+  //'are',
+  //'art',
+  //'be',
+  //'is'
 ];
