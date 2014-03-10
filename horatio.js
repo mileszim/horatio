@@ -7,203 +7,191 @@
 var Horatio = Horatio || {};
 
 /**
- * Clean Lines
+ * Tokens
  */
-Horatio.CleanLines = {
-    lineTerminals: function() {
-        var terminals = "[" + Horatio.Wordlists.line_terminals.join("") + "]";
-        return new RegExp(terminals);
-    },
-    cleanLine: function(line) {
-        return line.trim().replace(/[\s\n]+/g, " ");
-    },
-    clean: function(text) {
-        var lines = text.split(Horatio.CleanLines.lineTerminals());
-        return Horatio.CleanLines.cleanLines(lines);
-    },
-    cleanLines: function(lines) {
-        var cleaned = [];
-        for (var l in lines) {
-            var c = Horatio.CleanLines.cleanLine(lines[l]);
-            if (c != "") cleaned.push(c);
-        }
-        return cleaned;
-    }
+Horatio.Token = function(token, sequence) {
+    this.token = token;
+    this.sequence = sequence;
 };
 
-/**
- * Line Parser
- */
-Horatio.LineParser = function(line_array) {
-    this.line_array = line_array;
-    this.type = "value";
-    this.value = null;
-    this.multiplier = 1;
-    this.direction = 1;
-};
-
-Horatio.LineParser.prototype = {
-    parse: function() {
-        var self = this;
-        if (self.line_array.length === 0) {
-            return null;
-        }
-        // get word to test
-        var str = self.line_array.shift();
-        /**
-     * test and continue parsing if needed.
-     * this needs to be broken up/rewritten entirely
-     */
-        switch (true) {
-          // Is an article/something
-            case self.Expressions.articles().test(str):
-            self.parse();
-            break;
-
-          // Is an adjective
-            case self.Expressions.adjectives().test(str):
-            if (self.Expressions.negative_adjectives().test(str)) {
-                self.multiplier *= 2;
-                self.direction = -1;
-                self.parse();
-            }
-            if (self.Expressions.positive_adjectives().test(str)) {
-                self.multiplier *= 2;
-                self.direction = 1;
-                self.parse();
-            }
-            break;
-
-          // Is a noun
-            case self.Expressions.nouns().test(str):
-            if (self.Expressions.negative_nouns().test(str)) self.direction = -1;
-            self.value = self.direction * self.multiplier;
-            return null;
-            break;
-
-          // Is an operator
-            case self.Expressions.operators().test(str):
-            var break_point = self.line_array.lastIndexOf("and");
-            var left_side = new Horatio.LineParser(self.line_array.slice(0, break_point));
-            var right_side = new Horatio.LineParser(self.line_array.slice(break_point + 1));
-            left_side.parse();
-            right_side.parse();
-            if (str === "sum") self.value = left_side.value + right_side.value;
-            if (str === "difference") self.value = left_side.value - right_side.value;
-            if (str === "quotient") self.value = left_side.value / right_side.value;
-            if (str === "product") self.value = left_side.value * right_side.value;
-            return null;
-            break;
-
-          // Is a comparison
-            case self.Expressions.comparisons().test(str):
-            self.line_array.shift();
-            self.line_array.shift();
-            self.line_array.shift();
-            self.parse();
-            break;
-        }
-    }
-};
-
-/**
- * Horatio Parser
- */
-Horatio.Parser = function(input_text) {
-    this.input_text = input_text;
-    this.input_array = null;
-    this.program = null;
-};
-
-Horatio.Parser.prototype = {
+Horatio.Token.prototype = {
     /**
-   * Main parsing function
+   * Token Constants
    */
-    parse: function() {
-        this.clean(this.input_text);
-        this.program = new Horatio.Program(this.getTitle());
-        this.addCharacters();
-        var t = new Horatio.Tokenizer(this.input_array[2]);
-        console.log(t.parse());
+    CHARACTER: function() {
+        return this.token === 1;
     },
-    getTitle: function() {
-        return this.input_array.shift();
-    }
-};
-
-/**
- * Program
- */
-Horatio.Program = function(title) {
-    this.title = title;
-    this.characters = {};
-    this.acts = {};
-};
-
-Horatio.Program.prototype = {
-    addCharacter: function(character) {
-        this.characters[character.name] = character;
+    ARTICLE: function() {
+        return this.token === 2;
     },
-    createCharacter: function(character_name) {
-        this.characters[character_name] = new Horatio.Program.Character(character_name);
+    BE: function() {
+        return this.token === 3;
     },
-    addAct: function(act) {
-        this.acts[act.num] = act;
+    ACT: function() {
+        return this.token === 4;
     },
-    createAct: function(act_num) {
-        this.acts[act_num] = new Horatio.Program.Act(act_num);
+    SCENE: function() {
+        return this.token === 5;
+    },
+    ENTER: function() {
+        return this.token === 6;
+    },
+    EXIT: function() {
+        return this.token === 7;
+    },
+    EXEUNT: function() {
+        return this.token === 8;
+    },
+    INPUT: function() {
+        return this.token === 9;
+    },
+    OUTPUT: function() {
+        return this.token === 10;
+    },
+    IMPERATIVE: function() {
+        return this.token === 11;
+    },
+    TO: function() {
+        return this.token === 12;
+    },
+    RETURN: function() {
+        return this.token === 13;
+    },
+    POSITIVE_COMPARATIVE: function() {
+        return this.token === 14;
+    },
+    NEGATIVE_COMPARATIVE: function() {
+        return this.token === 15;
+    },
+    AS: function() {
+        return this.token === 16;
+    },
+    NOT: function() {
+        return this.token === 17;
+    },
+    THAN: function() {
+        return this.token === 18;
+    },
+    IF_SO: function() {
+        return this.token === 19;
+    },
+    UNARY_OPERATOR: function() {
+        return this.token === 20;
+    },
+    ARITHMETIC_OPERATOR: function() {
+        return this.token === 21;
+    },
+    REMEMBER: function() {
+        return this.token === 22;
+    },
+    RECALL: function() {
+        return this.token === 23;
+    },
+    FIRST_PERSON_PRONOUN: function() {
+        return this.token === 24;
+    },
+    SECOND_PERSON_PRONOUN: function() {
+        return this.token === 25;
+    },
+    POSITIVE_ADJECTIVE: function() {
+        return this.token === 26;
+    },
+    NEUTRAL_ADJECTIVE: function() {
+        return this.token === 27;
+    },
+    NEGATIVE_ADJECTIVE: function() {
+        return this.token === 28;
+    },
+    POSITIVE_NOUN: function() {
+        return this.token === 29;
+    },
+    NEUTRAL_NOUN: function() {
+        return this.token === 30;
+    },
+    NEGATIVE_NOUN: function() {
+        return this.token === 31;
+    },
+    ROMAN_NUMERAL: function() {
+        return this.token === 32;
+    },
+    COLON: function() {
+        return this.token === 33;
+    },
+    COMMA: function() {
+        return this.token === 34;
+    },
+    PERIOD: function() {
+        return this.token === 35;
+    },
+    EXCLAMATION_POINT: function() {
+        return this.token === 36;
+    },
+    QUESTION_MARK: function() {
+        return this.token === 37;
+    },
+    AMPERSAND: function() {
+        return this.token === 38;
+    },
+    AND: function() {
+        return this.token === 39;
+    },
+    LEFT_BRACKET: function() {
+        return this.token === 40;
+    },
+    RIGHT_BRACKET: function() {
+        return this.token === 41;
+    },
+    COMMENT: function() {
+        return this.token === 42;
     }
 };
 
 /**
  * Tokenizer
  */
-Horatio.Tokenizer = function(line) {
-    this.line = line;
-    this.type = null;
-    if (typeof line === "string") this.line = line.split(" ");
+Horatio.Tokenizer = function() {
+    this.tokens = [];
 };
 
 Horatio.Tokenizer.prototype = {
-    types: {
-        Act: function(line_array) {
-            return {
-                type: "act",
-                content: this.clean(line_array[1])
-            };
-        },
-        Scene: function(line_array) {
-            return {
-                type: "scene",
-                content: this.clean(line_array[1])
-            };
-        },
-        Enter: function(line_array) {
-            var characters = [ line_array[1] ];
-            if (line_array[2] === "and") characters.push(line_array[3]);
-            return {
-                type: "enter_characters",
-                content: characters
-            };
-        },
-        Exit: function(line_array) {
-            return "exit";
-        },
-        You: function(line_array) {
-            var lp = new Horatio.LineParser(line_array.slice(1));
-            lp.parse();
-            return {
-                type: "value",
-                content: lp.value
-            };
-        }
-    },
-    clean: function(word) {
-        return word.trim().replace(/[:\[,]+/g, "");
-    },
-    parse: function() {
-        var check = this.line[0];
-        return this.types[this.clean(check)](this.line);
+    tokenize: function(input) {
+        // strip all newlines/extra whitespace
+        input = input.trim().replace(/[\s\n]+/g, " ");
+        // replace terminals
+        input = input.replace(/[:,.!?\[\]]/g, function(match) {
+            switch (match) {
+              case ":":
+                return " COLON";
+                break;
+
+              case ",":
+                return " COMMA";
+                break;
+
+              case ".":
+                return " PERIOD";
+                break;
+
+              case "!":
+                return " EXCLAMATION_POINT";
+                break;
+
+              case "?":
+                return " QUESTION_MARK";
+                break;
+
+              case "[":
+                return " LEFT_BRACKET";
+                break;
+
+              case "]":
+                return " RIGHT_BRACKET";
+                break;
+            }
+        });
+        // Split into array by spaces
+        var input_array = input.split(" ");
+        console.log(input_array);
     }
 };
 
@@ -214,200 +202,3 @@ Horatio.Tokenizer.prototype = {
  * Loaded from includes/wordlists/ at make
  */
 Horatio.Wordlists = {};
-
-Horatio.LineParser.prototype.Expressions = {
-    adjectives: function() {
-        var r = "^(" + Horatio.Wordlists.negative_adjectives.join("|") + "|" + Horatio.Wordlists.positive_adjectives.join("|") + ")$";
-        return new RegExp(r);
-    },
-    negative_adjectives: function() {
-        var r = "^(" + Horatio.Wordlists.negative_adjectives.join("|") + ")$";
-        return new RegExp(r);
-    },
-    positive_adjectives: function() {
-        var r = "^(" + Horatio.Wordlists.positive_adjectives.join("|") + ")$";
-        return new RegExp(r);
-    },
-    nouns: function() {
-        var r = "^(" + Horatio.Wordlists.negative_nouns.join("|") + "|" + Horatio.Wordlists.positive_nouns.join("|") + ")$";
-        return new RegExp(r);
-    },
-    negative_nouns: function() {
-        var r = "^(" + Horatio.Wordlists.negative_nouns.join("|") + ")$";
-        return new RegExp(r);
-    },
-    positive_nouns: function() {
-        var r = "^(" + Horatio.Wordlists.positive_nouns.join("|") + ")$";
-        return new RegExp(r);
-    },
-    comparisons: function() {
-        var r = "^(are|art|as)$";
-        return new RegExp(r);
-    },
-    operators: function() {
-        var r = "^(sum|difference|product|quotient)$";
-        return new RegExp(r);
-    },
-    articles: function() {
-        var r = "^(of|between|the|a|an|your|my|mine|thy|thine)$";
-        return new RegExp(r);
-    }
-};
-
-Horatio.Parser.prototype.Characters = {
-    parseCharacter: function(line) {
-        return line.match(this.characterReg())[1];
-    },
-    characterReg: function() {
-        var r = "(" + Horatio.Wordlists.characters.join("|") + ")" + Horatio.Wordlists.character_terminal;
-        return new RegExp(r);
-    }
-};
-
-Horatio.Parser.prototype.addCharacters = function() {
-    var breaker = "Act I";
-    while (this.input_array[0] && this.input_array[0].indexOf(breaker) < 0) {
-        var l = this.input_array.shift();
-        this.program.createCharacter(this.Characters.parseCharacter(l));
-    }
-};
-
-/**
- * Clean
- */
-Horatio.Parser.prototype.Clean = {
-    lineTerminals: function() {
-        var terminals = "[" + Horatio.Wordlists.line_terminals.join("") + "]";
-        return new RegExp(terminals);
-    },
-    cleanLine: function(line) {
-        return line.trim().replace(/[\s\n]+/g, " ");
-    },
-    splitLines: function(text) {
-        var lines = text.split(this.lineTerminals());
-        return this.cleanLines(lines);
-    },
-    cleanLines: function(lines) {
-        var cleaned = [];
-        for (var l in lines) {
-            var c = this.cleanLine(lines[l]);
-            if (c != "") cleaned.push(c);
-        }
-        return cleaned;
-    }
-};
-
-Horatio.Parser.prototype.clean = function() {
-    this.input_array = this.Clean.splitLines(this.input_text);
-};
-
-/**
- * Act
- */
-Horatio.Program.Act = function(num) {
-    this.num = num;
-    this.scenes = {};
-};
-
-Horatio.Program.Act.prototype = {
-    createScene: function(num) {
-        if (!this.scenes[num]) this.scenes[num] = new Scene(num);
-    }
-};
-
-/**
- * Character
- */
-Horatio.Program.Character = function(name) {
-    this.name = name;
-    this.values = [];
-};
-
-Horatio.Program.Character.prototype = {
-    peek: function() {
-        return this.values[0] || null;
-    },
-    val: function() {
-        return this.peek();
-    },
-    push: function(value) {
-        this.values.unshift(value);
-    },
-    pop: function() {
-        return this.values.shift();
-    }
-};
-
-/**
- * Scene
- */
-Horatio.Program.Scene = function(num) {
-    this.num = num;
-};
-
-/** Act and Scene */
-Horatio.Wordlists.act_and_scene = [ "Act", "Scene" ];
-
-/** Articles **/
-Horatio.Wordlists.articles = [ "a", "an", "the" ];
-
-/** Be */
-Horatio.Wordlists.be = [ "am", "are", "art", "be", "is" ];
-
-/** Characters */
-Horatio.Wordlists.characters = [ "Achilles", "Adonis", "Adriana", "Aegeon", "Aemilia", "Agamemnon", "Agrippa", "Ajax", "Alonso", "Andromache", "Angelo", "Antiochus", "Antonio", "Arthur", "Autolycus", "Balthazar", "Banquo", "Beatrice", "Benedick", "Benvolio", "Bianca", "Brabantio", "Brutus", "Capulet", "Cassandra", "Cassius", "Christopher Sly", "Cicero", "Claudio", "Claudius", "Cleopatra", "Cordelia", "Cornelius", "Cressida", "Cymberline", "Demetrius", "Desdemona", "Dionyza", "Doctor Caius", "Dogberry", "Don John", "Don Pedro", "Donalbain", "Dorcas", "Duncan", "Egeus", "Emilia", "Escalus", "Falstaff", "Fenton", "Ferdinand", "Ford", "Fortinbras", "Francisca", "Friar John", "Friar Laurence", "Gertrude", "Goneril", "Hamlet", "Hecate", "Hector", "Helen", "Helena", "Hermia", "Hermonie", "Hippolyta", "Horatio", "Imogen", "Isabella", "John of Gaunt", "John of Lancaster", "Julia", "Juliet", "Julius Caesar", "King Henry", "King John", "King Lear", "King Richard", "Lady Capulet", "Lady Macbeth", "Lady Macduff", "Lady Montague", "Lennox", "Leonato", "Luciana", "Lucio", "Lychorida", "Lysander", "Macbeth", "Macduff", "Malcolm", "Mariana", "Mark Antony", "Mercutio", "Miranda", "Mistress Ford", "Mistress Overdone", "Mistress Page", "Montague", "Mopsa", "Oberon", "Octavia", "Octavius Caesar", "Olivia", "Ophelia", "Orlando", "Orsino", "Othello", "Page", "Pantino", "Paris", "Pericles", "Pinch", "Polonius", "Pompeius", "Portia", "Priam", "Prince Henry", "Prospero", "Proteus", "Publius", "Puck", "Queen Elinor", "Regan", "Robin", "Romeo", "Rosalind", "Sebastian", "Shallow", "Shylock", "Slender", "Solinus", "Stephano", "Thaisa", "The Abbot of Westminster", "The Apothecary", "The Archbishop of Canterbury", "The Duke of Milan", "The Duke of Venice", "The Ghost", "Theseus", "Thurio", "Timon", "Titania", "Titus", "Troilus", "Tybalt", "Ulysses", "Valentine", "Venus", "Vincentio", "Viola" ];
-
-/** Enter, Exit, and Exeunt */
-Horatio.Wordlists.enter_exit_exeunt = [ "Enter", "Exit", "Exeunt" ];
-
-/** First Person */
-Horatio.Wordlists.first_person = [ "I", "i", "me" ];
-
-/** First Person Possessive */
-Horatio.Wordlists.first_person_possessive = [ "mine", "my" ];
-
-/** First Person Reflexive */
-Horatio.Wordlists.first_person_reflexive = [ "myself" ];
-
-/** Negative Adjective */
-Horatio.Wordlists.negative_adjectives = [ "bad", "big", "cowardly", "cursed", "damned", "dirty", "disgusting", "distasteful", "dusty", "evil", "fat", "fat-kidneyed", "fatherless", "foul", "hairy", "half-witted", "horrible", "horrid", "infected", "lying", "miserable", "misused", "oozing", "rotten", "smelly", "snotty", "sorry", "stinking", "stuffed", "stupid", "vile", "villainous", "worried" ];
-
-/** Negative Comparatives */
-Horatio.Wordlists.negative_comparatives = [ "punier", "smaller", "worse" ];
-
-/** Negative Nouns */
-Horatio.Wordlists.negative_nouns = [ "Hell", "Microsoft", "bastard", "beggar", "blister", "codpiece", "coward", "curse", "death", "devil", "draught", "famine", "flirt-gill", "goat", "hate", "hog", "hound", "leech", "lie", "pig", "plague", "starvation", "toad", "war", "wolf" ];
-
-/** Nothing */
-Horatio.Wordlists.nothing = [ "nothing", "zero" ];
-
-/** Positive Adjectives */
-Horatio.Wordlists.positive_adjectives = [ "amazing", "beautiful", "blossoming", "bold", "black", "brave", "charming", "clearest", "cunning", "cute", "delicious", "embroidered", "fair", "fine", "gentle", "golden", "good", "handsome", "happy", "healthy", "honest", "little", "lovely", "loving", "mighty", "noble", "old", "peaceful", "pretty", "prompt", "proud", "reddest", "rich", "rural", "smooth", "sunny", "sweet", "sweetest", "trustworthy", "tiny", "warm" ];
-
-/** Positive Comparatives */
-Horatio.Wordlists.positive_comparatives = [ "better", "bigger", "fresher", "friendlier", "nicer", "jollier" ];
-
-/** Positive Nouns */
-Horatio.Wordlists.positive_nouns = [ "Heaven", "King", "Lord", "angel", "flower", "happiness", "joy", "plum", "summer's day", "hero", "rose", "kingdom", "pony", "cat" ];
-
-/** Roman Numerals */
-Horatio.Wordlists.roman_numerals = [ "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX" ];
-
-/** Second Person */
-Horatio.Wordlists.second_person = [ "thee", "thou", "you" ];
-
-/** Second Person Possessive */
-Horatio.Wordlists.second_person_possessive = [ "thine", "thy", "your" ];
-
-/** Second Person Reflexive */
-Horatio.Wordlists.second_person_reflexive = [ "thyself", "yourself" ];
-
-/** Terminals */
-Horatio.Wordlists.terminals = [ ":", ",", "[", ".", "?", "]" ];
-
-Horatio.Wordlists.line_terminals = [ "\\.", "?", "!", "\\]" ];
-
-Horatio.Wordlists.character_terminal = ",";
-
-/** Third Person Possessive */
-Horatio.Wordlists.third_person_possessive = [ "his", "her", "its", "their" ];

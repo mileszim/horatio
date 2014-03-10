@@ -1,57 +1,34 @@
 /**
  * Tokenizer
  */
-Horatio.Tokenizer = function(line) {
-  this.line = line;
-  this.type = null;
-  if (typeof line === 'string') this.line = line.split(" ");
+Horatio.Tokenizer = function() {
+  this.tokens = [];
 }
 
 
 Horatio.Tokenizer.prototype = {
   
-  
-  types: {
-    "Act":    function(line_array) {
-      return { type: "act", content: this.clean(line_array[1]) };
-    },
+  tokenize: function(input) {
+    // strip all newlines/extra whitespace
+    input = input.trim().replace(/[\s\n]+/g," ");
     
+    // replace terminals
+    input = input.replace(/[:,.!?\[\]]/g, function(match) {
+      switch(match) {
+        case ":": return " COLON";             break;
+        case ",": return " COMMA";             break;
+        case ".": return " PERIOD";            break;
+        case "!": return " EXCLAMATION_POINT"; break;
+        case "?": return " QUESTION_MARK";     break;
+        case "[": return " LEFT_BRACKET";      break;
+        case "]": return " RIGHT_BRACKET";     break;
+      }
+    });
     
-    "Scene":  function(line_array) {
-      return { type: "scene", content: this.clean(line_array[1]) };
-    },
-    
-    
-    "Enter": function(line_array) {
-      var characters = [line_array[1]];
-      if (line_array[2]==="and") characters.push(line_array[3]);
-      return { type: "enter_characters", content: characters };
-    },
-    
-    
-    "Exit":  function(line_array) {
-      return "exit";
-    },
-    
-    
-    "You":    function(line_array) {
-      var lp = new Horatio.LineParser(line_array.slice(1));
-      lp.parse();
-      return { type: "value", content: lp.value };
-    }
-  },
-  
-  
-  
-  
-  clean: function(word) {
-    return word.trim().replace(/[:\[,]+/g,"");
-  },
-  
-  
-  parse: function() {
-    var check = this.line[0];
-    return this.types[this.clean(check)](this.line);
+    // Split into array by spaces
+    var input_array = input.split(" ");
+    console.log(input_array);
   }
+
   
 };
