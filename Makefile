@@ -1,18 +1,10 @@
 all: full min
 
 full:
-	uglifyjs -b indent-level=4 --comments all \
-	-o horatio.js \
-	scripts/horatio.js \
-	scripts/lib/*.js \
-	scripts/includes/wordlists/*.js
+	grunt concat
 
 min:
-	uglifyjs \
-	-o horatio.min.js \
-	scripts/horatio.js \
-	scripts/lib/*.js \
-	scripts/includes/wordlists/*.js
+	grunt uglify
 
 clean:
 	rm horatio.js horatio.min.js
