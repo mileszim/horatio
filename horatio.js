@@ -167,6 +167,24 @@ Horatio.AST = {
   NegativeComparative: function(sequence) { this.sequence = sequence; }
   
 };
+Horatio.Compiler = function() {};
+
+
+Horatio.Compiler.prototype = {
+  
+  /**
+   * Compile an SPL program
+   */
+  compile: function(input) {
+    // Parse input
+    var parser = new Horatio.Parser(input);
+    var AST = parser.parse();
+    
+    
+    return AST;
+  }
+  
+};
 Horatio.Parser = function(input) {
   this.tokenizer    = new Horatio.Tokenizer(input);
   this.currentToken = null;

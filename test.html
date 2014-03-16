@@ -2,8 +2,9 @@
   <head>
     <script src="./horatio.js"></script>
     <script>
-      var p = new Horatio.Parser("Some test comment here. Romeo, a test character. Juliet, another test character. Act I: A test act. Scene I: a test scene. [Enter Romeo & Juliet] Romeo: Remember me! Juliet: Let us proceed to Scene II. [Exeunt] Scene II: Another scene. [Enter Romeo] Romeo: Open your heart! [Exit Romeo]");
-      console.log(p.parse());
+      var c = new Horatio.Compiler();
+      var r = c.compile("Some test comment here. Romeo, a test character. Juliet, another test character. Act I: A test act. Scene I: a test scene. [Enter Romeo & Juliet] Romeo: Remember me! Juliet: Let us proceed to Scene II. [Exeunt] Scene II: Another scene. [Enter Romeo] Romeo: Open your heart! [Exit Romeo]");
+		console.log(r);
     </script>
   </head>
 </html>
