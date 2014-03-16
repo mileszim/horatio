@@ -1,7 +1,7 @@
 /**
  * Parses an SPL program and generates an AST.
  * @memberof Horatio
- * @param {string} input The SPL program to parse
+ * @param {string} input - The SPL program to parse
  * @constructor
  */
 Horatio.Parser = function(input) {
@@ -13,8 +13,8 @@ Horatio.Parser.prototype = {
   
   /**
    * Accept the current token if it matches an expected kind
-   * @param {number} expectedKind The byte value of the expected token
-   * @throws {SyntaxError} Throws syntax error if current token kind does not match expected token kind.
+   * @param  {number}      expectedKind - The byte value of the expected token
+   * @throws {SyntaxError}              - Throws syntax error if current token kind does not match expected token kind.
    */
   accept: function(expectedKind) {
     if (this.currentToken.kind === expectedKind) {
@@ -33,7 +33,7 @@ Horatio.Parser.prototype = {
   
   /**
    * Parse the SPL program and return an AST
-   * @returns {Horatio.AST.Program} The program AST.
+   * @returns {Horatio.AST.Program} - The program AST.
    */
   parse: function() {
     this.currentToken = this.tokenizer.nextToken();

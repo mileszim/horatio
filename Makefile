@@ -1,4 +1,4 @@
-all: full min
+all: full min documentation
 
 full:
 	grunt jshint:before_concat
@@ -13,3 +13,6 @@ clean:
 
 install:
 	npm install
+
+documentation:
+	grunt jsdoc

@@ -7,6 +7,9 @@ Horatio.AST = {
   
   /**
    * @memberof Horatio.AST
+   * @param {Horatio.AST.Comment}             comment
+   * @param {Array.<Horatio.AST.Declaration>} declarations
+   * @param {Array.<Horatio.AST.Part>}        parts
    * @constructor
    */
   Program: function(comment, declarations, parts) {
@@ -18,6 +21,8 @@ Horatio.AST = {
   
   /**
    * @memberof Horatio.AST
+   * @param {Horatio.AST.Character} character
+   * @param {Horatio.AST.Comment}   comment
    * @constructor
    */
   Declaration: function(character, comment) {
@@ -28,6 +33,9 @@ Horatio.AST = {
   
   /**
    * @memberof Horatio.AST
+   * @param {Horatio.AST.Numeral}         numeral
+   * @param {Horatio.AST.Comment}         comment
+   * @param {Array.<Horatio.AST.Subpart>} subparts
    * @constructor
    */
   Part: function(numeral, comment, subparts) {
@@ -39,6 +47,9 @@ Horatio.AST = {
   
   /**
    * @memberof Horatio.AST
+   * @param {Horatio.AST.Numeral} numeral
+   * @param {Horatio.AST.Comment} comment
+   * @param {Horatio.AST.Stage}   stage
    * @constructor
    */
   Subpart: function(numeral, comment, stage) {
@@ -50,6 +61,9 @@ Horatio.AST = {
   
   /**
    * @memberof Horatio.AST
+   * @param {Horatio.AST.Dialogue}                                  dialogue
+   * @param {Horatio.AST.Enter|Horatio.AST.Exit|Horatio.AST.exeunt} start_presence
+   * @param {Horatio.AST.Enter|Horatio.AST.Exit|Horatio.AST.exeunt} end_presence
    * @constructor
    */
   Stage: function(dialogue, start_presence, end_presence) {
@@ -61,6 +75,8 @@ Horatio.AST = {
   
   /**
    * @memberof Horatio.AST
+   * @param {Horatio.AST.Character} character_1
+   * @param {Horatio.AST.Character} character_2
    * @constructor
    */
   Enter: function(character_1, character_2) {
@@ -70,6 +86,7 @@ Horatio.AST = {
   
   /**
    * @memberof Horatio.AST
+   * @param {Horatio.AST.Character} character
    * @constructor
    */
   Exit: function(character) {
@@ -78,6 +95,8 @@ Horatio.AST = {
   
   /**
    * @memberof Horatio.AST
+   * @param {Horatio.AST.Character} character_1
+   * @param {Horatio.AST.Character} character_2
    * @constructor
    */
   Exeunt: function(character_1, character_2) {
@@ -88,6 +107,7 @@ Horatio.AST = {
   
   /**
    * @memberof Horatio.AST
+   * @param {Array.<Horatio.AST.Line>} lines
    * @constructor
    */
   Dialogue: function(lines) {
@@ -97,6 +117,8 @@ Horatio.AST = {
   
   /**
    * @memberof Horatio.AST
+   * @param {Horatio.AST.Character}         character
+   * @param {Array.<Horatio.AST.Sentences>} sentences
    * @constructor
    */
   Line: function(character, sentences) {
@@ -106,6 +128,7 @@ Horatio.AST = {
   
   /**
    * @memberof Horatio.AST
+   * @param {Horatio.AST.Numeral} numeral
    * @constructor
    */
   Goto: function(numeral) {

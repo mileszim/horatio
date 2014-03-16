@@ -1,9 +1,20 @@
-/*! horatio - v0.0.0 - 2014-03-15
+/*! horatio - v0.0.0 - 2014-03-16
 * https://github.com/mileszim/horatio
 * Copyright (c) 2014 ; Licensed  */
+/**
+ * Horatio Namespace
+ * @namespace
+ */
 var Horatio = Horatio || {};
 Horatio.AST = {
   
+  /**
+   * @memberof Horatio.AST
+   * @param {Horatio.AST.Comment}             comment
+   * @param {Array.<Horatio.AST.Declaration>} declarations
+   * @param {Array.<Horatio.AST.Part>}        parts
+   * @constructor
+   */
   Program: function(comment, declarations, parts) {
     this.comment      = comment;
     this.declarations = declarations;
@@ -11,12 +22,25 @@ Horatio.AST = {
   },
   
   
+  /**
+   * @memberof Horatio.AST
+   * @param {Horatio.AST.Character} character
+   * @param {Horatio.AST.Comment}   comment
+   * @constructor
+   */
   Declaration: function(character, comment) {
     this.character = character;
     this.comment   = comment;
   },
   
   
+  /**
+   * @memberof Horatio.AST
+   * @param {Horatio.AST.Numeral}         numeral
+   * @param {Horatio.AST.Comment}         comment
+   * @param {Array.<Horatio.AST.Subpart>} subparts
+   * @constructor
+   */
   Part: function(numeral, comment, subparts) {
     this.numeral  = numeral;
     this.comment  = comment;
@@ -24,6 +48,13 @@ Horatio.AST = {
   },
   
   
+  /**
+   * @memberof Horatio.AST
+   * @param {Horatio.AST.Numeral} numeral
+   * @param {Horatio.AST.Comment} comment
+   * @param {Horatio.AST.Stage}   stage
+   * @constructor
+   */
   Subpart: function(numeral, comment, stage) {
     this.numeral = numeral;
     this.comment = comment;
@@ -31,6 +62,13 @@ Horatio.AST = {
   },
   
   
+  /**
+   * @memberof Horatio.AST
+   * @param {Horatio.AST.Dialogue}                                  dialogue
+   * @param {Horatio.AST.Enter|Horatio.AST.Exit|Horatio.AST.exeunt} start_presence
+   * @param {Horatio.AST.Enter|Horatio.AST.Exit|Horatio.AST.exeunt} end_presence
+   * @constructor
+   */
   Stage: function(dialogue, start_presence, end_presence) {
     this.dialogue       = dialogue;
     this.start_presence = start_presence;
@@ -38,109 +76,215 @@ Horatio.AST = {
   },
   
   
+  /**
+   * @memberof Horatio.AST
+   * @param {Horatio.AST.Character} character_1
+   * @param {Horatio.AST.Character} character_2
+   * @constructor
+   */
   Enter: function(character_1, character_2) {
     this.character_1 = character_1;
     this.character_2 = character_2;
   },
   
+  /**
+   * @memberof Horatio.AST
+   * @param {Horatio.AST.Character} character
+   * @constructor
+   */
   Exit: function(character) {
     this.character = character;
   },
   
+  /**
+   * @memberof Horatio.AST
+   * @param {Horatio.AST.Character} character_1
+   * @param {Horatio.AST.Character} character_2
+   * @constructor
+   */
   Exeunt: function(character_1, character_2) {
     this.character_1 = character_1;
     this.character_2 = character_2;
   },
   
   
+  /**
+   * @memberof Horatio.AST
+   * @param {Array.<Horatio.AST.Line>} lines
+   * @constructor
+   */
   Dialogue: function(lines) {
     this.lines = lines;
   },
   
   
+  /**
+   * @memberof Horatio.AST
+   * @param {Horatio.AST.Character}         character
+   * @param {Array.<Horatio.AST.Sentences>} sentences
+   * @constructor
+   */
   Line: function(character, sentences) {
     this.character = character;
     this.sentences = sentences;
   },
   
+  /**
+   * @memberof Horatio.AST
+   * @param {Horatio.AST.Numeral} numeral
+   * @constructor
+   */
   Goto: function(numeral) {
     this.numeral = numeral;
   },
   
   
-  // sentences
+  /**
+   * @memberof Horatio.AST
+   * @constructor
+   */
   AssignmentSentence: function(value) {
     this.value = value;
   },
   
+  /**
+   * @memberof Horatio.AST
+   * @constructor
+   */
   QuestionSentence: function(comparison, value) {
     this.comparison = comparison;
     this.value      = value;
   },
   
+  /**
+   * @memberof Horatio.AST
+   * @constructor
+   */
   ResponseSentence: function(goto) {
     this.goto = goto;
   },
   
+  /**
+   * @memberof Horatio.AST
+   * @constructor
+   */
   GotoSentence: function(goto) {
     this.goto = goto;
   },
   
+  /**
+   * @memberof Horatio.AST
+   * @constructor
+   */
   IntegerInputSentence: function(sequence) { this.sequence = sequence; },
+  /**
+   * @memberof Horatio.AST
+   * @constructor
+   */
   CharInputSentence:    function(sequence) { this.sequence = sequence; },
   
+  /**
+   * @memberof Horatio.AST
+   * @constructor
+   */
   IntegerOutputSentence: function(sequence) { this.sequence = sequence; },
+  /**
+   * @memberof Horatio.AST
+   * @constructor
+   */
   CharOutputSentence:    function(sequence) { this.sequence = sequence; },
   
+  /**
+   * @memberof Horatio.AST
+   * @constructor
+   */
   RememberSentence: function(pronoun) {
     this.pronoun = pronoun;
   },
   
+  /**
+   * @memberof Horatio.AST
+   * @constructor
+   */
   RecallSentence: function(comment) {
     this.comment = comment;
   },
   
   
-  // Values
+  /**
+   * @memberof Horatio.AST
+   * @constructor
+   */
   PositiveConstantValue: function(noun, adjectives) {
     this.noun       = noun;
     this.adjectives = adjectives;
   },
   
+  /**
+   * @memberof Horatio.AST
+   * @constructor
+   */
   NegativeConstantValue: function(noun, adjectives) {
     this.noun       = noun;
     this.adjectives = adjectives;
   },
   
+  /**
+   * @memberof Horatio.AST
+   * @constructor
+   */
   UnaryOperationValue: function(operator, value) {
     this.operator = operator;
     this.value    = value;
   },
   
+  /**
+   * @memberof Horatio.AST
+   * @constructor
+   */
   ArithmeticOperationValue: function(operator, value_1, value_2) {
     this.operator = operator;
     this.value_1  = value_1;
     this.value_2  = value_2;
   },
   
+  /**
+   * @memberof Horatio.AST
+   * @constructor
+   */
   PronounValue: function(pronoun) {
     this.pronoun = pronoun;
   },
   
   
-  // Comparatives
+  /**
+   * @memberof Horatio.AST
+   * @constructor
+   */
   GreaterThanComparison: function(comparative) {
     this.comparative = comparative;
   },
   
+  /**
+   * @memberof Horatio.AST
+   * @constructor
+   */
   LesserThanComparison: function(comparative) {
     this.comparative = comparative;
   },
   
+  /**
+   * @memberof Horatio.AST
+   * @constructor
+   */
   EqualToComparison: function(adjective) {
     this.adjective = adjective;
   },
   
+  /**
+   * @memberof Horatio.AST
+   * @constructor
+   */
   InverseComparison: function(comparison) {
     this.comparison = comparison;
   },
@@ -148,22 +292,93 @@ Horatio.AST = {
   
   
   /**
-   * Terminals
+   * @memberof Horatio.AST
+   * @constructor
    */
   Comment:             function(sequence) { this.sequence = sequence; },
+  
+  /**
+   * @memberof Horatio.AST
+   * @constructor
+   */
   Numeral:             function(sequence) { this.sequence = sequence; },
+  
+  /**
+   * @memberof Horatio.AST
+   * @constructor
+   */
   Character:           function(sequence) { this.sequence = sequence; },
+  
+  /**
+   * @memberof Horatio.AST
+   * @constructor
+   */
   FirstPersonPronoun:  function(sequence) { this.sequence = sequence; },
+  
+  /**
+   * @memberof Horatio.AST
+   * @constructor
+   */
   SecondPersonPronoun: function(sequence) { this.sequence = sequence; },
+  
+  /**
+   * @memberof Horatio.AST
+   * @constructor
+   */
   PositiveNoun:        function(sequence) { this.sequence = sequence; },
+  
+  /**
+   * @memberof Horatio.AST
+   * @constructor
+   */
   NeutralNoun:         function(sequence) { this.sequence = sequence; },
+  
+  /**
+   * @memberof Horatio.AST
+   * @constructor
+   */
   NegativeNoun:        function(sequence) { this.sequence = sequence; },
+  
+  /**
+   * @memberof Horatio.AST
+   * @constructor
+   */
   PositiveAdjective:   function(sequence) { this.sequence = sequence; },
+  
+  /**
+   * @memberof Horatio.AST
+   * @constructor
+   */
   NeutralAdjective:    function(sequence) { this.sequence = sequence; },
+  
+  /**
+   * @memberof Horatio.AST
+   * @constructor
+   */
   NegativeAdjective:   function(sequence) { this.sequence = sequence; },
+  
+  /**
+   * @memberof Horatio.AST
+   * @constructor
+   */
   UnaryOperator:       function(sequence) { this.sequence = sequence; },
+  
+  /**
+   * @memberof Horatio.AST
+   * @constructor
+   */
   ArithmeticOperator:  function(sequence) { this.sequence = sequence; },
+  
+  /**
+   * @memberof Horatio.AST
+   * @constructor
+   */
   PositiveComparative: function(sequence) { this.sequence = sequence; },
+  
+  /**
+   * @memberof Horatio.AST
+   * @constructor
+   */
   NegativeComparative: function(sequence) { this.sequence = sequence; }
   
 };
@@ -174,6 +389,7 @@ Horatio.Compiler.prototype = {
   
   /**
    * Compile an SPL program
+   * @param {string} input - The input SPL program
    */
   compile: function(input) {
     // Parse input
@@ -192,6 +408,11 @@ Horatio.Parser = function(input) {
 
 Horatio.Parser.prototype = {
   
+  /**
+   * Accept the current token if it matches an expected kind
+   * @param  {number}      expectedKind - The byte value of the expected token
+   * @throws {SyntaxError}              - Throws syntax error if current token kind does not match expected token kind.
+   */
   accept: function(expectedKind) {
     if (this.currentToken.kind === expectedKind) {
       this.currentToken = this.tokenizer.nextToken();
@@ -200,10 +421,17 @@ Horatio.Parser.prototype = {
     }
   },
   
+  /**
+   * Accept the current token regardless of kind
+   */
   acceptIt: function() {
     this.currentToken = this.tokenizer.nextToken();
   },
   
+  /**
+   * Parse the SPL program and return an AST
+   * @returns {Horatio.AST.Program} - The program AST.
+   */
   parse: function() {
     this.currentToken = this.tokenizer.nextToken();
     var program = this.parseProgram();
@@ -215,9 +443,7 @@ Horatio.Parser.prototype = {
   
   
   
-  /**
-   * Parsers
-   */
+  /* Parsers */
   parseProgram: function() {
     var comment = this.parseComment();
     this.accept(Horatio.Token.PERIOD);
@@ -698,65 +924,62 @@ Horatio.Token = function(kind, sequence) {
 };
 
 
-  
-/**
- * Token Constants
- */
-Horatio.Token.CHARACTER             = 10;
-Horatio.Token.ARTICLE               = 11;
-Horatio.Token.BE                    = 12;
-Horatio.Token.ACT                   = 13;
-Horatio.Token.SCENE                 = 14;
-Horatio.Token.ENTER                 = 15;
-Horatio.Token.EXIT                  = 16;
-Horatio.Token.EXEUNT                = 17;
 
-//Horatio.Token.INPUT                 = 20;
-Horatio.Token.INPUT_INTEGER         = 21;
-Horatio.Token.INPUT_CHAR            = 22;
-//Horatio.Token.OUTPUT                = 23;
-Horatio.Token.OUTPUT_INTEGER        = 24;
-Horatio.Token.OUTPUT_CHAR           = 25;
+/** @static */ Horatio.Token.CHARACTER             = 10;
+/** @static */ Horatio.Token.ARTICLE               = 11;
+/** @static */ Horatio.Token.BE                    = 12;
+/** @static */ Horatio.Token.ACT                   = 13;
+/** @static */ Horatio.Token.SCENE                 = 14;
+/** @static */ Horatio.Token.ENTER                 = 15;
+/** @static */ Horatio.Token.EXIT                  = 16;
+/** @static */ Horatio.Token.EXEUNT                = 17;
+
+///** @static */ Horatio.Token.INPUT                 = 20;
+/** @static */ Horatio.Token.INPUT_INTEGER         = 21;
+/** @static */ Horatio.Token.INPUT_CHAR            = 22;
+///** @static */ Horatio.Token.OUTPUT                = 23;
+/** @static */ Horatio.Token.OUTPUT_INTEGER        = 24;
+/** @static */ Horatio.Token.OUTPUT_CHAR           = 25;
   
-Horatio.Token.IMPERATIVE            = 30;
-Horatio.Token.TO                    = 31;
-Horatio.Token.RETURN                = 32;
+/** @static */ Horatio.Token.IMPERATIVE            = 30;
+/** @static */ Horatio.Token.TO                    = 31;
+/** @static */ Horatio.Token.RETURN                = 32;
   
-Horatio.Token.POSITIVE_COMPARATIVE  = 40;
-Horatio.Token.NEGATIVE_COMPARATIVE  = 41;
-Horatio.Token.AS                    = 42;
-Horatio.Token.NOT                   = 43;
-Horatio.Token.THAN                  = 44;
-Horatio.Token.IF_SO                 = 45;
-Horatio.Token.BE_COMPARATIVE        = 46;
+/** @static */ Horatio.Token.POSITIVE_COMPARATIVE  = 40;
+/** @static */ Horatio.Token.NEGATIVE_COMPARATIVE  = 41;
+/** @static */ Horatio.Token.AS                    = 42;
+/** @static */ Horatio.Token.NOT                   = 43;
+/** @static */ Horatio.Token.THAN                  = 44;
+/** @static */ Horatio.Token.IF_SO                 = 45;
+/** @static */ Horatio.Token.BE_COMPARATIVE        = 46;
   
-Horatio.Token.UNARY_OPERATOR        = 50;
-Horatio.Token.ARITHMETIC_OPERATOR   = 51;
+/** @static */ Horatio.Token.UNARY_OPERATOR        = 50;
+/** @static */ Horatio.Token.ARITHMETIC_OPERATOR   = 51;
   
-Horatio.Token.REMEMBER              = 60;
-Horatio.Token.RECALL                = 61;
+/** @static */ Horatio.Token.REMEMBER              = 60;
+/** @static */ Horatio.Token.RECALL                = 61;
   
-Horatio.Token.FIRST_PERSON_PRONOUN  = 70;
-Horatio.Token.SECOND_PERSON_PRONOUN = 71;
-Horatio.Token.POSITIVE_ADJECTIVE    = 72;
-Horatio.Token.NEUTRAL_ADJECTIVE     = 73;
-Horatio.Token.NEGATIVE_ADJECTIVE    = 74;
-Horatio.Token.POSITIVE_NOUN         = 75;
-Horatio.Token.NEUTRAL_NOUN          = 76;
-Horatio.Token.NEGATIVE_NOUN         = 77;
-Horatio.Token.ROMAN_NUMERAL         = 78;
+/** @static */ Horatio.Token.FIRST_PERSON_PRONOUN  = 70;
+/** @static */ Horatio.Token.SECOND_PERSON_PRONOUN = 71;
+/** @static */ Horatio.Token.POSITIVE_ADJECTIVE    = 72;
+/** @static */ Horatio.Token.NEUTRAL_ADJECTIVE     = 73;
+/** @static */ Horatio.Token.NEGATIVE_ADJECTIVE    = 74;
+/** @static */ Horatio.Token.POSITIVE_NOUN         = 75;
+/** @static */ Horatio.Token.NEUTRAL_NOUN          = 76;
+/** @static */ Horatio.Token.NEGATIVE_NOUN         = 77;
+/** @static */ Horatio.Token.ROMAN_NUMERAL         = 78;
   
-Horatio.Token.COLON                 = 90;
-Horatio.Token.COMMA                 = 91;
-Horatio.Token.PERIOD                = 92;
-Horatio.Token.EXCLAMATION_POINT     = 93;
-Horatio.Token.QUESTION_MARK         = 94;
-Horatio.Token.AMPERSAND             = 95;
-Horatio.Token.AND                   = 96;
-Horatio.Token.LEFT_BRACKET          = 97;
-Horatio.Token.RIGHT_BRACKET         = 98;
+/** @static */ Horatio.Token.COLON                 = 90;
+/** @static */ Horatio.Token.COMMA                 = 91;
+/** @static */ Horatio.Token.PERIOD                = 92;
+/** @static */ Horatio.Token.EXCLAMATION_POINT     = 93;
+/** @static */ Horatio.Token.QUESTION_MARK         = 94;
+/** @static */ Horatio.Token.AMPERSAND             = 95;
+/** @static */ Horatio.Token.AND                   = 96;
+/** @static */ Horatio.Token.LEFT_BRACKET          = 97;
+/** @static */ Horatio.Token.RIGHT_BRACKET         = 98;
   
-Horatio.Token.COMMENT               = 110;
+/** @static */ Horatio.Token.COMMENT               = 110;
 Horatio.Tokenizer = function(input) {
   this.tokens = [];
   this.dictionary = {};
@@ -767,6 +990,10 @@ Horatio.Tokenizer = function(input) {
 
 Horatio.Tokenizer.prototype = {
   
+  /**
+   * Get the next token
+   * @returns {Horatio.Token|number} - The next token from the input program, or -1 if no remaining tokens.
+   */
   nextToken: function() {
     if (this.tokens.length > 0) {
       return this.tokens.shift();
@@ -777,6 +1004,10 @@ Horatio.Tokenizer.prototype = {
   
   
   
+  /**
+   * Scan and tokenize an input SPL program
+   * @param {string} input - The input SPL program
+   */
   tokenize: function(input) {
     // strip all newlines/extra whitespace
     input = input.trim().replace(/[\s\n]+/g," ");
@@ -825,6 +1056,9 @@ Horatio.Tokenizer.prototype = {
   
   
   
+  /**
+   * Builds a hash of words -> byte codes for scanning
+   */
   buildDictionary: function() {
     var self = this;
     var wl = Horatio.Wordlists;

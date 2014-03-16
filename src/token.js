@@ -1,8 +1,8 @@
 /**
  * SPL Tokens
  * @memberof Horatio
- * @param {number} kind     The scanned token byte
- * @param {string} sequence The matched phrase
+ * @param {number} kind     - The scanned token byte
+ * @param {string} sequence - The matched phrase
  * @constructor
  */
 Horatio.Token = function(kind, sequence) {

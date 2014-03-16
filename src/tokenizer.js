@@ -1,7 +1,7 @@
 /**
  * SPL Tokenizer
  * @memberof Horatio
- * @param {string} input An input SPL program
+ * @param {string} input - An input SPL program
  * @constructor
  */
 Horatio.Tokenizer = function(input) {
@@ -16,7 +16,7 @@ Horatio.Tokenizer.prototype = {
   
   /**
    * Get the next token
-   * @returns {Horatio.Token|number} The next token from the input program, or -1 if no remaining tokens.
+   * @returns {Horatio.Token|number} - The next token from the input program, or -1 if no remaining tokens.
    */
   nextToken: function() {
     if (this.tokens.length > 0) {
@@ -30,7 +30,7 @@ Horatio.Tokenizer.prototype = {
   
   /**
    * Scan and tokenize an input SPL program
-   * @param {string} input The input SPL program
+   * @param {string} input - The input SPL program
    */
   tokenize: function(input) {
     // strip all newlines/extra whitespace
