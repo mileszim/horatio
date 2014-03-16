@@ -36,20 +36,20 @@ module.exports = function(grunt) {
     },
     jshint: {
       options: {
-        curly: false,
-        eqeqeq: true,
-        immed: true,
+        curly:   false,
+        eqeqeq:  true,
+        immed:   true,
         latedef: true,
-        newcap: true,
-        noarg: true,
-        sub: true,
-        undef: true,
-        unused: true,
-        boss: true,
-        eqnull: true,
+        newcap:  true,
+        noarg:   true,
+        sub:     true,
+        undef:   true,
+        unused:  true,
+        boss:    true,
+        eqnull:  true,
         browser: true,
         globals: {
-          jQuery: true,
+          jQuery:  true,
           Horatio: true
         }
       },
@@ -61,7 +61,11 @@ module.exports = function(grunt) {
     },
     jsdoc: {
       dist : {
-        src: ['src/*.js', 'includes/**/*.js', 'README.md'], 
+        src: [
+          'src/*.js',
+          'includes/**/*.js',
+          'README.md'
+        ], 
         options: {
           destination: 'docs'
         }
