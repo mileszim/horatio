@@ -86,15 +86,19 @@ Horatio.AST = {
     this.goto = goto;
   },
   
-  IntegerInputSentence:   function(sequence) { this.sequence = sequence; },
-  CharacterInputSentence: function(sequence) { this.sequence = sequence; },
+  IntegerInputSentence: function(sequence) { this.sequence = sequence; },
+  CharInputSentence:    function(sequence) { this.sequence = sequence; },
   
-  IntegerOutputSentence:   function(sequence) { this.sequence = sequence; },
-  CharacterOutputSentence: function(sequence) { this.sequence = sequence; },
+  IntegerOutputSentence: function(sequence) { this.sequence = sequence; },
+  CharOutputSentence:    function(sequence) { this.sequence = sequence; },
   
-  RememberSentence: function() {},
+  RememberSentence: function(pronoun) {
+    this.pronoun = pronoun;
+  },
   
-  RecallSentence: function() {},
+  RecallSentence: function(comment) {
+    this.comment = comment;
+  },
   
   
   // Values
@@ -334,8 +338,10 @@ Horatio.Parser.prototype = {
         case Horatio.Token.BE_COMPARATIVE:
         case Horatio.Token.IF_SO:
         case Horatio.Token.IMPERATIVE:
-        case Horatio.Token.INPUT:
-        case Horatio.Token.OUTPUT:
+        case Horatio.Token.INPUT_INTEGER:
+        case Horatio.Token.INPUT_CHAR:
+        case Horatio.Token.OUTPUT_INTEGER:
+        case Horatio.Token.OUTPUT_CHAR:
         case Horatio.Token.REMEMBER:
         case Horatio.Token.RECALL:
           return true;
@@ -374,12 +380,14 @@ Horatio.Parser.prototype = {
         this.accept(Horatio.Token.PERIOD);
         break;
       
-      case Horatio.Token.INPUT:
+      case Horatio.Token.INPUT_INTEGER:
+      case Horatio.Token.INPUT_CHAR:
         sentence = this.parseInput();
         this.accept(Horatio.Token.EXCLAMATION_POINT);
         break;
       
-      case Horatio.Token.OUTPUT:
+      case Horatio.Token.OUTPUT_INTEGER:
+      case Horatio.Token.OUTPUT_CHAR:
         sentence = this.parseOutput();
         this.accept(Horatio.Token.EXCLAMATION_POINT);
         break;
@@ -595,31 +603,63 @@ Horatio.Parser.prototype = {
   
   
   parseInput: function() {
-    this.accept(Horatio.Token.INPUT);
+    var sequence = this.currentToken.sequence;
+    var ret;
+    switch (this.currentToken.kind) {
+      case Horatio.Token.INPUT_INTEGER:
+        ret = new Horatio.AST.IntegerInputSentence(sequence);
+        break;
+      case Horatio.Token.INPUT_CHAR:
+        ret = new Horatio.AST.CharInputSentence(sequence);
+        break;
+    }
+    this.acceptIt();
+    return ret;
   },
   
   
   parseOutput: function() {
-    this.accept(Horatio.Token.OUTPUT);
+    var sequence = this.currentToken.sequence;
+    var ret;
+    switch (this.currentToken.kind) {
+      case Horatio.Token.OUTPUT_INTEGER:
+        ret = new Horatio.AST.IntegerOutputSentence(sequence);
+        break;
+      case Horatio.Token.OUTPUT_CHAR:
+        ret = new Horatio.AST.CharOutputSentence(sequence);
+        break;
+    }
+    this.acceptIt();
+    return ret;
   },
   
   
   parseRemember: function() {
     this.accept(Horatio.Token.REMEMBER);
+    var pronoun;
     switch (this.currentToken.kind) {
       case Horatio.Token.FIRST_PERSON_PRONOUN:
-      case Horatio.Token.SECOND_PERSON_PRONOUN:
+        pronoun = new Horatio.AST.FirstPersonPronoun(this.currentToken.sequence);
         this.acceptIt();
+        break;
+      case Horatio.Token.SECOND_PERSON_PRONOUN:
+        pronoun = new Horatio.AST.SecondPersonPronoun(this.currentToken.sequence);
+        this.acceptIt();
+        break;
     }
+    return new Horatio.AST.RememberSentence(pronoun);
   },
   
   
   parseRecall: function() {
     this.accept(Horatio.Token.RECALL);
     this.accept(Horatio.Token.COMMA);
+    var comment = "";
     while (this.currentToken.kind!==Horatio.Token.EXCLAMATION_POINT) {
+      comment += this.currentToken.sequence + " ";
       this.acceptIt();
     }
+    return new Horatio.AST.RecallSentence(comment.trim());
   },
   
   
@@ -644,56 +684,61 @@ Horatio.Token = function(kind, sequence) {
 /**
  * Token Constants
  */
-Horatio.Token.CHARACTER             = 1;
-Horatio.Token.ARTICLE               = 2;
-Horatio.Token.BE                    = 3;
-Horatio.Token.ACT                   = 4;
-Horatio.Token.SCENE                 = 5;
-Horatio.Token.ENTER                 = 6;
-Horatio.Token.EXIT                  = 7;
-Horatio.Token.EXEUNT                = 8;
-Horatio.Token.INPUT                 = 9;
-Horatio.Token.OUTPUT                = 10;
+Horatio.Token.CHARACTER             = 10;
+Horatio.Token.ARTICLE               = 11;
+Horatio.Token.BE                    = 12;
+Horatio.Token.ACT                   = 13;
+Horatio.Token.SCENE                 = 14;
+Horatio.Token.ENTER                 = 15;
+Horatio.Token.EXIT                  = 16;
+Horatio.Token.EXEUNT                = 17;
+
+//Horatio.Token.INPUT                 = 20;
+Horatio.Token.INPUT_INTEGER         = 21;
+Horatio.Token.INPUT_CHAR            = 22;
+//Horatio.Token.OUTPUT                = 23;
+Horatio.Token.OUTPUT_INTEGER        = 24;
+Horatio.Token.OUTPUT_CHAR           = 25;
   
-Horatio.Token.IMPERATIVE            = 11;
-Horatio.Token.TO                    = 12;
-Horatio.Token.RETURN                = 13;
+Horatio.Token.IMPERATIVE            = 30;
+Horatio.Token.TO                    = 31;
+Horatio.Token.RETURN                = 32;
   
-Horatio.Token.POSITIVE_COMPARATIVE  = 14;
-Horatio.Token.NEGATIVE_COMPARATIVE  = 15;
-Horatio.Token.AS                    = 16;
-Horatio.Token.NOT                   = 17;
-Horatio.Token.THAN                  = 18;
-Horatio.Token.IF_SO                 = 19;
-Horatio.Token.BE_COMPARATIVE        = 20;
+Horatio.Token.POSITIVE_COMPARATIVE  = 40;
+Horatio.Token.NEGATIVE_COMPARATIVE  = 41;
+Horatio.Token.AS                    = 42;
+Horatio.Token.NOT                   = 43;
+Horatio.Token.THAN                  = 44;
+Horatio.Token.IF_SO                 = 45;
+Horatio.Token.BE_COMPARATIVE        = 46;
   
-Horatio.Token.UNARY_OPERATOR        = 21;
-Horatio.Token.ARITHMETIC_OPERATOR   = 22;
+Horatio.Token.UNARY_OPERATOR        = 50;
+Horatio.Token.ARITHMETIC_OPERATOR   = 51;
   
-Horatio.Token.REMEMBER              = 23;
-Horatio.Token.RECALL                = 24;
+Horatio.Token.REMEMBER              = 60;
+Horatio.Token.RECALL                = 61;
   
-Horatio.Token.FIRST_PERSON_PRONOUN  = 25;
-Horatio.Token.SECOND_PERSON_PRONOUN = 26;
-Horatio.Token.POSITIVE_ADJECTIVE    = 27;
-Horatio.Token.NEUTRAL_ADJECTIVE     = 28;
-Horatio.Token.NEGATIVE_ADJECTIVE    = 29;
-Horatio.Token.POSITIVE_NOUN         = 30;
-Horatio.Token.NEUTRAL_NOUN          = 31;
-Horatio.Token.NEGATIVE_NOUN         = 32;
-Horatio.Token.ROMAN_NUMERAL         = 33;
+Horatio.Token.FIRST_PERSON_PRONOUN  = 70;
+Horatio.Token.SECOND_PERSON_PRONOUN = 71;
+Horatio.Token.POSITIVE_ADJECTIVE    = 72;
+Horatio.Token.NEUTRAL_ADJECTIVE     = 73;
+Horatio.Token.NEGATIVE_ADJECTIVE    = 74;
+Horatio.Token.POSITIVE_NOUN         = 75;
+Horatio.Token.NEUTRAL_NOUN          = 76;
+Horatio.Token.NEGATIVE_NOUN         = 77;
+Horatio.Token.ROMAN_NUMERAL         = 78;
   
-Horatio.Token.COLON                 = 34;
-Horatio.Token.COMMA                 = 35;
-Horatio.Token.PERIOD                = 36;
-Horatio.Token.EXCLAMATION_POINT     = 37;
-Horatio.Token.QUESTION_MARK         = 38;
-Horatio.Token.AMPERSAND             = 39;
-Horatio.Token.AND                   = 40;
-Horatio.Token.LEFT_BRACKET          = 41;
-Horatio.Token.RIGHT_BRACKET         = 42;
+Horatio.Token.COLON                 = 90;
+Horatio.Token.COMMA                 = 91;
+Horatio.Token.PERIOD                = 92;
+Horatio.Token.EXCLAMATION_POINT     = 93;
+Horatio.Token.QUESTION_MARK         = 94;
+Horatio.Token.AMPERSAND             = 95;
+Horatio.Token.AND                   = 96;
+Horatio.Token.LEFT_BRACKET          = 97;
+Horatio.Token.RIGHT_BRACKET         = 98;
   
-Horatio.Token.COMMENT               = 43;
+Horatio.Token.COMMENT               = 110;
 Horatio.Tokenizer = function(input) {
   this.tokens = [];
   this.dictionary = {};
@@ -766,48 +811,59 @@ Horatio.Tokenizer.prototype = {
     var self = this;
     var wl = Horatio.Wordlists;
     
-    wl.characters            .forEach(function(w) { self.dictionary[w] = 1;  });
-    wl.articles              .forEach(function(w) { self.dictionary[w] = 2;  });
-    wl.be                    .forEach(function(w) { self.dictionary[w] = 3;  });
-    wl.act                   .forEach(function(w) { self.dictionary[w] = 4;  });
-    wl.scene                 .forEach(function(w) { self.dictionary[w] = 5;  });
-    wl.enter                 .forEach(function(w) { self.dictionary[w] = 6;  });
-    wl.exit                  .forEach(function(w) { self.dictionary[w] = 7;  });
-    wl.exeunt                .forEach(function(w) { self.dictionary[w] = 8;  });
-    wl.input                 .forEach(function(w) { self.dictionary[w] = 9;  });
-    wl.output                .forEach(function(w) { self.dictionary[w] = 10; });
-    wl.imperatives           .forEach(function(w) { self.dictionary[w] = 11; });
-    wl.to                    .forEach(function(w) { self.dictionary[w] = 12; });
-    wl.return                .forEach(function(w) { self.dictionary[w] = 13; });
-    wl.positive_comparatives .forEach(function(w) { self.dictionary[w] = 14; });
-    wl.negative_comparatives .forEach(function(w) { self.dictionary[w] = 15; });
-    wl.as                    .forEach(function(w) { self.dictionary[w] = 16; });
-    wl.not                   .forEach(function(w) { self.dictionary[w] = 17; });
-    wl.than                  .forEach(function(w) { self.dictionary[w] = 18; });
-    wl.if_so                 .forEach(function(w) { self.dictionary[w] = 19; });
-    wl.be_comparatives       .forEach(function(w) { self.dictionary[w] = 20; });
-    wl.unary_operators       .forEach(function(w) { self.dictionary[w] = 21; });
-    wl.arithmetic_operators  .forEach(function(w) { self.dictionary[w] = 22; });
-    wl.remember              .forEach(function(w) { self.dictionary[w] = 23; });
-    wl.recall                .forEach(function(w) { self.dictionary[w] = 24; });
-    wl.first_person_pronouns .forEach(function(w) { self.dictionary[w] = 25; });
-    wl.second_person_pronouns.forEach(function(w) { self.dictionary[w] = 26; });
-    wl.positive_adjectives   .forEach(function(w) { self.dictionary[w] = 27; });
-    wl.neutral_adjectives    .forEach(function(w) { self.dictionary[w] = 28; });
-    wl.negative_adjectives   .forEach(function(w) { self.dictionary[w] = 29; });
-    wl.positive_nouns        .forEach(function(w) { self.dictionary[w] = 30; });
-    wl.neutral_nouns         .forEach(function(w) { self.dictionary[w] = 31; });
-    wl.negative_nouns        .forEach(function(w) { self.dictionary[w] = 32; });
-    wl.roman_numerals        .forEach(function(w) { self.dictionary[w] = 33; });
-    wl.colon                 .forEach(function(w) { self.dictionary[w] = 34; });
-    wl.comma                 .forEach(function(w) { self.dictionary[w] = 35; });
-    wl.period                .forEach(function(w) { self.dictionary[w] = 36; });
-    wl.exclamation_point     .forEach(function(w) { self.dictionary[w] = 37; });
-    wl.question_mark         .forEach(function(w) { self.dictionary[w] = 38; });
-    wl.ampersand             .forEach(function(w) { self.dictionary[w] = 39; });
-    wl.and                   .forEach(function(w) { self.dictionary[w] = 40; });
-    wl.left_bracket          .forEach(function(w) { self.dictionary[w] = 41; });
-    wl.right_bracket         .forEach(function(w) { self.dictionary[w] = 42; });
+    wl.characters            .forEach(function(w) { self.dictionary[w] = 10; });
+    wl.articles              .forEach(function(w) { self.dictionary[w] = 11; });
+    wl.be                    .forEach(function(w) { self.dictionary[w] = 12; });
+    wl.act                   .forEach(function(w) { self.dictionary[w] = 13; });
+    wl.scene                 .forEach(function(w) { self.dictionary[w] = 14; });
+    wl.enter                 .forEach(function(w) { self.dictionary[w] = 15; });
+    wl.exit                  .forEach(function(w) { self.dictionary[w] = 16; });
+    wl.exeunt                .forEach(function(w) { self.dictionary[w] = 17; });
+    
+    //wl.input                 .forEach(function(w) { self.dictionary[w] = 20; });
+    wl.input_integer         .forEach(function(w) { self.dictionary[w] = 21; });
+    wl.input_char            .forEach(function(w) { self.dictionary[w] = 22; });
+    //wl.output                .forEach(function(w) { self.dictionary[w] = 23; });
+    wl.output_integer        .forEach(function(w) { self.dictionary[w] = 24; });
+    wl.output_char           .forEach(function(w) { self.dictionary[w] = 25; });
+    
+    wl.imperatives           .forEach(function(w) { self.dictionary[w] = 30; });
+    wl.to                    .forEach(function(w) { self.dictionary[w] = 31; });
+    wl.return                .forEach(function(w) { self.dictionary[w] = 32; });
+    
+    wl.positive_comparatives .forEach(function(w) { self.dictionary[w] = 40; });
+    wl.negative_comparatives .forEach(function(w) { self.dictionary[w] = 41; });
+    wl.as                    .forEach(function(w) { self.dictionary[w] = 42; });
+    wl.not                   .forEach(function(w) { self.dictionary[w] = 43; });
+    wl.than                  .forEach(function(w) { self.dictionary[w] = 44; });
+    wl.if_so                 .forEach(function(w) { self.dictionary[w] = 45; });
+    wl.be_comparatives       .forEach(function(w) { self.dictionary[w] = 46; });
+    
+    wl.unary_operators       .forEach(function(w) { self.dictionary[w] = 50; });
+    wl.arithmetic_operators  .forEach(function(w) { self.dictionary[w] = 51; });
+    
+    wl.remember              .forEach(function(w) { self.dictionary[w] = 60; });
+    wl.recall                .forEach(function(w) { self.dictionary[w] = 61; });
+    
+    wl.first_person_pronouns .forEach(function(w) { self.dictionary[w] = 70; });
+    wl.second_person_pronouns.forEach(function(w) { self.dictionary[w] = 71; });
+    wl.positive_adjectives   .forEach(function(w) { self.dictionary[w] = 72; });
+    wl.neutral_adjectives    .forEach(function(w) { self.dictionary[w] = 73; });
+    wl.negative_adjectives   .forEach(function(w) { self.dictionary[w] = 74; });
+    wl.positive_nouns        .forEach(function(w) { self.dictionary[w] = 75; });
+    wl.neutral_nouns         .forEach(function(w) { self.dictionary[w] = 76; });
+    wl.negative_nouns        .forEach(function(w) { self.dictionary[w] = 77; });
+    wl.roman_numerals        .forEach(function(w) { self.dictionary[w] = 78; });
+    
+    wl.colon                 .forEach(function(w) { self.dictionary[w] = 90; });
+    wl.comma                 .forEach(function(w) { self.dictionary[w] = 91; });
+    wl.period                .forEach(function(w) { self.dictionary[w] = 92; });
+    wl.exclamation_point     .forEach(function(w) { self.dictionary[w] = 93; });
+    wl.question_mark         .forEach(function(w) { self.dictionary[w] = 94; });
+    wl.ampersand             .forEach(function(w) { self.dictionary[w] = 95; });
+    wl.and                   .forEach(function(w) { self.dictionary[w] = 96; });
+    wl.left_bracket          .forEach(function(w) { self.dictionary[w] = 97; });
+    wl.right_bracket         .forEach(function(w) { self.dictionary[w] = 98; });
   }
 
   
@@ -1027,15 +1083,13 @@ Horatio.Wordlists.return = [
   'proceed',
   'return'
 ];
-Horatio.Wordlists.input = [
-  'Listen to your heart',
-  'Open your mind'
-];
+Horatio.Wordlists.input_integer = ['Listen to your heart'];
+Horatio.Wordlists.input_char    = ['Open your mind'];
+Horatio.Wordlists.input = Horatio.Wordlists.input_integer.concat(Horatio.Wordlists.input_char);
 
-Horatio.Wordlists.output = [
-  'Open your heart',
-  'Speak your mind'
-];
+Horatio.Wordlists.output_integer = ['Open your heart'];
+Horatio.Wordlists.output_char    = ['Speak your mind'];
+Horatio.Wordlists.output = Horatio.Wordlists.output_integer.concat(Horatio.Wordlists.output_char);
 Horatio.Wordlists.as    = ['as'];
 Horatio.Wordlists.not   = ['not'];
 Horatio.Wordlists.than  = ['than'];

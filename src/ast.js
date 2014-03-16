@@ -85,15 +85,19 @@ Horatio.AST = {
     this.goto = goto;
   },
   
-  IntegerInputSentence:   function(sequence) { this.sequence = sequence; },
-  CharacterInputSentence: function(sequence) { this.sequence = sequence; },
+  IntegerInputSentence: function(sequence) { this.sequence = sequence; },
+  CharInputSentence:    function(sequence) { this.sequence = sequence; },
   
-  IntegerOutputSentence:   function(sequence) { this.sequence = sequence; },
-  CharacterOutputSentence: function(sequence) { this.sequence = sequence; },
+  IntegerOutputSentence: function(sequence) { this.sequence = sequence; },
+  CharOutputSentence:    function(sequence) { this.sequence = sequence; },
   
-  RememberSentence: function() {},
+  RememberSentence: function(pronoun) {
+    this.pronoun = pronoun;
+  },
   
-  RecallSentence: function() {},
+  RecallSentence: function(comment) {
+    this.comment = comment;
+  },
   
   
   // Values

@@ -172,8 +172,10 @@ Horatio.Parser.prototype = {
         case Horatio.Token.BE_COMPARATIVE:
         case Horatio.Token.IF_SO:
         case Horatio.Token.IMPERATIVE:
-        case Horatio.Token.INPUT:
-        case Horatio.Token.OUTPUT:
+        case Horatio.Token.INPUT_INTEGER:
+        case Horatio.Token.INPUT_CHAR:
+        case Horatio.Token.OUTPUT_INTEGER:
+        case Horatio.Token.OUTPUT_CHAR:
         case Horatio.Token.REMEMBER:
         case Horatio.Token.RECALL:
           return true;
@@ -212,12 +214,14 @@ Horatio.Parser.prototype = {
         this.accept(Horatio.Token.PERIOD);
         break;
       
-      case Horatio.Token.INPUT:
+      case Horatio.Token.INPUT_INTEGER:
+      case Horatio.Token.INPUT_CHAR:
         sentence = this.parseInput();
         this.accept(Horatio.Token.EXCLAMATION_POINT);
         break;
       
-      case Horatio.Token.OUTPUT:
+      case Horatio.Token.OUTPUT_INTEGER:
+      case Horatio.Token.OUTPUT_CHAR:
         sentence = this.parseOutput();
         this.accept(Horatio.Token.EXCLAMATION_POINT);
         break;
@@ -433,31 +437,63 @@ Horatio.Parser.prototype = {
   
   
   parseInput: function() {
-    this.accept(Horatio.Token.INPUT);
+    var sequence = this.currentToken.sequence;
+    var ret;
+    switch (this.currentToken.kind) {
+      case Horatio.Token.INPUT_INTEGER:
+        ret = new Horatio.AST.IntegerInputSentence(sequence);
+        break;
+      case Horatio.Token.INPUT_CHAR:
+        ret = new Horatio.AST.CharInputSentence(sequence);
+        break;
+    }
+    this.acceptIt();
+    return ret;
   },
   
   
   parseOutput: function() {
-    this.accept(Horatio.Token.OUTPUT);
+    var sequence = this.currentToken.sequence;
+    var ret;
+    switch (this.currentToken.kind) {
+      case Horatio.Token.OUTPUT_INTEGER:
+        ret = new Horatio.AST.IntegerOutputSentence(sequence);
+        break;
+      case Horatio.Token.OUTPUT_CHAR:
+        ret = new Horatio.AST.CharOutputSentence(sequence);
+        break;
+    }
+    this.acceptIt();
+    return ret;
   },
   
   
   parseRemember: function() {
     this.accept(Horatio.Token.REMEMBER);
+    var pronoun;
     switch (this.currentToken.kind) {
       case Horatio.Token.FIRST_PERSON_PRONOUN:
-      case Horatio.Token.SECOND_PERSON_PRONOUN:
+        pronoun = new Horatio.AST.FirstPersonPronoun(this.currentToken.sequence);
         this.acceptIt();
+        break;
+      case Horatio.Token.SECOND_PERSON_PRONOUN:
+        pronoun = new Horatio.AST.SecondPersonPronoun(this.currentToken.sequence);
+        this.acceptIt();
+        break;
     }
+    return new Horatio.AST.RememberSentence(pronoun);
   },
   
   
   parseRecall: function() {
     this.accept(Horatio.Token.RECALL);
     this.accept(Horatio.Token.COMMA);
+    var comment = "";
     while (this.currentToken.kind!==Horatio.Token.EXCLAMATION_POINT) {
+      comment += this.currentToken.sequence + " ";
       this.acceptIt();
     }
+    return new Horatio.AST.RecallSentence(comment.trim());
   },
   
   
