@@ -132,6 +132,7 @@ Horatio.Parser.prototype = {
   
   
   parseDialogue: function() {
+    this.parseLine();
     while (this.currentToken.kind===Horatio.Token.CHARACTER) {
       this.parseLine();
     }
