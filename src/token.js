@@ -4,7 +4,7 @@
 Horatio.Token = function(kind, sequence) {
   this.kind     = kind;
   this.sequence = sequence;
-}
+};
 
 
   

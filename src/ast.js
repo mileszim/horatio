@@ -3,15 +3,10 @@
  */
 Horatio.AST = {
   
-  Program: function(comment, declaration, part) {
-    this.comment     = comment;
-    this.declaration = declaration;
-    this.part        = part;
-  },
-  
-  
-  Comment: function(text) {
-    this.text = text;
+  Program: function(comment, declarations, parts) {
+    this.comment      = comment;
+    this.declarations = declarations;
+    this.parts        = parts;
   },
   
   
@@ -21,52 +16,117 @@ Horatio.AST = {
   },
   
   
-  DeclarationList: function(d1, d2) {
-    this.d1 = d1;
-    this.d2 = d2;
+  Part: function(numeral, comment, subparts) {
+    this.numeral  = numeral;
+    this.comment  = comment;
+    this.subparts = subparts;
   },
   
   
-  Part: function(numeral, comment, subpart) {
-    this.numeral = numeral;
-    this.comment = comment;
-    this.subpart = subpart;
-  },
-  
-  PartList: function(p1, p2) {
-    this.p1 = p1;
-    this.p2 = p2;
-  },
-  
-  
-  SubPart: function(numeral, comment, stage) {
+  Subpart: function(numeral, comment, stage) {
     this.numeral = numeral;
     this.comment = comment;
     this.stage   = stage;
   },
   
-  SubPartList: function(s1, s2) {
-    this.s1 = s1;
-    this.s2 = s2;
+  
+  Stage: function(dialogue, start_presence, end_presence) {
+    this.dialogue       = dialogue;
+    this.start_presence = start_presence;
+    this.end_presence   = end_presence;
   },
   
   
-  Stage: function(dialogue, initial_presence, final_presence) {
-    this.dialogue         = dialogue;
-    this.initial_presence = initial_presence;
-    this.final_presence   = final_presence;
+  Enter: function(character_1, character_2) {
+    this.character_1 = character_1;
+    this.character_2 = character_2;
+  },
+  
+  Exit: function(character) {
+    this.character = character;
+  },
+  
+  Exeunt: function(character_1, character_2) {
+    this.character_1 = character_1;
+    this.character_2 = character_2;
   },
   
   
-  Presence: function(type, c1, c2) {
-    this.type = type;
-    this.c1   = c1;
-    this.c2   = c2;
+  Dialogue: function(lines) {
+    this.lines = lines;
   },
   
   
-  Dialogue: function(line1,line2) {
-    this.line1 = line1;
-  }
+  Line: function(character, sentences) {
+    this.character = character;
+    this.sentences = sentences;
+  },
+  
+  
+  // sentences
+  AssignmentSentence: function(value) {
+    this.value = value;
+  },
+  
+  QuestionSentence: function() {},
+  
+  ResponseSentence: function() {},
+  
+  GotoSentence: function() {},
+  
+  InputSentence: function() {},
+  
+  OutputSentence: function() {},
+  
+  RememberSentence: function() {},
+  
+  RecallSentence: function() {},
+  
+  
+  // Values
+  PositiveConstantValue: function(noun, adjectives) {
+    this.noun       = noun;
+    this.adjectives = adjectives;
+  },
+  
+  NegativeConstantValue: function(noun, adjectives) {
+    this.noun       = noun;
+    this.adjectives = adjectives;
+  },
+  
+  UnaryOperationValue: function(operator, value) {
+    this.operator = operator;
+    this.value    = value;
+  },
+  
+  ArithmeticOperationValue: function(operator, value_1, value_2) {
+    this.operator = operator;
+    this.value_1  = value_1;
+    this.value_2  = value_2;
+  },
+  
+  PronounValue: function(pronoun) {
+    this.pronoun = pronoun;
+  },
+  
+  
+  
+  
+  /**
+   * Terminals
+   */
+  Comment:             function(sequence) { this.sequence = sequence; },
+  Numeral:             function(sequence) { this.sequence = sequence; },
+  Character:           function(sequence) { this.sequence = sequence; },
+  FirstPersonPronoun:  function(sequence) { this.sequence = sequence; },
+  SecondPersonPronoun: function(sequence) { this.sequence = sequence; },
+  PositiveNoun:        function(sequence) { this.sequence = sequence; },
+  NeutralNoun:         function(sequence) { this.sequence = sequence; },
+  NegativeNoun:        function(sequence) { this.sequence = sequence; },
+  PositiveAdjective:   function(sequence) { this.sequence = sequence; },
+  NeutralAdjective:    function(sequence) { this.sequence = sequence; },
+  NegativeAdjective:   function(sequence) { this.sequence = sequence; },
+  UnaryOperator:       function(sequence) { this.sequence = sequence; },
+  ArithmeticOperator:  function(sequence) { this.sequence = sequence; }
   
 };

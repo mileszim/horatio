@@ -20,7 +20,7 @@ module.exports = function(grunt) {
         src: [
         	'src/horatio.js',
         	'src/*.js',
-        	'includes/wordlists/*.js'
+        	'includes/**/*.js'
         ],
         dest: '<%= pkg.name %>.js'
       }
@@ -36,7 +36,7 @@ module.exports = function(grunt) {
     },
     jshint: {
       options: {
-        curly: true,
+        curly: false,
         eqeqeq: true,
         immed: true,
         latedef: true,
@@ -49,15 +49,15 @@ module.exports = function(grunt) {
         eqnull: true,
         browser: true,
         globals: {
-          jQuery: true
+          jQuery: true,
+          Horatio: true
         }
       },
       gruntfile: {
         src: 'Gruntfile.js'
       },
-      lib_test: {
-        src: ['lib/**/*.js', 'test/**/*.js']
-      }
+      before_concat: ['src/*.js'],
+      after_concat: ['horatio.js']
     },
     qunit: {
       files: ['test/**/*.html']

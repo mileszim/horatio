@@ -6,7 +6,7 @@ Horatio.Tokenizer = function(input) {
   this.dictionary = {};
   this.buildDictionary();
   this.tokenize(input);
-}
+};
 
 
 Horatio.Tokenizer.prototype = {
@@ -28,13 +28,13 @@ Horatio.Tokenizer.prototype = {
     // replace terminals
     input = input.replace(/[:,.!?\[\]]/g, function(match) {
       switch(match) {
-        case ":": return " COLON";             break;
-        case ",": return " COMMA";             break;
-        case ".": return " PERIOD";            break;
-        case "!": return " EXCLAMATION_POINT"; break;
-        case "?": return " QUESTION_MARK";     break;
-        case "[": return "LEFT_BRACKET ";      break;
-        case "]": return " RIGHT_BRACKET";     break;
+        case ":": return " COLON";             //break;
+        case ",": return " COMMA";             //break;
+        case ".": return " PERIOD";            //break;
+        case "!": return " EXCLAMATION_POINT"; //break;
+        case "?": return " QUESTION_MARK";     //break;
+        case "[": return "LEFT_BRACKET ";      //break;
+        case "]": return " RIGHT_BRACKET";     //break;
       }
     });
     
