@@ -22,7 +22,7 @@ module.exports = function(grunt) {
         	'src/*.js',
         	'includes/**/*.js'
         ],
-        dest: '<%= pkg.name %>.js'
+        dest: 'dist/<%= pkg.name %>.js'
       }
     },
     uglify: {
@@ -31,7 +31,7 @@ module.exports = function(grunt) {
       },
       dist: {
         src: '<%= concat.dist.dest %>',
-        dest: '<%= pkg.name %>.min.js'
+        dest: 'dist/<%= pkg.name %>.min.js'
       }
     },
     jshint: {
@@ -57,7 +57,7 @@ module.exports = function(grunt) {
         src: 'Gruntfile.js'
       },
       before_concat: ['src/*.js'],
-      after_concat: ['horatio.js']
+      after_concat: ['dist/horatio.js']
     },
     jsdoc: {
       dist : {

@@ -9,7 +9,7 @@ min:
 	grunt uglify
 
 clean:
-	rm horatio.js horatio.min.js
+	rm dist/*
 
 install:
 	npm install
