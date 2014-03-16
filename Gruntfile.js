@@ -59,6 +59,14 @@ module.exports = function(grunt) {
       before_concat: ['src/*.js'],
       after_concat: ['horatio.js']
     },
+    jsdoc: {
+      dist : {
+        src: ['src/*.js', 'includes/**/*.js'], 
+        options: {
+          destination: 'docs'
+        }
+      }
+    },
     qunit: {
       files: ['test/**/*.html']
     },
@@ -80,8 +88,9 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-qunit');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-jsdoc');
 
   // Default task.
-  grunt.registerTask('default', ['jshint', 'qunit', 'concat', 'uglify']);
+  grunt.registerTask('default', ['jshint', 'concat', 'uglify', 'jsdoc']);
 
 };

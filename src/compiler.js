@@ -1,5 +1,7 @@
 /**
- * Compiler
+ * Compiles SPL into javascript
+ * @memberof Horatio
+ * @constructor
  */
 Horatio.Compiler = function() {};
 
@@ -8,6 +10,7 @@ Horatio.Compiler.prototype = {
   
   /**
    * Compile an SPL program
+   * @param {string} input The input SPL program
    */
   compile: function(input) {
     // Parse input

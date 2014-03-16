@@ -4,4 +4,9 @@
  *
  * @author Miles Zimmerman
  */
+
+/**
+ * Horatio Namespace
+ * @namespace
+ */
 var Horatio = Horatio || {};
