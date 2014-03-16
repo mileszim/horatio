@@ -2,7 +2,7 @@
   "name": "horatio",
   "version": "0.0.0",
   "description": "A javascript compiler for the Shakespeare Programming Language",
-  "main": "horatio.js",
+  "main": "dist/horatio.js",
   "dependencies": {},
   "devDependencies": {
     "grunt": "~0.4.2",
