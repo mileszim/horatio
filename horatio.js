@@ -63,21 +63,34 @@ Horatio.AST = {
     this.sentences = sentences;
   },
   
+  Goto: function(numeral) {
+    this.numeral = numeral;
+  },
+  
   
   // sentences
   AssignmentSentence: function(value) {
     this.value = value;
   },
   
-  QuestionSentence: function() {},
+  QuestionSentence: function(comparison, value) {
+    this.comparison = comparison;
+    this.value      = value;
+  },
   
-  ResponseSentence: function() {},
+  ResponseSentence: function(goto) {
+    this.goto = goto;
+  },
   
-  GotoSentence: function() {},
+  GotoSentence: function(goto) {
+    this.goto = goto;
+  },
   
-  InputSentence: function() {},
+  IntegerInputSentence:   function(sequence) { this.sequence = sequence; },
+  CharacterInputSentence: function(sequence) { this.sequence = sequence; },
   
-  OutputSentence: function() {},
+  IntegerOutputSentence:   function(sequence) { this.sequence = sequence; },
+  CharacterOutputSentence: function(sequence) { this.sequence = sequence; },
   
   RememberSentence: function() {},
   
@@ -111,6 +124,23 @@ Horatio.AST = {
   },
   
   
+  // Comparatives
+  GreaterThanComparison: function(comparative) {
+    this.comparative = comparative;
+  },
+  
+  LesserThanComparison: function(comparative) {
+    this.comparative = comparative;
+  },
+  
+  EqualToComparison: function(adjective) {
+    this.adjective = adjective;
+  },
+  
+  InverseComparison: function(comparison) {
+    this.comparison = comparison;
+  },
+  
   
   
   /**
@@ -128,7 +158,9 @@ Horatio.AST = {
   NeutralAdjective:    function(sequence) { this.sequence = sequence; },
   NegativeAdjective:   function(sequence) { this.sequence = sequence; },
   UnaryOperator:       function(sequence) { this.sequence = sequence; },
-  ArithmeticOperator:  function(sequence) { this.sequence = sequence; }
+  ArithmeticOperator:  function(sequence) { this.sequence = sequence; },
+  PositiveComparative: function(sequence) { this.sequence = sequence; },
+  NegativeComparative: function(sequence) { this.sequence = sequence; }
   
 };
 Horatio.Parser = function(input) {
@@ -496,44 +528,58 @@ Horatio.Parser.prototype = {
   
   parseQuestion: function() {
     this.accept(Horatio.Token.BE_COMPARATIVE);
-    this.parseComparative();
-    this.parseValue();
+    var comparison = this.parseComparative();
+    var value      = this.parseValue();
+    return new Horatio.AST.QuestionSentence(comparison, value);
   },
   
   
   parseComparative: function() {
+    var comparison, comparative, adjective;
     switch (this.currentToken.kind) {
       
       case Horatio.Token.POSITIVE_COMPARATIVE:
+        comparative = new Horatio.AST.PositiveComparative(this.currentToken.sequence);
+        comparison  = new Horatio.AST.GreaterThanComparison(comparative);
+        this.acceptIt();
+        this.accept(Horatio.Token.THAN);
+        break;
       case Horatio.Token.NEGATIVE_COMPARATIVE:
+        comparative = new Horatio.AST.NegativeComparative(this.currentToken.sequence);
+        comparison  = new Horatio.AST.LesserThanComparison(comparative);
         this.acceptIt();
         this.accept(Horatio.Token.THAN);
         break;
         
       case Horatio.Token.AS:
         this.acceptIt();
-        this.parseAdjective();
+        adjective  = this.parseAdjective();
+        comparison = new Horatio.AST.EqualToComparison(adjective);
         this.accept(Horatio.Token.AS);
         break;
       
       case Horatio.Token.NOT:
         this.acceptIt();
-        switch (this.currentToken.kind) {
-          case Horatio.Token.POSITIVE_COMPARATIVE:
-          case Horatio.Token.NEGATIVE_COMPARATIVE:
-            this.acceptIt();
-            this.accept(Horatio.Token.THAN);
-            break;
-        }
+        comparative = this.parseComparative();
+        comparison  = new Horatio.AST.InverseComparison(comparative);
+        //switch (this.currentToken.kind) {
+        //  case Horatio.Token.POSITIVE_COMPARATIVE:
+        //  case Horatio.Token.NEGATIVE_COMPARATIVE:
+        //    this.acceptIt();
+        //    this.accept(Horatio.Token.THAN);
+        //    break;
+        //}
         break;
     }
+    return comparison;
   },
   
   
   parseResponse: function() {
     this.accept(Horatio.Token.IF_SO);
     this.accept(Horatio.Token.COMMA);
-    this.parseGoto();
+    var goto = this.parseGoto();
+    return new Horatio.AST.ResponseSentence(goto);
   },
   
   
@@ -542,7 +588,9 @@ Horatio.Parser.prototype = {
     this.accept(Horatio.Token.RETURN);
     this.accept(Horatio.Token.TO);
     this.accept(Horatio.Token.SCENE);
+    var numeral = new Horatio.AST.Numeral(this.currentToken.sequence);
     this.accept(Horatio.Token.ROMAN_NUMERAL);
+    return new Horatio.AST.Goto(numeral);
   },
   
   

@@ -62,21 +62,34 @@ Horatio.AST = {
     this.sentences = sentences;
   },
   
+  Goto: function(numeral) {
+    this.numeral = numeral;
+  },
+  
   
   // sentences
   AssignmentSentence: function(value) {
     this.value = value;
   },
   
-  QuestionSentence: function() {},
+  QuestionSentence: function(comparison, value) {
+    this.comparison = comparison;
+    this.value      = value;
+  },
   
-  ResponseSentence: function() {},
+  ResponseSentence: function(goto) {
+    this.goto = goto;
+  },
   
-  GotoSentence: function() {},
+  GotoSentence: function(goto) {
+    this.goto = goto;
+  },
   
-  InputSentence: function() {},
+  IntegerInputSentence:   function(sequence) { this.sequence = sequence; },
+  CharacterInputSentence: function(sequence) { this.sequence = sequence; },
   
-  OutputSentence: function() {},
+  IntegerOutputSentence:   function(sequence) { this.sequence = sequence; },
+  CharacterOutputSentence: function(sequence) { this.sequence = sequence; },
   
   RememberSentence: function() {},
   
@@ -110,6 +123,23 @@ Horatio.AST = {
   },
   
   
+  // Comparatives
+  GreaterThanComparison: function(comparative) {
+    this.comparative = comparative;
+  },
+  
+  LesserThanComparison: function(comparative) {
+    this.comparative = comparative;
+  },
+  
+  EqualToComparison: function(adjective) {
+    this.adjective = adjective;
+  },
+  
+  InverseComparison: function(comparison) {
+    this.comparison = comparison;
+  },
+  
   
   
   /**
@@ -127,6 +157,8 @@ Horatio.AST = {
   NeutralAdjective:    function(sequence) { this.sequence = sequence; },
   NegativeAdjective:   function(sequence) { this.sequence = sequence; },
   UnaryOperator:       function(sequence) { this.sequence = sequence; },
-  ArithmeticOperator:  function(sequence) { this.sequence = sequence; }
+  ArithmeticOperator:  function(sequence) { this.sequence = sequence; },
+  PositiveComparative: function(sequence) { this.sequence = sequence; },
+  NegativeComparative: function(sequence) { this.sequence = sequence; }
   
 };
