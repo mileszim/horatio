@@ -48,6 +48,7 @@ module.exports = function(grunt) {
         boss:    true,
         eqnull:  true,
         browser: true,
+        node:    true,
         globals: {
           jQuery:  true,
           Horatio: true

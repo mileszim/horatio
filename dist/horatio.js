@@ -1,11 +1,21 @@
-/*! horatio - v0.0.0 - 2014-03-16
+/*! horatio - v0.0.0 - 2014-03-19
 * https://github.com/mileszim/horatio
 * Copyright (c) 2014 ; Licensed  */
 /**
  * Horatio Namespace
  * @namespace
  */
-var Horatio = Horatio || {};
+var Horatio = Horatio || {
+  
+  // Is this running on nodejs?
+  // Borrowed with love from moment.js
+  hasModule: (typeof module !== 'undefined' && module.exports && typeof require !== 'undefined')
+  
+};
+
+
+/** Expose */
+if (Horatio.hasModule) module.exports = Horatio;
 Horatio.AST = {
   
   /**
