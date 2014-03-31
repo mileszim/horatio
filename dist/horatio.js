@@ -1,4 +1,4 @@
-/*! horatio - v0.0.0 - 2014-03-19
+/*! horatio - v0.0.0 - 2014-03-30
 * https://github.com/mileszim/horatio
 * Copyright (c) 2014 ; Licensed  */
 /**
@@ -29,6 +29,11 @@ Horatio.AST = {
     this.comment      = comment;
     this.declarations = declarations;
     this.parts        = parts;
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitProgram(this, arg);
+    };
   },
   
   
@@ -41,6 +46,11 @@ Horatio.AST = {
   Declaration: function(character, comment) {
     this.character = character;
     this.comment   = comment;
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitDeclaration(this, arg);
+    };
   },
   
   
@@ -55,6 +65,11 @@ Horatio.AST = {
     this.numeral  = numeral;
     this.comment  = comment;
     this.subparts = subparts;
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitPart(this, arg);
+    };
   },
   
   
@@ -69,6 +84,11 @@ Horatio.AST = {
     this.numeral = numeral;
     this.comment = comment;
     this.stage   = stage;
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitSubpart(this, arg);
+    };
   },
   
   
@@ -83,6 +103,11 @@ Horatio.AST = {
     this.dialogue       = dialogue;
     this.start_presence = start_presence;
     this.end_presence   = end_presence;
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitStage(this, arg);
+    };
   },
   
   
@@ -95,6 +120,11 @@ Horatio.AST = {
   Enter: function(character_1, character_2) {
     this.character_1 = character_1;
     this.character_2 = character_2;
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitEnter(this, arg);
+    };
   },
   
   /**
@@ -104,6 +134,11 @@ Horatio.AST = {
    */
   Exit: function(character) {
     this.character = character;
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitExit(this, arg);
+    };
   },
   
   /**
@@ -115,6 +150,11 @@ Horatio.AST = {
   Exeunt: function(character_1, character_2) {
     this.character_1 = character_1;
     this.character_2 = character_2;
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitExeunt(this, arg);
+    };
   },
   
   
@@ -125,6 +165,11 @@ Horatio.AST = {
    */
   Dialogue: function(lines) {
     this.lines = lines;
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitDialogue(this, arg);
+    };
   },
   
   
@@ -137,6 +182,11 @@ Horatio.AST = {
   Line: function(character, sentences) {
     this.character = character;
     this.sentences = sentences;
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitLine(this, arg);
+    };
   },
   
   /**
@@ -146,6 +196,11 @@ Horatio.AST = {
    */
   Goto: function(numeral) {
     this.numeral = numeral;
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitGoto(this, arg);
+    };
   },
   
   
@@ -155,6 +210,11 @@ Horatio.AST = {
    */
   AssignmentSentence: function(value) {
     this.value = value;
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitAssignmentSentence(this, arg);
+    };
   },
   
   /**
@@ -164,6 +224,11 @@ Horatio.AST = {
   QuestionSentence: function(comparison, value) {
     this.comparison = comparison;
     this.value      = value;
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitQuestionSentence(this, arg);
+    };
   },
   
   /**
@@ -172,6 +237,11 @@ Horatio.AST = {
    */
   ResponseSentence: function(goto) {
     this.goto = goto;
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitResponseSentence(this, arg);
+    };
   },
   
   /**
@@ -180,29 +250,64 @@ Horatio.AST = {
    */
   GotoSentence: function(goto) {
     this.goto = goto;
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitGotoSentence(this, arg);
+    };
   },
   
   /**
    * @memberof Horatio.AST
    * @constructor
    */
-  IntegerInputSentence: function(sequence) { this.sequence = sequence; },
-  /**
-   * @memberof Horatio.AST
-   * @constructor
-   */
-  CharInputSentence:    function(sequence) { this.sequence = sequence; },
+  IntegerInputSentence: function(sequence) { 
+    this.sequence = sequence; 
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitIntegerInputSentence(this, arg);
+    };
+  },
   
   /**
    * @memberof Horatio.AST
    * @constructor
    */
-  IntegerOutputSentence: function(sequence) { this.sequence = sequence; },
+  CharInputSentence: function(sequence) { 
+    this.sequence = sequence; 
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitCharInputSentence(this, arg);
+    };
+  },
+  
   /**
    * @memberof Horatio.AST
    * @constructor
    */
-  CharOutputSentence:    function(sequence) { this.sequence = sequence; },
+  IntegerOutputSentence: function(sequence) { 
+    this.sequence = sequence; 
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitIntegerOutputSentence(this, arg);
+    };
+  },
+  
+  /**
+   * @memberof Horatio.AST
+   * @constructor
+   */
+  CharOutputSentence: function(sequence) { 
+    this.sequence = sequence; 
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitCharOutputSentence(this, arg);
+    };
+  },
   
   /**
    * @memberof Horatio.AST
@@ -210,6 +315,11 @@ Horatio.AST = {
    */
   RememberSentence: function(pronoun) {
     this.pronoun = pronoun;
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitRememberSentence(this, arg);
+    };
   },
   
   /**
@@ -218,6 +328,11 @@ Horatio.AST = {
    */
   RecallSentence: function(comment) {
     this.comment = comment;
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitRecallSentence(this, arg);
+    };
   },
   
   
@@ -228,6 +343,11 @@ Horatio.AST = {
   PositiveConstantValue: function(noun, adjectives) {
     this.noun       = noun;
     this.adjectives = adjectives;
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitPositiveConstantValue(this, arg);
+    };
   },
   
   /**
@@ -237,6 +357,11 @@ Horatio.AST = {
   NegativeConstantValue: function(noun, adjectives) {
     this.noun       = noun;
     this.adjectives = adjectives;
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitPositiveConstantValue(this, arg);
+    };
   },
   
   /**
@@ -246,6 +371,11 @@ Horatio.AST = {
   UnaryOperationValue: function(operator, value) {
     this.operator = operator;
     this.value    = value;
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitPositiveConstantValue(this, arg);
+    };
   },
   
   /**
@@ -256,6 +386,11 @@ Horatio.AST = {
     this.operator = operator;
     this.value_1  = value_1;
     this.value_2  = value_2;
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitArithmeticOperationValue(this, arg);
+    };
   },
   
   /**
@@ -264,6 +399,11 @@ Horatio.AST = {
    */
   PronounValue: function(pronoun) {
     this.pronoun = pronoun;
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitPronounValue(this, arg);
+    };
   },
   
   
@@ -273,6 +413,11 @@ Horatio.AST = {
    */
   GreaterThanComparison: function(comparative) {
     this.comparative = comparative;
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitGreaterThanComparison(this, arg);
+    };
   },
   
   /**
@@ -281,6 +426,11 @@ Horatio.AST = {
    */
   LesserThanComparison: function(comparative) {
     this.comparative = comparative;
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitLesserThanComparison(this, arg);
+    };
   },
   
   /**
@@ -289,6 +439,11 @@ Horatio.AST = {
    */
   EqualToComparison: function(adjective) {
     this.adjective = adjective;
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitEqualToComparison(this, arg);
+    };
   },
   
   /**
@@ -297,6 +452,11 @@ Horatio.AST = {
    */
   InverseComparison: function(comparison) {
     this.comparison = comparison;
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitInverseComparison(this, arg);
+    };
   },
   
   
@@ -305,91 +465,196 @@ Horatio.AST = {
    * @memberof Horatio.AST
    * @constructor
    */
-  Comment:             function(sequence) { this.sequence = sequence; },
+  Comment: function(sequence) {
+    this.sequence = sequence; 
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitComment(this, arg);
+    };
+  },
   
   /**
    * @memberof Horatio.AST
    * @constructor
    */
-  Numeral:             function(sequence) { this.sequence = sequence; },
+  Numeral: function(sequence) {
+    this.sequence = sequence; 
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitNumeral(this, arg);
+    };
+  },
   
   /**
    * @memberof Horatio.AST
    * @constructor
    */
-  Character:           function(sequence) { this.sequence = sequence; },
+  Character: function(sequence) {
+    this.sequence = sequence; 
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitCharacter(this, arg);
+    };
+  },
   
   /**
    * @memberof Horatio.AST
    * @constructor
    */
-  FirstPersonPronoun:  function(sequence) { this.sequence = sequence; },
+  FirstPersonPronoun: function(sequence) {
+    this.sequence = sequence; 
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitFirstPersonPronoun(this, arg);
+    };
+  },
   
   /**
    * @memberof Horatio.AST
    * @constructor
    */
-  SecondPersonPronoun: function(sequence) { this.sequence = sequence; },
+  SecondPersonPronoun: function(sequence) {
+    this.sequence = sequence; 
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitSecondPersonPronoun(this, arg);
+    };
+  },
   
   /**
    * @memberof Horatio.AST
    * @constructor
    */
-  PositiveNoun:        function(sequence) { this.sequence = sequence; },
+  PositiveNoun: function(sequence) {
+    this.sequence = sequence; 
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitPositiveNoun(this, arg);
+    };
+  },
   
   /**
    * @memberof Horatio.AST
    * @constructor
    */
-  NeutralNoun:         function(sequence) { this.sequence = sequence; },
+  NeutralNoun: function(sequence) {
+    this.sequence = sequence; 
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitNeutralNoun(this, arg);
+    };
+  },
   
   /**
    * @memberof Horatio.AST
    * @constructor
    */
-  NegativeNoun:        function(sequence) { this.sequence = sequence; },
+  NegativeNoun: function(sequence) {
+    this.sequence = sequence; 
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitNegativeNoun(this, arg);
+    };
+  },
   
   /**
    * @memberof Horatio.AST
    * @constructor
    */
-  PositiveAdjective:   function(sequence) { this.sequence = sequence; },
+  PositiveAdjective: function(sequence) {
+    this.sequence = sequence; 
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitPositiveAdjective(this, arg);
+    };
+  },
   
   /**
    * @memberof Horatio.AST
    * @constructor
    */
-  NeutralAdjective:    function(sequence) { this.sequence = sequence; },
+  NeutralAdjective: function(sequence) {
+    this.sequence = sequence; 
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitNeutralAdjective(this, arg);
+    };
+  },
   
   /**
    * @memberof Horatio.AST
    * @constructor
    */
-  NegativeAdjective:   function(sequence) { this.sequence = sequence; },
+  NegativeAdjective: function(sequence) {
+    this.sequence = sequence; 
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitNegativeAdjective(this, arg);
+    };
+  },
   
   /**
    * @memberof Horatio.AST
    * @constructor
    */
-  UnaryOperator:       function(sequence) { this.sequence = sequence; },
+  UnaryOperator: function(sequence) {
+    this.sequence = sequence; 
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitUnaryOperator(this, arg);
+    };
+  },
   
   /**
    * @memberof Horatio.AST
    * @constructor
    */
-  ArithmeticOperator:  function(sequence) { this.sequence = sequence; },
+  ArithmeticOperator: function(sequence) {
+    this.sequence = sequence; 
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitArithmeticOperator(this, arg);
+    };
+  },
   
   /**
    * @memberof Horatio.AST
    * @constructor
    */
-  PositiveComparative: function(sequence) { this.sequence = sequence; },
+  PositiveComparative: function(sequence) {
+    this.sequence = sequence; 
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitPositiveComparative(this, arg);
+    };
+  },
   
   /**
    * @memberof Horatio.AST
    * @constructor
    */
-  NegativeComparative: function(sequence) { this.sequence = sequence; }
+  NegativeComparative: function(sequence) {
+    this.sequence = sequence; 
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitNegativeComparative(this, arg);
+    };
+  }
   
 };
 Horatio.Compiler = function() {};
@@ -1130,6 +1395,7 @@ Horatio.Tokenizer.prototype = {
 
   
 };
+
 Horatio.Wordlists = {};
 Horatio.Wordlists.act   = ['Act'];
 Horatio.Wordlists.scene = ['Scene'];
