@@ -156,8 +156,10 @@ Horatio.Parser.prototype = {
           c2 = new Horatio.AST.Character(this.currentToken.sequence);
           this.accept(Horatio.Token.CHARACTER);
           ret = new Horatio.AST.Exeunt(c1, c2);
-          break;
+        } else {
+          ret = new Horatio.AST.Exeunt();
         }
+        break;
     }
     this.accept(Horatio.Token.RIGHT_BRACKET);
     return ret;

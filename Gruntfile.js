@@ -19,7 +19,14 @@ module.exports = function(grunt) {
       dist: {
         src: [
         	'src/horatio.js',
-        	'src/*.js',
+          'src/wordlists.js',
+        	'src/token.js',
+          'src/visitor.js',
+          'src/ast.js',
+          'src/tokenizer.js',
+          'src/parser.js',
+          'src/compiler.js',
+          'src/checker.js',
         	'includes/**/*.js'
         ],
         dest: 'dist/<%= pkg.name %>.js'
@@ -44,7 +51,7 @@ module.exports = function(grunt) {
         noarg:   true,
         sub:     true,
         undef:   true,
-        unused:  true,
+        unused:  false,
         boss:    true,
         eqnull:  true,
         browser: true,

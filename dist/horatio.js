@@ -1,4 +1,4 @@
-/*! horatio - v0.0.0 - 2014-03-30
+/*! horatio - v0.0.0 - 2014-04-22
 * https://github.com/mileszim/horatio
 * Copyright (c) 2014 ; Licensed  */
 /**
@@ -16,6 +16,347 @@ var Horatio = Horatio || {
 
 /** Expose */
 if (Horatio.hasModule) module.exports = Horatio;
+Horatio.Wordlists = {};
+Horatio.Token = function(kind, sequence) {
+  this.kind     = kind;
+  this.sequence = sequence;
+};
+
+
+
+/** @static */ Horatio.Token.CHARACTER             = 10;
+/** @static */ Horatio.Token.ARTICLE               = 11;
+/** @static */ Horatio.Token.BE                    = 12;
+/** @static */ Horatio.Token.ACT                   = 13;
+/** @static */ Horatio.Token.SCENE                 = 14;
+/** @static */ Horatio.Token.ENTER                 = 15;
+/** @static */ Horatio.Token.EXIT                  = 16;
+/** @static */ Horatio.Token.EXEUNT                = 17;
+
+///** @static */ Horatio.Token.INPUT                 = 20;
+/** @static */ Horatio.Token.INPUT_INTEGER         = 21;
+/** @static */ Horatio.Token.INPUT_CHAR            = 22;
+///** @static */ Horatio.Token.OUTPUT                = 23;
+/** @static */ Horatio.Token.OUTPUT_INTEGER        = 24;
+/** @static */ Horatio.Token.OUTPUT_CHAR           = 25;
+  
+/** @static */ Horatio.Token.IMPERATIVE            = 30;
+/** @static */ Horatio.Token.TO                    = 31;
+/** @static */ Horatio.Token.RETURN                = 32;
+  
+/** @static */ Horatio.Token.POSITIVE_COMPARATIVE  = 40;
+/** @static */ Horatio.Token.NEGATIVE_COMPARATIVE  = 41;
+/** @static */ Horatio.Token.AS                    = 42;
+/** @static */ Horatio.Token.NOT                   = 43;
+/** @static */ Horatio.Token.THAN                  = 44;
+/** @static */ Horatio.Token.IF_SO                 = 45;
+/** @static */ Horatio.Token.BE_COMPARATIVE        = 46;
+  
+/** @static */ Horatio.Token.UNARY_OPERATOR        = 50;
+/** @static */ Horatio.Token.ARITHMETIC_OPERATOR   = 51;
+  
+/** @static */ Horatio.Token.REMEMBER              = 60;
+/** @static */ Horatio.Token.RECALL                = 61;
+  
+/** @static */ Horatio.Token.FIRST_PERSON_PRONOUN  = 70;
+/** @static */ Horatio.Token.SECOND_PERSON_PRONOUN = 71;
+/** @static */ Horatio.Token.POSITIVE_ADJECTIVE    = 72;
+/** @static */ Horatio.Token.NEUTRAL_ADJECTIVE     = 73;
+/** @static */ Horatio.Token.NEGATIVE_ADJECTIVE    = 74;
+/** @static */ Horatio.Token.POSITIVE_NOUN         = 75;
+/** @static */ Horatio.Token.NEUTRAL_NOUN          = 76;
+/** @static */ Horatio.Token.NEGATIVE_NOUN         = 77;
+/** @static */ Horatio.Token.ROMAN_NUMERAL         = 78;
+  
+/** @static */ Horatio.Token.COLON                 = 90;
+/** @static */ Horatio.Token.COMMA                 = 91;
+/** @static */ Horatio.Token.PERIOD                = 92;
+/** @static */ Horatio.Token.EXCLAMATION_POINT     = 93;
+/** @static */ Horatio.Token.QUESTION_MARK         = 94;
+/** @static */ Horatio.Token.AMPERSAND             = 95;
+/** @static */ Horatio.Token.AND                   = 96;
+/** @static */ Horatio.Token.LEFT_BRACKET          = 97;
+/** @static */ Horatio.Token.RIGHT_BRACKET         = 98;
+  
+/** @static */ Horatio.Token.COMMENT               = 110;
+Horatio.Visitor = function() {};
+
+Horatio.Visitor.prototype = {
+  
+  /**
+   * Program
+   */
+  visitProgram: function(program, arg) {    
+    var self = this;
+    
+    // comment
+    program.comment.visit(this, null);
+    
+    // declarations
+    if (program.declarations.length > 0) {
+      program.declarations.forEach(function(declaration) {
+        declaration.visit(self, null);
+      });
+    } else {
+      throw new Error("Semantic Error - No characters declared.");
+    }
+    
+    // parts
+    if (program.parts.length > 0) {
+      program.parts.forEach(function(part) {
+        part.visit(self, null);
+      });
+    } else {
+      throw new Error("Semantic Error - No parts in program.");
+    }
+    
+    return null;
+  },
+  
+  
+  
+  /**
+   * Comment
+   */
+  visitComment: function(comment, arg) {
+    if (comment.sequence) {
+      return null;
+    } else {
+      throw new Error("Semantic Error - Comment malformed.");
+    }
+  },
+  
+  
+  
+  /**
+   * Declaration
+   */
+  visitDeclaration: function(declaration, arg) {
+    var c = declaration.character.visit(this, arg);
+    
+    if (this.characters[c.sequence]) {
+      throw new Error("Semantic Error - Character already defined.");
+    } else {
+      this.characters[c.sequence] = {
+        on_stage: false,
+        value_depth: 0
+      };
+    }
+    
+    declaration.comment.visit(this, arg);
+    return null;
+  },
+  
+  
+  
+  /**
+   * Character
+   */
+  visitCharacter: function(character, arg) {
+    var self = this;
+    
+    if (!character.sequence) {
+      throw new Error("Semantic Error - Character undefined.");
+    }
+    
+    if (!(character instanceof Horatio.AST.Character)) {
+      throw new Error("Semantic Error - Not of type Character.");
+    }
+    
+    // Declared flag
+    if (arg && arg.declared === true && !this.declared(character.sequence)) {
+      throw new Error("Semantic Error - Character Undeclared");
+    }
+    
+    // Present on stage flag
+    if (arg && arg.hasOwnProperty('on_stage')) {
+      switch (arg.on_stage) {
+      case true:
+        if (!this.onStage(character.sequence)) {
+          throw new Error("Semantic Error - Character not on stage.");
+        }
+        break;
+      
+      case false:
+        if (this.onStage(character.sequence)) {
+          throw new Error("Semantic Error - Character already on stage.");
+        }
+        break;
+      }
+    }
+    
+    return character;
+  },
+  
+  
+  
+  /**
+   * Part
+   */
+  visitPart: function(part, arg) {
+    var self = this;
+    
+    part.numeral.visit(this, arg);
+    part.comment.visit(this, arg);
+    
+    if (part.subparts.length > 0) {
+      part.subparts.forEach(function(subpart) {
+        subpart.visit(self, arg);
+      });
+    } else {
+      throw new Error("Semantic Error - No subparts defined.");
+    }
+    
+    return null;
+  },
+  
+  
+  
+  /**
+   * Numeral
+   */
+  visitNumeral: function(numeral, arg) {
+    if (numeral.sequence) {
+      return null;
+    } else {
+      throw new Error("Semantic Error - Numeral malformed.");
+    }
+  },
+  
+  
+  
+  /**
+   * Subparts
+   */
+  visitSubpart: function(subpart, arg) {
+    subpart.numeral.visit(this, arg);
+    subpart.comment.visit(this, arg);
+    subpart.stage.visit(this, arg);
+    return null;
+  },
+  
+  
+  
+  /**
+   * Stage
+   */
+  visitStage: function(stage, arg) {
+    if (stage.start_presence) stage.start_presence.visit(this, arg);
+    if (stage.end_presence) stage.end_presence.visit(this, arg);
+    if (stage.dialogue) stage.dialogue.visit(this, arg);
+    return null;
+  },
+  
+  
+  
+  /**
+   * Enter
+   */
+  visitEnter: function(presence, arg) {
+    
+    if (!presence.character_1 && !presence.character_2) {
+      throw new Error("Semantic Error - No characters entering.");
+    }
+    
+    var c1 = presence.character_1.visit(this, {declared: true, on_stage: false});  
+    this.toggleStage(c1.sequence);
+
+    if (presence.character_2) {
+      var c2 = presence.character_2.visit(this, {declared: true, on_stage: false});
+      
+      if (c1.sequence === c2.sequence) {
+        throw new Error("Semantic Error - Same character entering twice in same statement.");
+      }
+      
+      this.toggleStage(c2.sequence);
+    }
+    
+    return null;
+  },
+  
+  
+  
+  /**
+   * Exit
+   */
+  visitExit: function(presence, arg) {
+    if (!presence.character) {
+      throw new Error("Semantic Error - No character exiting.");
+    }
+    
+    var c = presence.character.visit(this, {declared: true, on_stage: true});
+    this.toggleStage(c.sequence);
+    
+    return null;
+  },
+  
+  
+  
+  /**
+   * Exeunt
+   */
+  visitExeunt: function(presence, arg) {
+    // - No characters on stage
+    // x Only 1 character exeunting
+    // x characters are the same
+    
+    if (presence.character_1 ? !presence.character_2 : presence.character_2) {
+      throw new Error("Semantic Error - Either 2 or no characters can be defined, not one.");
+    }
+    
+    if (presence.character_1 && presence.character_2) {
+      var c1 = presence.character_1.visit(this, {declared: true, on_stage: true});
+      var c2 = presence.character_2.visit(this, {declared: true, on_stage: true});
+      
+      if (c1.sequence === c2.sequence) {
+        throw new Error("Semantic Error - Characters are the same.");
+      }
+      
+      this.toggleStage(c1.sequence);
+      this.toggleStage(c2.sequence);
+      
+    } else {
+      this.exeuntStage();  
+    }
+    
+    return null;
+  },
+  
+  
+  
+  /**
+   * Dialogue
+   */
+  visitDialogue: function(dialogue, arg) {
+    var self = this;
+    dialogue.lines.forEach(function(line) {
+      line.visit(self, arg);
+    });
+    return null;
+  },
+  
+  
+  
+  /**
+   * Line
+   */
+  visitLine: function(line, arg) {
+    var self = this;
+    
+    var c = line.character.visit(this, {declared: true, on_stage: true});
+    
+    if (line.sentences.length === 0) {
+      throw new Error("Semantic Error - Line cannot have no sentences.");
+    } else {
+      line.sentences.forEach(function(sentence) {
+        sentence.visit(self, arg);
+      });
+    }
+    
+    return null;
+  }
+  
+};
 Horatio.AST = {
   
   /**
@@ -657,23 +998,144 @@ Horatio.AST = {
   }
   
 };
-Horatio.Compiler = function() {};
+Horatio.Tokenizer = function(input) {
+  this.tokens = [];
+  this.dictionary = {};
+  this.buildDictionary();
+  this.tokenize(input);
+};
 
 
-Horatio.Compiler.prototype = {
+Horatio.Tokenizer.prototype = {
   
   /**
-   * Compile an SPL program
+   * Get the next token
+   * @returns {Horatio.Token|number} - The next token from the input program, or -1 if no remaining tokens.
+   */
+  nextToken: function() {
+    if (this.tokens.length > 0) {
+      return this.tokens.shift();
+    } else {
+      return -1;
+    }
+  },
+  
+  
+  
+  /**
+   * Scan and tokenize an input SPL program
    * @param {string} input - The input SPL program
    */
-  compile: function(input) {
-    // Parse input
-    var parser = new Horatio.Parser(input);
-    var AST = parser.parse();
+  tokenize: function(input) {
+    // strip all newlines/extra whitespace
+    input = input.trim().replace(/[\s\n]+/g," ");
     
+    // replace terminals
+    input = input.replace(/[:,.!?\[\]]/g, function(match) {
+      switch(match) {
+        case ":": return " COLON";             //break;
+        case ",": return " COMMA";             //break;
+        case ".": return " PERIOD";            //break;
+        case "!": return " EXCLAMATION_POINT"; //break;
+        case "?": return " QUESTION_MARK";     //break;
+        case "[": return "LEFT_BRACKET ";      //break;
+        case "]": return " RIGHT_BRACKET";     //break;
+      }
+    });
     
-    return AST;
+    // Split into array by spaces
+    var input_array = input.split(" ");
+    
+    // tokenize
+    while (input_array.length > 0) {
+      var current = input_array.shift();
+      if (this.dictionary[current]) {
+        this.tokens.push(new Horatio.Token(this.dictionary[current], current));
+      } else {
+        
+        // check if further appends will find match
+        var br = 0;
+        var orig = current;
+        while (!this.dictionary[current] && br < 6) {
+          current = current + " " + input_array[br];
+          
+          if (this.dictionary[current]) {
+            this.tokens.push(new Horatio.Token(this.dictionary[current], current));
+            input_array.splice(0,br+1);
+          }
+          br += 1;
+        }
+        
+        // comment
+        if (br===6) this.tokens.push(new Horatio.Token(43, orig));
+      }
+    }
+  },
+  
+  
+  
+  /**
+   * Builds a hash of words -> byte codes for scanning
+   */
+  buildDictionary: function() {
+    var self = this;
+    var wl = Horatio.Wordlists;
+    
+    wl.characters            .forEach(function(w) { self.dictionary[w] = 10; });
+    wl.articles              .forEach(function(w) { self.dictionary[w] = 11; });
+    wl.be                    .forEach(function(w) { self.dictionary[w] = 12; });
+    wl.act                   .forEach(function(w) { self.dictionary[w] = 13; });
+    wl.scene                 .forEach(function(w) { self.dictionary[w] = 14; });
+    wl.enter                 .forEach(function(w) { self.dictionary[w] = 15; });
+    wl.exit                  .forEach(function(w) { self.dictionary[w] = 16; });
+    wl.exeunt                .forEach(function(w) { self.dictionary[w] = 17; });
+    
+    //wl.input                 .forEach(function(w) { self.dictionary[w] = 20; });
+    wl.input_integer         .forEach(function(w) { self.dictionary[w] = 21; });
+    wl.input_char            .forEach(function(w) { self.dictionary[w] = 22; });
+    //wl.output                .forEach(function(w) { self.dictionary[w] = 23; });
+    wl.output_integer        .forEach(function(w) { self.dictionary[w] = 24; });
+    wl.output_char           .forEach(function(w) { self.dictionary[w] = 25; });
+    
+    wl.imperatives           .forEach(function(w) { self.dictionary[w] = 30; });
+    wl.to                    .forEach(function(w) { self.dictionary[w] = 31; });
+    wl.return                .forEach(function(w) { self.dictionary[w] = 32; });
+    
+    wl.positive_comparatives .forEach(function(w) { self.dictionary[w] = 40; });
+    wl.negative_comparatives .forEach(function(w) { self.dictionary[w] = 41; });
+    wl.as                    .forEach(function(w) { self.dictionary[w] = 42; });
+    wl.not                   .forEach(function(w) { self.dictionary[w] = 43; });
+    wl.than                  .forEach(function(w) { self.dictionary[w] = 44; });
+    wl.if_so                 .forEach(function(w) { self.dictionary[w] = 45; });
+    wl.be_comparatives       .forEach(function(w) { self.dictionary[w] = 46; });
+    
+    wl.unary_operators       .forEach(function(w) { self.dictionary[w] = 50; });
+    wl.arithmetic_operators  .forEach(function(w) { self.dictionary[w] = 51; });
+    
+    wl.remember              .forEach(function(w) { self.dictionary[w] = 60; });
+    wl.recall                .forEach(function(w) { self.dictionary[w] = 61; });
+    
+    wl.first_person_pronouns .forEach(function(w) { self.dictionary[w] = 70; });
+    wl.second_person_pronouns.forEach(function(w) { self.dictionary[w] = 71; });
+    wl.positive_adjectives   .forEach(function(w) { self.dictionary[w] = 72; });
+    wl.neutral_adjectives    .forEach(function(w) { self.dictionary[w] = 73; });
+    wl.negative_adjectives   .forEach(function(w) { self.dictionary[w] = 74; });
+    wl.positive_nouns        .forEach(function(w) { self.dictionary[w] = 75; });
+    wl.neutral_nouns         .forEach(function(w) { self.dictionary[w] = 76; });
+    wl.negative_nouns        .forEach(function(w) { self.dictionary[w] = 77; });
+    wl.roman_numerals        .forEach(function(w) { self.dictionary[w] = 78; });
+    
+    wl.colon                 .forEach(function(w) { self.dictionary[w] = 90; });
+    wl.comma                 .forEach(function(w) { self.dictionary[w] = 91; });
+    wl.period                .forEach(function(w) { self.dictionary[w] = 92; });
+    wl.exclamation_point     .forEach(function(w) { self.dictionary[w] = 93; });
+    wl.question_mark         .forEach(function(w) { self.dictionary[w] = 94; });
+    wl.ampersand             .forEach(function(w) { self.dictionary[w] = 95; });
+    wl.and                   .forEach(function(w) { self.dictionary[w] = 96; });
+    wl.left_bracket          .forEach(function(w) { self.dictionary[w] = 97; });
+    wl.right_bracket         .forEach(function(w) { self.dictionary[w] = 98; });
   }
+
   
 };
 Horatio.Parser = function(input) {
@@ -828,8 +1290,10 @@ Horatio.Parser.prototype = {
           c2 = new Horatio.AST.Character(this.currentToken.sequence);
           this.accept(Horatio.Token.CHARACTER);
           ret = new Horatio.AST.Exeunt(c1, c2);
-          break;
+        } else {
+          ret = new Horatio.AST.Exeunt();
         }
+        break;
     }
     this.accept(Horatio.Token.RIGHT_BRACKET);
     return ret;
@@ -1193,210 +1657,83 @@ Horatio.Parser.prototype = {
   }
    
 };
-Horatio.Token = function(kind, sequence) {
-  this.kind     = kind;
-  this.sequence = sequence;
-};
+Horatio.Compiler = function() {};
 
 
-
-/** @static */ Horatio.Token.CHARACTER             = 10;
-/** @static */ Horatio.Token.ARTICLE               = 11;
-/** @static */ Horatio.Token.BE                    = 12;
-/** @static */ Horatio.Token.ACT                   = 13;
-/** @static */ Horatio.Token.SCENE                 = 14;
-/** @static */ Horatio.Token.ENTER                 = 15;
-/** @static */ Horatio.Token.EXIT                  = 16;
-/** @static */ Horatio.Token.EXEUNT                = 17;
-
-///** @static */ Horatio.Token.INPUT                 = 20;
-/** @static */ Horatio.Token.INPUT_INTEGER         = 21;
-/** @static */ Horatio.Token.INPUT_CHAR            = 22;
-///** @static */ Horatio.Token.OUTPUT                = 23;
-/** @static */ Horatio.Token.OUTPUT_INTEGER        = 24;
-/** @static */ Horatio.Token.OUTPUT_CHAR           = 25;
-  
-/** @static */ Horatio.Token.IMPERATIVE            = 30;
-/** @static */ Horatio.Token.TO                    = 31;
-/** @static */ Horatio.Token.RETURN                = 32;
-  
-/** @static */ Horatio.Token.POSITIVE_COMPARATIVE  = 40;
-/** @static */ Horatio.Token.NEGATIVE_COMPARATIVE  = 41;
-/** @static */ Horatio.Token.AS                    = 42;
-/** @static */ Horatio.Token.NOT                   = 43;
-/** @static */ Horatio.Token.THAN                  = 44;
-/** @static */ Horatio.Token.IF_SO                 = 45;
-/** @static */ Horatio.Token.BE_COMPARATIVE        = 46;
-  
-/** @static */ Horatio.Token.UNARY_OPERATOR        = 50;
-/** @static */ Horatio.Token.ARITHMETIC_OPERATOR   = 51;
-  
-/** @static */ Horatio.Token.REMEMBER              = 60;
-/** @static */ Horatio.Token.RECALL                = 61;
-  
-/** @static */ Horatio.Token.FIRST_PERSON_PRONOUN  = 70;
-/** @static */ Horatio.Token.SECOND_PERSON_PRONOUN = 71;
-/** @static */ Horatio.Token.POSITIVE_ADJECTIVE    = 72;
-/** @static */ Horatio.Token.NEUTRAL_ADJECTIVE     = 73;
-/** @static */ Horatio.Token.NEGATIVE_ADJECTIVE    = 74;
-/** @static */ Horatio.Token.POSITIVE_NOUN         = 75;
-/** @static */ Horatio.Token.NEUTRAL_NOUN          = 76;
-/** @static */ Horatio.Token.NEGATIVE_NOUN         = 77;
-/** @static */ Horatio.Token.ROMAN_NUMERAL         = 78;
-  
-/** @static */ Horatio.Token.COLON                 = 90;
-/** @static */ Horatio.Token.COMMA                 = 91;
-/** @static */ Horatio.Token.PERIOD                = 92;
-/** @static */ Horatio.Token.EXCLAMATION_POINT     = 93;
-/** @static */ Horatio.Token.QUESTION_MARK         = 94;
-/** @static */ Horatio.Token.AMPERSAND             = 95;
-/** @static */ Horatio.Token.AND                   = 96;
-/** @static */ Horatio.Token.LEFT_BRACKET          = 97;
-/** @static */ Horatio.Token.RIGHT_BRACKET         = 98;
-  
-/** @static */ Horatio.Token.COMMENT               = 110;
-Horatio.Tokenizer = function(input) {
-  this.tokens = [];
-  this.dictionary = {};
-  this.buildDictionary();
-  this.tokenize(input);
-};
-
-
-Horatio.Tokenizer.prototype = {
+Horatio.Compiler.prototype = {
   
   /**
-   * Get the next token
-   * @returns {Horatio.Token|number} - The next token from the input program, or -1 if no remaining tokens.
-   */
-  nextToken: function() {
-    if (this.tokens.length > 0) {
-      return this.tokens.shift();
-    } else {
-      return -1;
-    }
-  },
-  
-  
-  
-  /**
-   * Scan and tokenize an input SPL program
+   * Compile an SPL program
    * @param {string} input - The input SPL program
    */
-  tokenize: function(input) {
-    // strip all newlines/extra whitespace
-    input = input.trim().replace(/[\s\n]+/g," ");
+  compile: function(input) {
+    // Parse input
+    var parser = new Horatio.Parser(input);
+    var AST = parser.parse();
     
-    // replace terminals
-    input = input.replace(/[:,.!?\[\]]/g, function(match) {
-      switch(match) {
-        case ":": return " COLON";             //break;
-        case ",": return " COMMA";             //break;
-        case ".": return " PERIOD";            //break;
-        case "!": return " EXCLAMATION_POINT"; //break;
-        case "?": return " QUESTION_MARK";     //break;
-        case "[": return "LEFT_BRACKET ";      //break;
-        case "]": return " RIGHT_BRACKET";     //break;
-      }
-    });
     
-    // Split into array by spaces
-    var input_array = input.split(" ");
-    
-    // tokenize
-    while (input_array.length > 0) {
-      var current = input_array.shift();
-      if (this.dictionary[current]) {
-        this.tokens.push(new Horatio.Token(this.dictionary[current], current));
-      } else {
-        
-        // check if further appends will find match
-        var br = 0;
-        var orig = current;
-        while (!this.dictionary[current] && br < 6) {
-          current = current + " " + input_array[br];
-          
-          if (this.dictionary[current]) {
-            this.tokens.push(new Horatio.Token(this.dictionary[current], current));
-            input_array.splice(0,br+1);
-          }
-          br += 1;
-        }
-        
-        // comment
-        if (br===6) this.tokens.push(new Horatio.Token(43, orig));
-      }
-    }
-  },
-  
-  
-  
-  /**
-   * Builds a hash of words -> byte codes for scanning
-   */
-  buildDictionary: function() {
-    var self = this;
-    var wl = Horatio.Wordlists;
-    
-    wl.characters            .forEach(function(w) { self.dictionary[w] = 10; });
-    wl.articles              .forEach(function(w) { self.dictionary[w] = 11; });
-    wl.be                    .forEach(function(w) { self.dictionary[w] = 12; });
-    wl.act                   .forEach(function(w) { self.dictionary[w] = 13; });
-    wl.scene                 .forEach(function(w) { self.dictionary[w] = 14; });
-    wl.enter                 .forEach(function(w) { self.dictionary[w] = 15; });
-    wl.exit                  .forEach(function(w) { self.dictionary[w] = 16; });
-    wl.exeunt                .forEach(function(w) { self.dictionary[w] = 17; });
-    
-    //wl.input                 .forEach(function(w) { self.dictionary[w] = 20; });
-    wl.input_integer         .forEach(function(w) { self.dictionary[w] = 21; });
-    wl.input_char            .forEach(function(w) { self.dictionary[w] = 22; });
-    //wl.output                .forEach(function(w) { self.dictionary[w] = 23; });
-    wl.output_integer        .forEach(function(w) { self.dictionary[w] = 24; });
-    wl.output_char           .forEach(function(w) { self.dictionary[w] = 25; });
-    
-    wl.imperatives           .forEach(function(w) { self.dictionary[w] = 30; });
-    wl.to                    .forEach(function(w) { self.dictionary[w] = 31; });
-    wl.return                .forEach(function(w) { self.dictionary[w] = 32; });
-    
-    wl.positive_comparatives .forEach(function(w) { self.dictionary[w] = 40; });
-    wl.negative_comparatives .forEach(function(w) { self.dictionary[w] = 41; });
-    wl.as                    .forEach(function(w) { self.dictionary[w] = 42; });
-    wl.not                   .forEach(function(w) { self.dictionary[w] = 43; });
-    wl.than                  .forEach(function(w) { self.dictionary[w] = 44; });
-    wl.if_so                 .forEach(function(w) { self.dictionary[w] = 45; });
-    wl.be_comparatives       .forEach(function(w) { self.dictionary[w] = 46; });
-    
-    wl.unary_operators       .forEach(function(w) { self.dictionary[w] = 50; });
-    wl.arithmetic_operators  .forEach(function(w) { self.dictionary[w] = 51; });
-    
-    wl.remember              .forEach(function(w) { self.dictionary[w] = 60; });
-    wl.recall                .forEach(function(w) { self.dictionary[w] = 61; });
-    
-    wl.first_person_pronouns .forEach(function(w) { self.dictionary[w] = 70; });
-    wl.second_person_pronouns.forEach(function(w) { self.dictionary[w] = 71; });
-    wl.positive_adjectives   .forEach(function(w) { self.dictionary[w] = 72; });
-    wl.neutral_adjectives    .forEach(function(w) { self.dictionary[w] = 73; });
-    wl.negative_adjectives   .forEach(function(w) { self.dictionary[w] = 74; });
-    wl.positive_nouns        .forEach(function(w) { self.dictionary[w] = 75; });
-    wl.neutral_nouns         .forEach(function(w) { self.dictionary[w] = 76; });
-    wl.negative_nouns        .forEach(function(w) { self.dictionary[w] = 77; });
-    wl.roman_numerals        .forEach(function(w) { self.dictionary[w] = 78; });
-    
-    wl.colon                 .forEach(function(w) { self.dictionary[w] = 90; });
-    wl.comma                 .forEach(function(w) { self.dictionary[w] = 91; });
-    wl.period                .forEach(function(w) { self.dictionary[w] = 92; });
-    wl.exclamation_point     .forEach(function(w) { self.dictionary[w] = 93; });
-    wl.question_mark         .forEach(function(w) { self.dictionary[w] = 94; });
-    wl.ampersand             .forEach(function(w) { self.dictionary[w] = 95; });
-    wl.and                   .forEach(function(w) { self.dictionary[w] = 96; });
-    wl.left_bracket          .forEach(function(w) { self.dictionary[w] = 97; });
-    wl.right_bracket         .forEach(function(w) { self.dictionary[w] = 98; });
+    return AST;
   }
-
   
 };
+Horatio.Checker = function() {
+  Horatio.Visitor.call(this);
+  this.characters = {};
+  this.parts = {};
+};
 
-Horatio.Wordlists = {};
+// inherit visitor prototype
+Horatio.Checker.prototype = new Horatio.Visitor();
+
+
+
+/**
+ * Check
+ */
+Horatio.Checker.prototype.check = function(program) {
+  program.visit(this, null);
+};
+
+
+
+/**
+ * Character exists
+ */
+Horatio.Checker.prototype.declared = function(character) {
+  return this.characters.hasOwnProperty(character);
+};
+
+
+/**
+ * Character on stage
+ */
+Horatio.Checker.prototype.onStage = function(character) {
+  if (this.declared(character) && this.characters[character].on_stage === true) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+
+/**
+ * Toggle Stage presence
+ */
+Horatio.Checker.prototype.toggleStage = function(character) {
+  if (this.declared(character)) {
+    this.characters[character].on_stage = !this.characters[character].on_stage;
+  }
+};
+
+
+/**
+ * Exeunt all
+ */
+Horatio.Checker.prototype.exeuntStage = function() {
+  for (var c in this.characters) {
+    this.characters[c].on_stage = false;
+  }
+};
 Horatio.Wordlists.act   = ['Act'];
 Horatio.Wordlists.scene = ['Scene'];
 Horatio.Wordlists.arithmetic_operators = [
