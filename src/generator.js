@@ -647,9 +647,9 @@ Horatio.Generator.prototype = {
       }
     };
     
-    var be = be.sequence;
+    var b = be.sequence;
     
-    return new Command(be);
+    return new Command(b);
   },
   
   
@@ -676,9 +676,9 @@ Horatio.Generator.prototype = {
       }
     };
     
-    var be = be.sequence;
+    var b = be.sequence;
     
-    return new Command(be);
+    return new Command(b);
   }
    
   
