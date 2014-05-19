@@ -80,7 +80,6 @@ Horatio.Program.prototype = {
   
   
   addCommand: function(act, scene, command) {
-    console.log(command);
     this.parts[act][scene].push(command);
     
     var self = this;

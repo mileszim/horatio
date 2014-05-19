@@ -206,15 +206,16 @@ Horatio.Generator.prototype = {
       var v = value;
       
       return function() {
-        var val = v();
-        this.characters[t].setValue(val);
+        var target = t.call(this);
+        var val = v.call(this);
+        this.characters[target].setValue(val);
       };
     };
     
     var target = assignment.be.visit(this, arg);
     var value = assignment.value.visit(this, arg);
     
-    this.program.addCommand(arg.act, arg.command, new Command(target, value));
+    this.program.addCommand(arg.act, arg.scene, new Command(target, value));
     
     return null;
   },
@@ -231,9 +232,10 @@ Horatio.Generator.prototype = {
       var v = value;
       
       return function() {
+        var character = b.call(this);
         var a = this.characters[b].value();
-        var val = v();
-        var result = c(a,val);
+        var val = v.call(this);
+        var result = c.call(this,a,val);
       };
     };
     
@@ -399,8 +401,8 @@ Horatio.Generator.prototype = {
       var v = value;
       
       return function() {
-        var val = v();
-        return o(val);
+        var val = v.call(this);
+        return o.call(this,val);
       };
     };
     
@@ -422,9 +424,9 @@ Horatio.Generator.prototype = {
       var v2 = value2;
       
       return function() {
-        var val1 = v1();
-        var val2 = v2();
-        return o(val1, val2);
+        var val1 = v1.call(this);
+        var val2 = v2.call(this);
+        return o.call(this,val1, val2);
       };
     };
     
@@ -532,7 +534,7 @@ Horatio.Generator.prototype = {
   visitSecondPersonPronoun: function(spp, arg) {
     var Command = function() {
       var speaking = arg.character;
-      var target = this.program.interlocutor(speaking).name();
+      var target = this.interlocutor.call(this,speaking).name();
       return target;
     };
     
@@ -620,6 +622,64 @@ Horatio.Generator.prototype = {
     var o = operator.sequence;
     
     return new Command(o);
+  },
+  
+  
+  
+  /**
+   * Be
+   */
+  visitBe: function(be, arg) {
+    var Command = function(be) {
+      var b = be;
+      var speaking = arg.character;
+      
+      switch(b) {
+      case "Thou art":
+      case "You are":
+        return function() {
+          return this.interlocutor(speaking).name();
+        };
+      case "I am":
+        return function() {
+          return speaking;
+        };
+      }
+    };
+    
+    var be = be.sequence;
+    
+    return new Command(be);
+  },
+  
+  
+  
+  /**
+   * Be Comparative
+   */
+  visitBeComparative: function(be, arg) {
+    var Command = function(be) {
+      var b = be;
+      var speaking = arg.character;
+      var t;
+      
+      switch(b) {
+      case "Art thou":
+      case "Are you":
+        return function() {
+          this.interlocutor(speaking).name();
+        };
+      case "Am I":
+        return function() {
+          this.characters[speaking].name();
+        };
+      }
+    };
+    
+    var be = be.sequence;
+    
+    return new Command(be);
   }
+   
   
 };

@@ -397,7 +397,7 @@ Horatio.Parser.prototype = {
     var be         = this.parseBeComparative();
     var comparison = this.parseComparative();
     var value      = this.parseValue();
-    return new Horatio.AST.QuestionSentence(comparison, value);
+    return new Horatio.AST.QuestionSentence(be, comparison, value);
   },
   
   

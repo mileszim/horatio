@@ -42,6 +42,22 @@ Horatio.Checker.prototype.onStage = function(character) {
 
 
 /**
+ * Solo on stage?
+ */
+Horatio.Checker.prototype.solo = function(character) {
+  if (this.declared(character) && this.characters[character]) {
+    for (var k in this.characters) {
+      if ((k!==character) && (this.characters[k]===true)) {
+        return false;
+      }
+    }
+    return true;
+  }
+  return false;
+};
+
+
+/**
  * Toggle Stage presence
  */
 Horatio.Checker.prototype.toggleStage = function(character) {

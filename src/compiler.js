@@ -25,9 +25,9 @@ Horatio.Compiler.prototype = {
     
     // Code Generation
     var encoder = new Horatio.Encoder();
-    encoder.encode(ast);
+    var program = encoder.encode(ast);
     
-    return ast;
+    return program;
   }
   
 };

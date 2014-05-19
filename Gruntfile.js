@@ -20,6 +20,7 @@ module.exports = function(grunt) {
         src: [
         	'src/horatio.js',
           'src/wordlists.js',
+          'includes/**/*.js',
         	'src/token.js',
           'src/character.js',
           'src/program.js',
@@ -28,10 +29,9 @@ module.exports = function(grunt) {
           'src/ast.js',
           'src/tokenizer.js',
           'src/parser.js',
-          'src/compiler.js',
           'src/checker.js',
           'src/encoder.js',
-        	'includes/**/*.js'
+          'src/compiler.js'
         ],
         dest: 'dist/<%= pkg.name %>.js'
       }

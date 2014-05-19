@@ -278,6 +278,7 @@ Horatio.Semantics.prototype = {
     if (line.sentences.length === 0) {
       throw new Error("Semantic Error - Line cannot have no sentences.");
     } else {
+      arg.character = c.sequence;
       line.sentences.forEach(function(sentence) {
         sentence.visit(self, arg);
       });
@@ -416,15 +417,15 @@ Horatio.Semantics.prototype = {
   visitPositiveConstantValue: function(pc_val, arg) {
     var self = this;
     
-    var n;
-    if (!(pc_val.noun instanceof Horatio.AST.PositiveNoun) || !(pc_val.noun instanceof Horatio.AST.NeutralNoun)) {
+    var n;    
+    if (!(pc_val.noun instanceof Horatio.AST.PositiveNoun) && !(pc_val.noun instanceof Horatio.AST.NeutralNoun)) {
       throw new Error("Semantic Error - Positive Constants must use a positive or neutral noun");
     } else {
       n = pc_val.noun.visit(this, arg);
     }
     pc_val.noun.visit(this, arg);
     pc_val.adjectives.forEach(function(adjective) {
-      if (!(adjective instanceof Horatio.AST.PositiveAdjective) || !(adjective instanceof Horatio.AST.NeutralAdjective)) {
+      if (!(adjective instanceof Horatio.AST.PositiveAdjective) && !(adjective instanceof Horatio.AST.NeutralAdjective)) {
         throw new Error("Semantic Error - Positive Constants must use positive of neutral adjectives.");
       } else {
         adjective.visit(this, arg);
@@ -444,14 +445,14 @@ Horatio.Semantics.prototype = {
     var self = this;
     
     var n;
-    if (!(nc_val.noun instanceof Horatio.AST.NegativeNoun) || !(nc_val.noun instanceof Horatio.AST.NeutralNoun)) {
+    if (!(nc_val.noun instanceof Horatio.AST.NegativeNoun) && !(nc_val.noun instanceof Horatio.AST.NeutralNoun)) {
       throw new Error("Semantic Error - Negative Constants must use a negative or neutral noun");
     } else {
       n = nc_val.noun.visit(this, arg);
     }
     nc_val.noun.visit(this, arg);
     nc_val.adjectives.forEach(function(adjective) {
-      if (!(adjective instanceof Horatio.AST.NegativeAdjective) || !(adjective instanceof Horatio.AST.NeutralAdjective)) {
+      if (!(adjective instanceof Horatio.AST.NegativeAdjective) && !(adjective instanceof Horatio.AST.NeutralAdjective)) {
         throw new Error("Semantic Error - Negative Constants must use negative of neutral adjectives.");
       } else {
         adjective.visit(this, arg);
@@ -668,6 +669,12 @@ Horatio.Semantics.prototype = {
    * Be
    */
   visitBe: function(be, arg) {
+    if (be.sequence==="You are" || be.sequence==="Thou art") {
+      if (this.solo(arg.character)) {
+        console.log("solo");
+        throw new Error("Semantic Error - Cannot assign value to interlocutor, only 1 character is on stage.");
+      }
+    }
     
     return null;
   },
@@ -678,6 +685,10 @@ Horatio.Semantics.prototype = {
    * Be Comparative
    */
   visitBeComparative: function(be, arg) {
+    if (be.sequence==="Are you" || be.sequence==="Art thou") {
+      if (this.solo(arg.character))
+        throw new Error("Semantic Error - Cannot compare value of interlocutor, only 1 character is on stage.");
+    }
     
     return null;
   }

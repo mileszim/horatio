@@ -17,6 +17,507 @@ var Horatio = Horatio || {
 /** Expose */
 if (Horatio.hasModule) module.exports = Horatio;
 Horatio.Wordlists = {};
+Horatio.Wordlists.act   = ['Act'];
+Horatio.Wordlists.scene = ['Scene'];
+Horatio.Wordlists.arithmetic_operators = [
+  'the sum of',
+  'the difference between',
+  'the product of',
+  'the quotient between',
+  'the remainder of the quotient between'
+];
+Horatio.Wordlists.articles = [
+  'a',
+  'an',
+  'the'
+];
+Horatio.Wordlists.be = [
+  'Thou art',
+  'You are',
+  'I am'
+  //'am',
+  //'are',
+  //'art',
+  //'be',
+  //'is'
+];
+
+Horatio.Wordlists.be_comparatives = [
+  'Art thou',
+  'Are you',
+  'Am I'
+];
+Horatio.Wordlists.characters = [
+  'Achilles',
+  'Adonis',
+  'Adriana',
+  'Aegeon',
+  'Aemilia',
+  'Agamemnon',
+  'Agrippa',
+  'Ajax',
+  'Alonso',
+  'Andromache',
+  'Angelo',
+  'Antiochus',
+  'Antonio',
+  'Arthur',
+  'Autolycus',
+  'Balthazar',
+  'Banquo',
+  'Beatrice',
+  'Benedick',
+  'Benvolio',
+  'Bianca',
+  'Brabantio',
+  'Brutus',
+  'Capulet',
+  'Cassandra',
+  'Cassius',
+  'Christopher Sly',
+  'Cicero',
+  'Claudio',
+  'Claudius',
+  'Cleopatra',
+  'Cordelia',
+  'Cornelius',
+  'Cressida',
+  'Cymberline',
+  'Demetrius',
+  'Desdemona',
+  'Dionyza',
+  'Doctor Caius',
+  'Dogberry',
+  'Don John',
+  'Don Pedro',
+  'Donalbain',
+  'Dorcas',
+  'Duncan',
+  'Egeus',
+  'Emilia',
+  'Escalus',
+  'Falstaff',
+  'Fenton',
+  'Ferdinand',
+  'Ford',
+  'Fortinbras',
+  'Francisca',
+  'Friar John',
+  'Friar Laurence',
+  'Gertrude',
+  'Goneril',
+  'Hamlet',
+  'Hecate',
+  'Hector',
+  'Helen',
+  'Helena',
+  'Hermia',
+  'Hermonie',
+  'Hippolyta',
+  'Horatio',
+  'Imogen',
+  'Isabella',
+  'John of Gaunt',
+  'John of Lancaster',
+  'Julia',
+  'Juliet',
+  'Julius Caesar',
+  'King Henry',
+  'King John',
+  'King Lear',
+  'King Richard',
+  'Lady Capulet',
+  'Lady Macbeth',
+  'Lady Macduff',
+  'Lady Montague',
+  'Lennox',
+  'Leonato',
+  'Luciana',
+  'Lucio',
+  'Lychorida',
+  'Lysander',
+  'Macbeth',
+  'Macduff',
+  'Malcolm',
+  'Mariana',
+  'Mark Antony',
+  'Mercutio',
+  'Miranda',
+  'Mistress Ford',
+  'Mistress Overdone',
+  'Mistress Page',
+  'Montague',
+  'Mopsa',
+  'Oberon',
+  'Octavia',
+  'Octavius Caesar',
+  'Olivia',
+  'Ophelia',
+  'Orlando',
+  'Orsino',
+  'Othello',
+  'Page',
+  'Pantino',
+  'Paris',
+  'Pericles',
+  'Pinch',
+  'Polonius',
+  'Pompeius',
+  'Portia',
+  'Priam',
+  'Prince Henry',
+  'Prospero',
+  'Proteus',
+  'Publius',
+  'Puck',
+  'Queen Elinor',
+  'Regan',
+  'Robin',
+  'Romeo',
+  'Rosalind',
+  'Sebastian',
+  'Shallow',
+  'Shylock',
+  'Slender',
+  'Solinus',
+  'Stephano',
+  'Thaisa',
+  'The Abbot of Westminster',
+  'The Apothecary',
+  'The Archbishop of Canterbury',
+  'The Duke of Milan',
+  'The Duke of Venice',
+  'The Ghost',
+  'Theseus',
+  'Thurio',
+  'Timon',
+  'Titania',
+  'Titus',
+  'Troilus',
+  'Tybalt',
+  'Ulysses',
+  'Valentine',
+  'Venus',
+  'Vincentio',
+  'Viola'
+];
+Horatio.Wordlists.enter  = ['Enter'];
+Horatio.Wordlists.exit   = ['Exit'];
+Horatio.Wordlists.exeunt = ['Exeunt'];
+Horatio.Wordlists.first_person = [
+  'I',
+  'i',
+  'me'
+];
+Horatio.Wordlists.first_person_possessive = [
+  'mine',
+  'my'
+];
+Horatio.Wordlists.first_person_reflexive = [
+  'myself'
+];
+Horatio.Wordlists.imperatives = [
+  'Let us',
+  'let us',
+  'We shall',
+  'we shall',
+  'We must',
+  'we must'
+];
+
+Horatio.Wordlists.to = ['to'];
+
+Horatio.Wordlists.return = [
+  'proceed',
+  'return'
+];
+Horatio.Wordlists.input_integer = ['Listen to your heart'];
+Horatio.Wordlists.input_char    = ['Open your mind'];
+Horatio.Wordlists.input = Horatio.Wordlists.input_integer.concat(Horatio.Wordlists.input_char);
+
+Horatio.Wordlists.output_integer = ['Open your heart'];
+Horatio.Wordlists.output_char    = ['Speak your mind'];
+Horatio.Wordlists.output = Horatio.Wordlists.output_integer.concat(Horatio.Wordlists.output_char);
+Horatio.Wordlists.as    = ['as'];
+Horatio.Wordlists.not   = ['not'];
+Horatio.Wordlists.than  = ['than'];
+Horatio.Wordlists.if_so = ['If so'];
+Horatio.Wordlists.and   = ['and'];
+Horatio.Wordlists.negative_adjectives = [
+  'bad',
+  'big',
+  'cowardly',
+  'cursed',
+  'damned',
+  'dirty',
+  'disgusting',
+  'distasteful',
+  'dusty',
+  'evil',
+  'fat',
+  'fat-kidneyed',
+  'fatherless',
+  'foul',
+  'hairy',
+  'half-witted',
+  'horrible',
+  'horrid',
+  'infected',
+  'lying',
+  'miserable',
+  'misused',
+  'oozing',
+  'rotten',
+  'smelly',
+  'snotty',
+  'sorry',
+  'stinking',
+  'stuffed',
+  'stupid',
+  'vile',
+  'villainous',
+  'worried'
+];
+Horatio.Wordlists.negative_comparatives = [
+  'punier',
+  'smaller',
+  'worse'
+];
+Horatio.Wordlists.negative_nouns = [
+  'Hell',
+  'Microsoft',
+  'bastard',
+  'beggar',
+  'blister',
+  'codpiece',
+  'coward',
+  'curse',
+  'death',
+  'devil',
+  'draught',
+  'famine',
+  'flirt-gill',
+  'goat',
+  'hate',
+  'hog',
+  'hound',
+  'leech',
+  'lie',
+  'pig',
+  'plague',
+  'starvation',
+  'toad',
+  'war',
+  'wolf'
+];
+Horatio.Wordlists.neutral_adjectives = [
+  'big',
+  'black',
+  'blue',
+  'bluest',
+  'bottomless',
+  'furry',
+  'green',
+  'hard',
+  'huge',
+  'large',
+  'little',
+  'normal',
+  'old',
+  'purple',
+  'red',
+  'rural',
+  'small',
+  'tiny',
+  'white',
+  'yellow'
+];
+Horatio.Wordlists.neutral_nouns = [
+  'animal',
+  'aunt',
+  'brother',
+  'cat',
+  'chihuahua',
+  'cousin',
+  'cow',
+  'daughter',
+  'door',
+  'face',
+  'father',
+  'fellow',
+  'granddaughter',
+  'grandfather',
+  'grandmother',
+  'grandson',
+  'hair',
+  'hamster',
+  'horse',
+  'lamp',
+  'lantern',
+  'mistletoe',
+  'moon',
+  'morning',
+  'mother',
+  'nephew',
+  'niece',
+  'nose',
+  'purse',
+  'road',
+  'roman',
+  'sister',
+  'sky',
+  'son',
+  'squirrel',
+  'stone wall',
+  'thing',
+  'town',
+  'tree',
+  'uncle',
+  'wind'
+];
+Horatio.Wordlists.nothing = [
+  'nothing',
+  'zero'
+];
+Horatio.Wordlists.positive_adjectives = [
+  'amazing',
+  'beautiful',
+  'blossoming',
+  'bold',
+  'black',
+  'brave',
+  'charming',
+  'clearest',
+  'cunning',
+  'cute',
+  'delicious',
+  'embroidered',
+  'fair',
+  'fine',
+  'gentle',
+  'golden',
+  'good',
+  'handsome',
+  'happy',
+  'healthy',
+  'honest',
+  'little',
+  'lovely',
+  'loving',
+  'mighty',
+  'noble',
+  'old',
+  'peaceful',
+  'pretty',
+  'prompt',
+  'proud',
+  'reddest',
+  'rich',
+  'rural',
+  'smooth',
+  'sunny',
+  'sweet',
+  'sweetest',
+  'trustworthy',
+  'tiny',
+  'warm'
+];
+Horatio.Wordlists.positive_comparatives = [
+  'better',
+  'bigger',
+  'fresher',
+  'friendlier',
+  'nicer',
+  'jollier'
+];
+Horatio.Wordlists.positive_nouns = [
+  'Heaven',
+  'King',
+  'Lord',
+  'angel',
+  'flower',
+  'happiness',
+  'joy',
+  'plum',
+  'summer\'s day',
+  'hero',
+  'rose',
+  'kingdom',
+  'pony',
+  'cat'
+];
+Horatio.Wordlists.first_person_pronouns = [
+  //'I',
+  'myself',
+  'me'
+];
+
+Horatio.Wordlists.second_person_pronouns = [
+  'you',
+  'yourself',
+  'thy',
+  'thee',
+  'thou'
+];
+Horatio.Wordlists.roman_numerals = [
+  'I',
+  'II',
+  'III',
+  'IV',
+  'V',
+  'VI',
+  'VII',
+  'VIII',
+  'IX',
+  'X',
+  'XI',
+  'XII',
+  'XIII',
+  'XIV',
+  'XV',
+  'XVI',
+  'XVII',
+  'XVIII',
+  'XIX',
+  'XX'
+];
+Horatio.Wordlists.second_person = [
+  'thee',
+  'thou',
+  'you'
+];
+Horatio.Wordlists.second_person_possessive = [
+  'thine',
+  'thy',
+  'your'
+];
+Horatio.Wordlists.second_person_reflexive = [
+  'thyself',
+  'yourself'
+];
+Horatio.Wordlists.remember = ['Remember'];
+Horatio.Wordlists.recall   = ['Recall'];
+Horatio.Wordlists.colon             = ['COLON'];
+Horatio.Wordlists.comma             = ['COMMA'];
+Horatio.Wordlists.period            = ['PERIOD'];
+Horatio.Wordlists.exclamation_point = ['EXCLAMATION_POINT'];
+Horatio.Wordlists.question_mark     = ['QUESTION_MARK'];
+Horatio.Wordlists.ampersand         = ['&'];
+Horatio.Wordlists.left_bracket      = ['LEFT_BRACKET'];
+Horatio.Wordlists.right_bracket     = ['RIGHT_BRACKET'];
+Horatio.Wordlists.third_person_possessive = [
+  'his',
+  'her',
+  'its',
+  'their'
+];
+Horatio.Wordlists.unary_operators = [
+  'the square of',
+  'the cube of',
+  'the square root of',
+  'the factorial of',
+  'twice'
+];
 Horatio.Token = function(kind, sequence) {
   this.kind     = kind;
   this.sequence = sequence;
@@ -228,7 +729,6 @@ Horatio.Program.prototype = {
   
   
   addCommand: function(act, scene, command) {
-    console.log(command);
     this.parts[act][scene].push(command);
     
     var self = this;
@@ -512,6 +1012,7 @@ Horatio.Semantics.prototype = {
     if (line.sentences.length === 0) {
       throw new Error("Semantic Error - Line cannot have no sentences.");
     } else {
+      arg.character = c.sequence;
       line.sentences.forEach(function(sentence) {
         sentence.visit(self, arg);
       });
@@ -650,15 +1151,15 @@ Horatio.Semantics.prototype = {
   visitPositiveConstantValue: function(pc_val, arg) {
     var self = this;
     
-    var n;
-    if (!(pc_val.noun instanceof Horatio.AST.PositiveNoun) || !(pc_val.noun instanceof Horatio.AST.NeutralNoun)) {
+    var n;    
+    if (!(pc_val.noun instanceof Horatio.AST.PositiveNoun) && !(pc_val.noun instanceof Horatio.AST.NeutralNoun)) {
       throw new Error("Semantic Error - Positive Constants must use a positive or neutral noun");
     } else {
       n = pc_val.noun.visit(this, arg);
     }
     pc_val.noun.visit(this, arg);
     pc_val.adjectives.forEach(function(adjective) {
-      if (!(adjective instanceof Horatio.AST.PositiveAdjective) || !(adjective instanceof Horatio.AST.NeutralAdjective)) {
+      if (!(adjective instanceof Horatio.AST.PositiveAdjective) && !(adjective instanceof Horatio.AST.NeutralAdjective)) {
         throw new Error("Semantic Error - Positive Constants must use positive of neutral adjectives.");
       } else {
         adjective.visit(this, arg);
@@ -678,14 +1179,14 @@ Horatio.Semantics.prototype = {
     var self = this;
     
     var n;
-    if (!(nc_val.noun instanceof Horatio.AST.NegativeNoun) || !(nc_val.noun instanceof Horatio.AST.NeutralNoun)) {
+    if (!(nc_val.noun instanceof Horatio.AST.NegativeNoun) && !(nc_val.noun instanceof Horatio.AST.NeutralNoun)) {
       throw new Error("Semantic Error - Negative Constants must use a negative or neutral noun");
     } else {
       n = nc_val.noun.visit(this, arg);
     }
     nc_val.noun.visit(this, arg);
     nc_val.adjectives.forEach(function(adjective) {
-      if (!(adjective instanceof Horatio.AST.NegativeAdjective) || !(adjective instanceof Horatio.AST.NeutralAdjective)) {
+      if (!(adjective instanceof Horatio.AST.NegativeAdjective) && !(adjective instanceof Horatio.AST.NeutralAdjective)) {
         throw new Error("Semantic Error - Negative Constants must use negative of neutral adjectives.");
       } else {
         adjective.visit(this, arg);
@@ -902,6 +1403,12 @@ Horatio.Semantics.prototype = {
    * Be
    */
   visitBe: function(be, arg) {
+    if (be.sequence==="You are" || be.sequence==="Thou art") {
+      if (this.solo(arg.character)) {
+        console.log("solo");
+        throw new Error("Semantic Error - Cannot assign value to interlocutor, only 1 character is on stage.");
+      }
+    }
     
     return null;
   },
@@ -912,6 +1419,10 @@ Horatio.Semantics.prototype = {
    * Be Comparative
    */
   visitBeComparative: function(be, arg) {
+    if (be.sequence==="Are you" || be.sequence==="Art thou") {
+      if (this.solo(arg.character))
+        throw new Error("Semantic Error - Cannot compare value of interlocutor, only 1 character is on stage.");
+    }
     
     return null;
   }
@@ -1122,15 +1633,16 @@ Horatio.Generator.prototype = {
       var v = value;
       
       return function() {
-        var val = v();
-        this.characters[t].setValue(val);
+        var target = t.call(this);
+        var val = v.call(this);
+        this.characters[target].setValue(val);
       };
     };
     
     var target = assignment.be.visit(this, arg);
     var value = assignment.value.visit(this, arg);
     
-    this.program.addCommand(arg.act, arg.command, new Command(target, value));
+    this.program.addCommand(arg.act, arg.scene, new Command(target, value));
     
     return null;
   },
@@ -1147,9 +1659,10 @@ Horatio.Generator.prototype = {
       var v = value;
       
       return function() {
+        var character = b.call(this);
         var a = this.characters[b].value();
-        var val = v();
-        var result = c(a,val);
+        var val = v.call(this);
+        var result = c.call(this,a,val);
       };
     };
     
@@ -1315,8 +1828,8 @@ Horatio.Generator.prototype = {
       var v = value;
       
       return function() {
-        var val = v();
-        return o(val);
+        var val = v.call(this);
+        return o.call(this,val);
       };
     };
     
@@ -1338,9 +1851,9 @@ Horatio.Generator.prototype = {
       var v2 = value2;
       
       return function() {
-        var val1 = v1();
-        var val2 = v2();
-        return o(val1, val2);
+        var val1 = v1.call(this);
+        var val2 = v2.call(this);
+        return o.call(this,val1, val2);
       };
     };
     
@@ -1448,7 +1961,7 @@ Horatio.Generator.prototype = {
   visitSecondPersonPronoun: function(spp, arg) {
     var Command = function() {
       var speaking = arg.character;
-      var target = this.program.interlocutor(speaking).name();
+      var target = this.interlocutor.call(this,speaking).name();
       return target;
     };
     
@@ -1536,7 +2049,65 @@ Horatio.Generator.prototype = {
     var o = operator.sequence;
     
     return new Command(o);
+  },
+  
+  
+  
+  /**
+   * Be
+   */
+  visitBe: function(be, arg) {
+    var Command = function(be) {
+      var b = be;
+      var speaking = arg.character;
+      
+      switch(b) {
+      case "Thou art":
+      case "You are":
+        return function() {
+          return this.interlocutor(speaking).name();
+        };
+      case "I am":
+        return function() {
+          return speaking;
+        };
+      }
+    };
+    
+    var be = be.sequence;
+    
+    return new Command(be);
+  },
+  
+  
+  
+  /**
+   * Be Comparative
+   */
+  visitBeComparative: function(be, arg) {
+    var Command = function(be) {
+      var b = be;
+      var speaking = arg.character;
+      var t;
+      
+      switch(b) {
+      case "Art thou":
+      case "Are you":
+        return function() {
+          this.interlocutor(speaking).name();
+        };
+      case "Am I":
+        return function() {
+          this.characters[speaking].name();
+        };
+      }
+    };
+    
+    var be = be.sequence;
+    
+    return new Command(be);
   }
+   
   
 };
 Horatio.AST = {
@@ -2741,7 +3312,7 @@ Horatio.Parser.prototype = {
     var be         = this.parseBeComparative();
     var comparison = this.parseComparative();
     var value      = this.parseValue();
-    return new Horatio.AST.QuestionSentence(comparison, value);
+    return new Horatio.AST.QuestionSentence(be, comparison, value);
   },
   
   
@@ -2886,34 +3457,6 @@ Horatio.Parser.prototype = {
   }
    
 };
-Horatio.Compiler = function() {};
-
-
-Horatio.Compiler.prototype = {
-  
-  /**
-   * Compile an SPL program
-   * @param {string} input - The input SPL program
-   */
-  compile: function(input) {
-    // Parse input
-    var parser = new Horatio.Parser(input);
-    
-    // Generate AST
-    var ast = parser.parse();
-    
-    // Semantic Check
-    var checker = new Horatio.Checker();
-    checker.check(ast);
-    
-    // Code Generation
-    var encoder = new Horatio.Encoder();
-    encoder.encode(ast);
-    
-    return ast;
-  }
-  
-};
 Horatio.Checker = function() {
   //Horatio.Visitor.call(this);
   this.characters = {};
@@ -2951,6 +3494,22 @@ Horatio.Checker.prototype.onStage = function(character) {
   } else {
     return false;
   }
+};
+
+
+/**
+ * Solo on stage?
+ */
+Horatio.Checker.prototype.solo = function(character) {
+  if (this.declared(character) && this.characters[character]) {
+    for (var k in this.characters) {
+      if ((k!==character) && (this.characters[k]===true)) {
+        return false;
+      }
+    }
+    return true;
+  }
+  return false;
 };
 
 
@@ -3001,6 +3560,7 @@ Horatio.Encoder.prototype = new Horatio.Generator();
  */
 Horatio.Encoder.prototype.encode = function(program) {
   program.visit(this, null);
+  return this.program;
 };
 
 
@@ -3011,504 +3571,31 @@ Horatio.Encoder.prototype.encode = function(program) {
 Horatio.Encoder.prototype.numeralIndex = function(numeral) {
   return Horatio.Wordlists.roman_numerals.indexOf(numeral);
 };
-Horatio.Wordlists.act   = ['Act'];
-Horatio.Wordlists.scene = ['Scene'];
-Horatio.Wordlists.arithmetic_operators = [
-  'the sum of',
-  'the difference between',
-  'the product of',
-  'the quotient between',
-  'the remainder of the quotient between'
-];
-Horatio.Wordlists.articles = [
-  'a',
-  'an',
-  'the'
-];
-Horatio.Wordlists.be = [
-  'Thou art',
-  'You are',
-  'I am'
-  //'am',
-  //'are',
-  //'art',
-  //'be',
-  //'is'
-];
+Horatio.Compiler = function() {};
 
-Horatio.Wordlists.be_comparatives = [
-  'Art thou',
-  'Are you',
-  'Am I'
-];
-Horatio.Wordlists.characters = [
-  'Achilles',
-  'Adonis',
-  'Adriana',
-  'Aegeon',
-  'Aemilia',
-  'Agamemnon',
-  'Agrippa',
-  'Ajax',
-  'Alonso',
-  'Andromache',
-  'Angelo',
-  'Antiochus',
-  'Antonio',
-  'Arthur',
-  'Autolycus',
-  'Balthazar',
-  'Banquo',
-  'Beatrice',
-  'Benedick',
-  'Benvolio',
-  'Bianca',
-  'Brabantio',
-  'Brutus',
-  'Capulet',
-  'Cassandra',
-  'Cassius',
-  'Christopher Sly',
-  'Cicero',
-  'Claudio',
-  'Claudius',
-  'Cleopatra',
-  'Cordelia',
-  'Cornelius',
-  'Cressida',
-  'Cymberline',
-  'Demetrius',
-  'Desdemona',
-  'Dionyza',
-  'Doctor Caius',
-  'Dogberry',
-  'Don John',
-  'Don Pedro',
-  'Donalbain',
-  'Dorcas',
-  'Duncan',
-  'Egeus',
-  'Emilia',
-  'Escalus',
-  'Falstaff',
-  'Fenton',
-  'Ferdinand',
-  'Ford',
-  'Fortinbras',
-  'Francisca',
-  'Friar John',
-  'Friar Laurence',
-  'Gertrude',
-  'Goneril',
-  'Hamlet',
-  'Hecate',
-  'Hector',
-  'Helen',
-  'Helena',
-  'Hermia',
-  'Hermonie',
-  'Hippolyta',
-  'Horatio',
-  'Imogen',
-  'Isabella',
-  'John of Gaunt',
-  'John of Lancaster',
-  'Julia',
-  'Juliet',
-  'Julius Caesar',
-  'King Henry',
-  'King John',
-  'King Lear',
-  'King Richard',
-  'Lady Capulet',
-  'Lady Macbeth',
-  'Lady Macduff',
-  'Lady Montague',
-  'Lennox',
-  'Leonato',
-  'Luciana',
-  'Lucio',
-  'Lychorida',
-  'Lysander',
-  'Macbeth',
-  'Macduff',
-  'Malcolm',
-  'Mariana',
-  'Mark Antony',
-  'Mercutio',
-  'Miranda',
-  'Mistress Ford',
-  'Mistress Overdone',
-  'Mistress Page',
-  'Montague',
-  'Mopsa',
-  'Oberon',
-  'Octavia',
-  'Octavius Caesar',
-  'Olivia',
-  'Ophelia',
-  'Orlando',
-  'Orsino',
-  'Othello',
-  'Page',
-  'Pantino',
-  'Paris',
-  'Pericles',
-  'Pinch',
-  'Polonius',
-  'Pompeius',
-  'Portia',
-  'Priam',
-  'Prince Henry',
-  'Prospero',
-  'Proteus',
-  'Publius',
-  'Puck',
-  'Queen Elinor',
-  'Regan',
-  'Robin',
-  'Romeo',
-  'Rosalind',
-  'Sebastian',
-  'Shallow',
-  'Shylock',
-  'Slender',
-  'Solinus',
-  'Stephano',
-  'Thaisa',
-  'The Abbot of Westminster',
-  'The Apothecary',
-  'The Archbishop of Canterbury',
-  'The Duke of Milan',
-  'The Duke of Venice',
-  'The Ghost',
-  'Theseus',
-  'Thurio',
-  'Timon',
-  'Titania',
-  'Titus',
-  'Troilus',
-  'Tybalt',
-  'Ulysses',
-  'Valentine',
-  'Venus',
-  'Vincentio',
-  'Viola'
-];
-Horatio.Wordlists.enter  = ['Enter'];
-Horatio.Wordlists.exit   = ['Exit'];
-Horatio.Wordlists.exeunt = ['Exeunt'];
-Horatio.Wordlists.first_person = [
-  'I',
-  'i',
-  'me'
-];
-Horatio.Wordlists.first_person_possessive = [
-  'mine',
-  'my'
-];
-Horatio.Wordlists.first_person_reflexive = [
-  'myself'
-];
-Horatio.Wordlists.imperatives = [
-  'Let us',
-  'let us',
-  'We shall',
-  'we shall',
-  'We must',
-  'we must'
-];
 
-Horatio.Wordlists.to = ['to'];
-
-Horatio.Wordlists.return = [
-  'proceed',
-  'return'
-];
-Horatio.Wordlists.input_integer = ['Listen to your heart'];
-Horatio.Wordlists.input_char    = ['Open your mind'];
-Horatio.Wordlists.input = Horatio.Wordlists.input_integer.concat(Horatio.Wordlists.input_char);
-
-Horatio.Wordlists.output_integer = ['Open your heart'];
-Horatio.Wordlists.output_char    = ['Speak your mind'];
-Horatio.Wordlists.output = Horatio.Wordlists.output_integer.concat(Horatio.Wordlists.output_char);
-Horatio.Wordlists.as    = ['as'];
-Horatio.Wordlists.not   = ['not'];
-Horatio.Wordlists.than  = ['than'];
-Horatio.Wordlists.if_so = ['If so'];
-Horatio.Wordlists.and   = ['and'];
-Horatio.Wordlists.negative_adjectives = [
-  'bad',
-  'big',
-  'cowardly',
-  'cursed',
-  'damned',
-  'dirty',
-  'disgusting',
-  'distasteful',
-  'dusty',
-  'evil',
-  'fat',
-  'fat-kidneyed',
-  'fatherless',
-  'foul',
-  'hairy',
-  'half-witted',
-  'horrible',
-  'horrid',
-  'infected',
-  'lying',
-  'miserable',
-  'misused',
-  'oozing',
-  'rotten',
-  'smelly',
-  'snotty',
-  'sorry',
-  'stinking',
-  'stuffed',
-  'stupid',
-  'vile',
-  'villainous',
-  'worried'
-];
-Horatio.Wordlists.negative_comparatives = [
-  'punier',
-  'smaller',
-  'worse'
-];
-Horatio.Wordlists.negative_nouns = [
-  'Hell',
-  'Microsoft',
-  'bastard',
-  'beggar',
-  'blister',
-  'codpiece',
-  'coward',
-  'curse',
-  'death',
-  'devil',
-  'draught',
-  'famine',
-  'flirt-gill',
-  'goat',
-  'hate',
-  'hog',
-  'hound',
-  'leech',
-  'lie',
-  'pig',
-  'plague',
-  'starvation',
-  'toad',
-  'war',
-  'wolf'
-];
-Horatio.Wordlists.neutral_adjectives = [
-  'big',
-  'black',
-  'blue',
-  'bluest',
-  'bottomless',
-  'furry',
-  'green',
-  'hard',
-  'huge',
-  'large',
-  'little',
-  'normal',
-  'old',
-  'purple',
-  'red',
-  'rural',
-  'small',
-  'tiny',
-  'white',
-  'yellow'
-];
-Horatio.Wordlists.neutral_nouns = [
-  'animal',
-  'aunt',
-  'brother',
-  'cat',
-  'chihuahua',
-  'cousin',
-  'cow',
-  'daughter',
-  'door',
-  'face',
-  'father',
-  'fellow',
-  'granddaughter',
-  'grandfather',
-  'grandmother',
-  'grandson',
-  'hair',
-  'hamster',
-  'horse',
-  'lamp',
-  'lantern',
-  'mistletoe',
-  'moon',
-  'morning',
-  'mother',
-  'nephew',
-  'niece',
-  'nose',
-  'purse',
-  'road',
-  'roman',
-  'sister',
-  'sky',
-  'son',
-  'squirrel',
-  'stone wall',
-  'thing',
-  'town',
-  'tree',
-  'uncle',
-  'wind'
-];
-Horatio.Wordlists.nothing = [
-  'nothing',
-  'zero'
-];
-Horatio.Wordlists.positive_adjectives = [
-  'amazing',
-  'beautiful',
-  'blossoming',
-  'bold',
-  'black',
-  'brave',
-  'charming',
-  'clearest',
-  'cunning',
-  'cute',
-  'delicious',
-  'embroidered',
-  'fair',
-  'fine',
-  'gentle',
-  'golden',
-  'good',
-  'handsome',
-  'happy',
-  'healthy',
-  'honest',
-  'little',
-  'lovely',
-  'loving',
-  'mighty',
-  'noble',
-  'old',
-  'peaceful',
-  'pretty',
-  'prompt',
-  'proud',
-  'reddest',
-  'rich',
-  'rural',
-  'smooth',
-  'sunny',
-  'sweet',
-  'sweetest',
-  'trustworthy',
-  'tiny',
-  'warm'
-];
-Horatio.Wordlists.positive_comparatives = [
-  'better',
-  'bigger',
-  'fresher',
-  'friendlier',
-  'nicer',
-  'jollier'
-];
-Horatio.Wordlists.positive_nouns = [
-  'Heaven',
-  'King',
-  'Lord',
-  'angel',
-  'flower',
-  'happiness',
-  'joy',
-  'plum',
-  'summer\'s day',
-  'hero',
-  'rose',
-  'kingdom',
-  'pony',
-  'cat'
-];
-Horatio.Wordlists.first_person_pronouns = [
-  //'I',
-  'myself',
-  'me'
-];
-
-Horatio.Wordlists.second_person_pronouns = [
-  'you',
-  'yourself',
-  'thy',
-  'thee',
-  'thou'
-];
-Horatio.Wordlists.roman_numerals = [
-  'I',
-  'II',
-  'III',
-  'IV',
-  'V',
-  'VI',
-  'VII',
-  'VIII',
-  'IX',
-  'X',
-  'XI',
-  'XII',
-  'XIII',
-  'XIV',
-  'XV',
-  'XVI',
-  'XVII',
-  'XVIII',
-  'XIX',
-  'XX'
-];
-Horatio.Wordlists.second_person = [
-  'thee',
-  'thou',
-  'you'
-];
-Horatio.Wordlists.second_person_possessive = [
-  'thine',
-  'thy',
-  'your'
-];
-Horatio.Wordlists.second_person_reflexive = [
-  'thyself',
-  'yourself'
-];
-Horatio.Wordlists.remember = ['Remember'];
-Horatio.Wordlists.recall   = ['Recall'];
-Horatio.Wordlists.colon             = ['COLON'];
-Horatio.Wordlists.comma             = ['COMMA'];
-Horatio.Wordlists.period            = ['PERIOD'];
-Horatio.Wordlists.exclamation_point = ['EXCLAMATION_POINT'];
-Horatio.Wordlists.question_mark     = ['QUESTION_MARK'];
-Horatio.Wordlists.ampersand         = ['&'];
-Horatio.Wordlists.left_bracket      = ['LEFT_BRACKET'];
-Horatio.Wordlists.right_bracket     = ['RIGHT_BRACKET'];
-Horatio.Wordlists.third_person_possessive = [
-  'his',
-  'her',
-  'its',
-  'their'
-];
-Horatio.Wordlists.unary_operators = [
-  'the square of',
-  'the cube of',
-  'the square root of',
-  'the factorial of',
-  'twice'
-];
+Horatio.Compiler.prototype = {
+  
+  /**
+   * Compile an SPL program
+   * @param {string} input - The input SPL program
+   */
+  compile: function(input) {
+    // Parse input
+    var parser = new Horatio.Parser(input);
+    
+    // Generate AST
+    var ast = parser.parse();
+    
+    // Semantic Check
+    var checker = new Horatio.Checker();
+    checker.check(ast);
+    
+    // Code Generation
+    var encoder = new Horatio.Encoder();
+    var program = encoder.encode(ast);
+    
+    return program;
+  }
+  
+};

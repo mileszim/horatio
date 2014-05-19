@@ -17,6 +17,7 @@ Horatio.Encoder.prototype = new Horatio.Generator();
  */
 Horatio.Encoder.prototype.encode = function(program) {
   program.visit(this, null);
+  return this.program;
 };
 
 
