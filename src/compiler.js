@@ -23,6 +23,9 @@ Horatio.Compiler.prototype = {
     var checker = new Horatio.Checker();
     checker.check(AST);
     
+    // Code Generation
+    var encoder = new Horatio.Encoder();
+    
     return AST;
   }
   
