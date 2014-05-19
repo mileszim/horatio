@@ -1,4 +1,4 @@
-/*! horatio - v0.0.0 - 2014-05-18
+/*! horatio - v0.0.0 - 2014-05-19
 * https://github.com/mileszim/horatio
 * Copyright (c) 2014 ; Licensed  */
 /**
@@ -79,9 +79,9 @@ Horatio.Token = function(kind, sequence) {
 /** @static */ Horatio.Token.RIGHT_BRACKET         = 98;
   
 /** @static */ Horatio.Token.COMMENT               = 110;
-Horatio.Visitor = function() {};
+Horatio.Semantics = function() {};
 
-Horatio.Visitor.prototype = {
+Horatio.Semantics.prototype = {
   
   /**
    * Program
@@ -137,10 +137,7 @@ Horatio.Visitor.prototype = {
     if (this.characters[c.sequence]) {
       throw new Error("Semantic Error - Character already defined.");
     } else {
-      this.characters[c.sequence] = {
-        on_stage: false,
-        value_depth: 0
-      };
+      this.characters[c.sequence] = false;
     }
     
     declaration.comment.visit(this, arg);
@@ -254,8 +251,8 @@ Horatio.Visitor.prototype = {
    */
   visitStage: function(stage, arg) {
     if (stage.start_presence) stage.start_presence.visit(this, arg);
-    if (stage.end_presence) stage.end_presence.visit(this, arg);
     if (stage.dialogue) stage.dialogue.visit(this, arg);
+    if (stage.end_presence) stage.end_presence.visit(this, arg);
     return null;
   },
   
@@ -265,14 +262,13 @@ Horatio.Visitor.prototype = {
    * Enter
    */
   visitEnter: function(presence, arg) {
-    
     if (!presence.character_1 && !presence.character_2) {
       throw new Error("Semantic Error - No characters entering.");
     }
     
-    var c1 = presence.character_1.visit(this, {declared: true, on_stage: false});  
+    var c1 = presence.character_1.visit(this, {declared: true, on_stage: false});
     this.toggleStage(c1.sequence);
-
+    
     if (presence.character_2) {
       var c2 = presence.character_2.visit(this, {declared: true, on_stage: false});
       
@@ -282,7 +278,7 @@ Horatio.Visitor.prototype = {
       
       this.toggleStage(c2.sequence);
     }
-    
+        
     return null;
   },
   
@@ -354,7 +350,7 @@ Horatio.Visitor.prototype = {
    */
   visitLine: function(line, arg) {
     var self = this;
-    
+
     var c = line.character.visit(this, {declared: true, on_stage: true});
     
     if (line.sentences.length === 0) {
@@ -2055,21 +2051,26 @@ Horatio.Compiler.prototype = {
   compile: function(input) {
     // Parse input
     var parser = new Horatio.Parser(input);
+    
+    // Generate AST
     var AST = parser.parse();
     
+    // Semantic Check
+    var checker = new Horatio.Checker();
+    checker.check(AST);
     
     return AST;
   }
   
 };
 Horatio.Checker = function() {
-  Horatio.Visitor.call(this);
+  //Horatio.Visitor.call(this);
   this.characters = {};
   this.parts = {};
 };
 
 // inherit visitor prototype
-Horatio.Checker.prototype = new Horatio.Visitor();
+Horatio.Checker.prototype = new Horatio.Semantics();
 
 
 
@@ -2094,8 +2095,8 @@ Horatio.Checker.prototype.declared = function(character) {
  * Character on stage
  */
 Horatio.Checker.prototype.onStage = function(character) {
-  if (this.declared(character) && this.characters[character].on_stage === true) {
-    return true;
+  if (this.declared(character)) {
+    return this.characters[character];
   } else {
     return false;
   }
@@ -2107,7 +2108,7 @@ Horatio.Checker.prototype.onStage = function(character) {
  */
 Horatio.Checker.prototype.toggleStage = function(character) {
   if (this.declared(character)) {
-    this.characters[character].on_stage = !this.characters[character].on_stage;
+    this.characters[character] = !this.characters[character];
   }
 };
 
@@ -2117,7 +2118,7 @@ Horatio.Checker.prototype.toggleStage = function(character) {
  */
 Horatio.Checker.prototype.exeuntStage = function() {
   for (var c in this.characters) {
-    this.characters[c].on_stage = false;
+    this.characters[c] = false;
   }
 };
 
@@ -2130,7 +2131,7 @@ Horatio.Checker.prototype.sceneExists = function(act, scene) {
   if (!this.parts[act]) {
     return false;
   } else {
-    return (this.parts[act].indexOf(scene) === -1);
+    return (this.parts[act].indexOf(scene) !== -1);
   }
 };
 Horatio.Wordlists.act   = ['Act'];

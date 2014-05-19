@@ -1,9 +1,9 @@
 /**
- * Horatio Visitor
+ * Horatio Semantics Visitor
  */
-Horatio.Visitor = function() {};
+Horatio.Semantics = function() {};
 
-Horatio.Visitor.prototype = {
+Horatio.Semantics.prototype = {
   
   /**
    * Program
@@ -59,10 +59,7 @@ Horatio.Visitor.prototype = {
     if (this.characters[c.sequence]) {
       throw new Error("Semantic Error - Character already defined.");
     } else {
-      this.characters[c.sequence] = {
-        on_stage: false,
-        value_depth: 0
-      };
+      this.characters[c.sequence] = false;
     }
     
     declaration.comment.visit(this, arg);
@@ -176,8 +173,8 @@ Horatio.Visitor.prototype = {
    */
   visitStage: function(stage, arg) {
     if (stage.start_presence) stage.start_presence.visit(this, arg);
-    if (stage.end_presence) stage.end_presence.visit(this, arg);
     if (stage.dialogue) stage.dialogue.visit(this, arg);
+    if (stage.end_presence) stage.end_presence.visit(this, arg);
     return null;
   },
   
@@ -187,14 +184,13 @@ Horatio.Visitor.prototype = {
    * Enter
    */
   visitEnter: function(presence, arg) {
-    
     if (!presence.character_1 && !presence.character_2) {
       throw new Error("Semantic Error - No characters entering.");
     }
     
-    var c1 = presence.character_1.visit(this, {declared: true, on_stage: false});  
+    var c1 = presence.character_1.visit(this, {declared: true, on_stage: false});
     this.toggleStage(c1.sequence);
-
+    
     if (presence.character_2) {
       var c2 = presence.character_2.visit(this, {declared: true, on_stage: false});
       
@@ -204,7 +200,7 @@ Horatio.Visitor.prototype = {
       
       this.toggleStage(c2.sequence);
     }
-    
+        
     return null;
   },
   
@@ -276,7 +272,7 @@ Horatio.Visitor.prototype = {
    */
   visitLine: function(line, arg) {
     var self = this;
-    
+
     var c = line.character.visit(this, {declared: true, on_stage: true});
     
     if (line.sentences.length === 0) {

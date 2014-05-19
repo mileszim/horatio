@@ -2,13 +2,13 @@
  * Horatio Checker
  */
 Horatio.Checker = function() {
-  Horatio.Visitor.call(this);
+  //Horatio.Visitor.call(this);
   this.characters = {};
   this.parts = {};
 };
 
 // inherit visitor prototype
-Horatio.Checker.prototype = new Horatio.Visitor();
+Horatio.Checker.prototype = new Horatio.Semantics();
 
 
 
@@ -33,8 +33,8 @@ Horatio.Checker.prototype.declared = function(character) {
  * Character on stage
  */
 Horatio.Checker.prototype.onStage = function(character) {
-  if (this.declared(character) && this.characters[character].on_stage === true) {
-    return true;
+  if (this.declared(character)) {
+    return this.characters[character];
   } else {
     return false;
   }
@@ -46,7 +46,7 @@ Horatio.Checker.prototype.onStage = function(character) {
  */
 Horatio.Checker.prototype.toggleStage = function(character) {
   if (this.declared(character)) {
-    this.characters[character].on_stage = !this.characters[character].on_stage;
+    this.characters[character] = !this.characters[character];
   }
 };
 
@@ -56,7 +56,7 @@ Horatio.Checker.prototype.toggleStage = function(character) {
  */
 Horatio.Checker.prototype.exeuntStage = function() {
   for (var c in this.characters) {
-    this.characters[c].on_stage = false;
+    this.characters[c] = false;
   }
 };
 
@@ -69,6 +69,6 @@ Horatio.Checker.prototype.sceneExists = function(act, scene) {
   if (!this.parts[act]) {
     return false;
   } else {
-    return (this.parts[act].indexOf(scene) === -1);
+    return (this.parts[act].indexOf(scene) !== -1);
   }
 };

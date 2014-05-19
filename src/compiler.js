@@ -15,8 +15,13 @@ Horatio.Compiler.prototype = {
   compile: function(input) {
     // Parse input
     var parser = new Horatio.Parser(input);
+    
+    // Generate AST
     var AST = parser.parse();
     
+    // Semantic Check
+    var checker = new Horatio.Checker();
+    checker.check(AST);
     
     return AST;
   }

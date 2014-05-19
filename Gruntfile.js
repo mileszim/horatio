@@ -21,7 +21,7 @@ module.exports = function(grunt) {
         	'src/horatio.js',
           'src/wordlists.js',
         	'src/token.js',
-          'src/visitor.js',
+          'src/semantics.js',
           'src/ast.js',
           'src/tokenizer.js',
           'src/parser.js',
