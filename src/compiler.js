@@ -17,16 +17,17 @@ Horatio.Compiler.prototype = {
     var parser = new Horatio.Parser(input);
     
     // Generate AST
-    var AST = parser.parse();
+    var ast = parser.parse();
     
     // Semantic Check
     var checker = new Horatio.Checker();
-    checker.check(AST);
+    checker.check(ast);
     
     // Code Generation
     var encoder = new Horatio.Encoder();
+    encoder.encode(ast);
     
-    return AST;
+    return ast;
   }
   
 };

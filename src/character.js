@@ -1,13 +1,22 @@
 /**
  * Horatio Program Character
  */
-Horatio.Character = function() {
+Horatio.Character = function(name) {
+  this._name = name;
   this._value  = null;
   this._memory = [];
 };
 
 
 Horatio.Character.prototype = {
+  
+  /**
+   * @returns {string}
+   */
+  name: function() {
+    return this._name;
+  },
+  
   
   /**
    * @returns {number|null}

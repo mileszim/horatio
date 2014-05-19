@@ -195,7 +195,8 @@ Horatio.AST = {
    * @memberof Horatio.AST
    * @constructor
    */
-  AssignmentSentence: function(value) {
+  AssignmentSentence: function(be, value) {
+    this.be = be;
     this.value = value;
     
     // visit
@@ -208,7 +209,8 @@ Horatio.AST = {
    * @memberof Horatio.AST
    * @constructor
    */
-  QuestionSentence: function(comparison, value) {
+  QuestionSentence: function(be, comparison, value) {
+    this.be         = be;
     this.comparison = comparison;
     this.value      = value;
     
@@ -640,6 +642,32 @@ Horatio.AST = {
     // visit
     this.visit = function(visitor, arg) {
       return visitor.visitNegativeComparative(this, arg);
+    };
+  },
+  
+  /**
+   * @memberof Horatio.AST
+   * @constructor
+   */
+  Be: function(sequence) {
+    this.sequence = sequence;
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitBe(this, arg);
+    };
+  },
+  
+  /**
+   * @memberof Horatio.AST
+   * @constructor
+   */
+  BeComparative: function(sequence) {
+    this.sequence = sequence;
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitBeComparative(this, arg);
     };
   }
   

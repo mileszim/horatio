@@ -79,13 +79,22 @@ Horatio.Token = function(kind, sequence) {
 /** @static */ Horatio.Token.RIGHT_BRACKET         = 98;
   
 /** @static */ Horatio.Token.COMMENT               = 110;
-Horatio.Character = function() {
+Horatio.Character = function(name) {
+  this._name = name;
   this._value  = null;
   this._memory = [];
 };
 
 
 Horatio.Character.prototype = {
+  
+  /**
+   * @returns {string}
+   */
+  name: function() {
+    return this._name;
+  },
+  
   
   /**
    * @returns {number|null}
@@ -143,28 +152,86 @@ Horatio.Character.prototype = {
 Horatio.Program = function() {
   this.characters = {};
   this.parts = [];
+  this.stage = [];
 };
 
 
 Horatio.Program.prototype = {
   
   run: function() {
-    console.log('run');
+    var self = this;
+    
+    for (var a = 0; a < self.parts.length; a++) {
+      for (var s = 0; s < self.parts[a].length; s++) {
+        for (var f = 0; f < self.parts[a][s].length; f++) {
+          self.parts[a][s][f].call(self);
+        }
+      }
+    }
+    
+    return 0;
+  },
+  
+  
+  runSub: function(act, start_scene, end_scene) {
+    var self = this;
+    
+    for (var s = start_scene; s < end_scene; s++) {
+      for (var f = 0; f < self.parts[act][s].length; f++) {
+        self.parts[act][s][f].call(self);
+      }
+    }
+    
+    return 0;
   },
   
   
   declareCharacter: function(character_name) {
-    this.characters[character_name] = new Horatio.Character();
+    this.characters[character_name] = new Horatio.Character(character_name);
   },
   
   
   newAct: function() {
     this.parts.push([]);
+    return this.parts.length-1;
   },
   
   
   newScene: function(act) {
     this.parts[act].push([]);
+    return this.parts[act].length-1;
+  },
+  
+  
+  enterStage: function(character_name) {
+    var c = this.characters[character_name];
+    this.stage.push(c);
+  },
+  
+  
+  exitStage: function(character_name) {
+    var c = this.characters[character_name];
+    this.stage.splice(this.stage.indexOf(c), 1);
+  },
+  
+  
+  exeuntStage: function() {
+    this.stage = [];
+  },
+  
+  
+  interlocutor: function(character_name) {
+    var c = this.characters[character_name];
+    var i = this.stage.filter(function(n) { return n === c; });
+    return i[0];
+  },
+  
+  
+  addCommand: function(act, scene, command) {
+    console.log(command);
+    this.parts[act][scene].push(command);
+    
+    var self = this;
   }
   
 };
@@ -474,6 +541,7 @@ Horatio.Semantics.prototype = {
    * Assignment Sentence
    */
   visitAssignmentSentence: function(assignment, arg) {
+    assignment.be.visit(this, arg);
     assignment.value.visit(this, arg);
     
     return null;
@@ -485,6 +553,7 @@ Horatio.Semantics.prototype = {
    * Question Sentence
    */
   visitQuestionSentence: function(question, arg) {
+    question.be.visit(this, arg);
     question.comparison.visit(this, arg);
     question.value.visit(this, arg);
     
@@ -825,6 +894,26 @@ Horatio.Semantics.prototype = {
   visitNegativeComparative: function(comparative, arg) {
     
     return null;
+  },
+  
+  
+  
+  /**
+   * Be
+   */
+  visitBe: function(be, arg) {
+    
+    return null;
+  },
+  
+  
+  
+  /**
+   * Be Comparative
+   */
+  visitBeComparative: function(be, arg) {
+    
+    return null;
   }
   
 };
@@ -838,41 +927,17 @@ Horatio.Generator.prototype = {
   visitProgram: function(program, arg) {    
     var self = this;
     
-    // comment
-    program.comment.visit(this, null);
-    
     // declarations
-    if (program.declarations.length > 0) {
-      program.declarations.forEach(function(declaration) {
-        declaration.visit(self, null);
-      });
-    } else {
-      throw new Error("Semantic Error - No characters declared.");
-    }
+    program.declarations.forEach(function(declaration) {
+      declaration.visit(self, null);
+    });
     
     // parts
-    if (program.parts.length > 0) {
-      program.parts.forEach(function(part) {
-        part.visit(self, null);
-      });
-    } else {
-      throw new Error("Semantic Error - No parts in program.");
-    }
+    program.parts.forEach(function(part) {
+      part.visit(self, null);
+    });
     
     return null;
-  },
-  
-  
-  
-  /**
-   * Comment
-   */
-  visitComment: function(comment, arg) {
-    if (comment.sequence) {
-      return null;
-    } else {
-      throw new Error("Semantic Error - Comment malformed.");
-    }
   },
   
   
@@ -881,57 +946,21 @@ Horatio.Generator.prototype = {
    * Declaration
    */
   visitDeclaration: function(declaration, arg) {
-    var c = declaration.character.visit(this, arg);
-    
-    if (this.characters[c.sequence]) {
-      throw new Error("Semantic Error - Character already defined.");
-    } else {
-      this.characters[c.sequence] = false;
-    }
-    
-    declaration.comment.visit(this, arg);
+    var c = declaration.character.sequence;
+    this.program.declareCharacter(c);
+
     return null;
   },
   
   
   
   /**
-   * Character
+   * Numeral
    */
-  visitCharacter: function(character, arg) {
-    var self = this;
+  visitNumeral: function(numeral, arg) {
+    var n = this.numeralIndex(numeral.sequence);
     
-    if (!character.sequence) {
-      throw new Error("Semantic Error - Character undefined.");
-    }
-    
-    if (!(character instanceof Horatio.AST.Character)) {
-      throw new Error("Semantic Error - Not of type Character.");
-    }
-    
-    // Declared flag
-    if (arg && arg.declared === true && !this.declared(character.sequence)) {
-      throw new Error("Semantic Error - Character Undeclared");
-    }
-    
-    // Present on stage flag
-    if (arg && arg.hasOwnProperty('on_stage')) {
-      switch (arg.on_stage) {
-      case true:
-        if (!this.onStage(character.sequence)) {
-          throw new Error("Semantic Error - Character not on stage.");
-        }
-        break;
-      
-      case false:
-        if (this.onStage(character.sequence)) {
-          throw new Error("Semantic Error - Character already on stage.");
-        }
-        break;
-      }
-    }
-    
-    return character;
+    return n;
   },
   
   
@@ -943,34 +972,11 @@ Horatio.Generator.prototype = {
     var self = this;
     
     var n = part.numeral.visit(this, arg);
-    part.comment.visit(this, arg);
+    var act = this.program.newAct();
+    part.subparts.forEach(function(subpart) {
+      subpart.visit(self, {act: act});
+    });
     
-    if (this.parts[n]) {
-      throw new Error("Semantic Error - Act already defined.");
-    } else
-    if (part.subparts.length === 0) {
-      throw new Error("Semantic Error - No subparts defined.");
-    } else {
-      this.parts[n] = [];
-      part.subparts.forEach(function(subpart) {
-        subpart.visit(self, {act: n});
-      });
-    }
-    
-    return null;
-  },
-  
-  
-  
-  /**
-   * Numeral
-   */
-  visitNumeral: function(numeral, arg) {
-    if (numeral.sequence) {
-      return numeral.sequence;
-    } else {
-      throw new Error("Semantic Error - Numeral malformed.");
-    }
     return null;
   },
   
@@ -981,14 +987,8 @@ Horatio.Generator.prototype = {
    */
   visitSubpart: function(subpart, arg) {
     var n = subpart.numeral.visit(this, arg);
-    
-    if (this.sceneExists(arg.act, n)) {
-      throw new Error("Semantic Error - Scene already defined.");
-    } else {
-      this.parts[arg.act].push(n);
-      subpart.comment.visit(this, arg);
-      subpart.stage.visit(this, {act: arg.act, scene: n});
-    }
+    var scene = this.program.newScene(arg.act);
+    subpart.stage.visit(this, {act: arg.act, scene: scene});
     
     return null;
   },
@@ -1002,6 +1002,7 @@ Horatio.Generator.prototype = {
     if (stage.start_presence) stage.start_presence.visit(this, arg);
     if (stage.dialogue) stage.dialogue.visit(this, arg);
     if (stage.end_presence) stage.end_presence.visit(this, arg);
+    
     return null;
   },
   
@@ -1011,21 +1012,21 @@ Horatio.Generator.prototype = {
    * Enter
    */
   visitEnter: function(presence, arg) {
-    if (!presence.character_1 && !presence.character_2) {
-      throw new Error("Semantic Error - No characters entering.");
-    }
+    var Command = function(cname) {
+      var c = cname;
+      return function() {
+        this.enterStage(c);
+      };
+    };
     
-    var c1 = presence.character_1.visit(this, {declared: true, on_stage: false});
-    this.toggleStage(c1.sequence);
+    var c1 = presence.character_1.sequence;
+        
+    this.program.addCommand(arg.act, arg.scene, new Command(c1));
     
     if (presence.character_2) {
-      var c2 = presence.character_2.visit(this, {declared: true, on_stage: false});
+      var c2 = presence.character_2.sequence;
       
-      if (c1.sequence === c2.sequence) {
-        throw new Error("Semantic Error - Same character entering twice in same statement.");
-      }
-      
-      this.toggleStage(c2.sequence);
+      this.program.addCommand(arg.act, arg.scene, new Command(c2));
     }
         
     return null;
@@ -1037,12 +1038,16 @@ Horatio.Generator.prototype = {
    * Exit
    */
   visitExit: function(presence, arg) {
-    if (!presence.character) {
-      throw new Error("Semantic Error - No character exiting.");
-    }
+    var Command = function(cname) {
+      var c = cname;
+      return function() {
+        this.exitStage(c);
+      };
+    };
     
-    var c = presence.character.visit(this, {declared: true, on_stage: true});
-    this.toggleStage(c.sequence);
+    var c = presence.character.sequence;
+    
+    this.program.addCommand(arg.act, arg.scene, new Command(c));
     
     return null;
   },
@@ -1053,28 +1058,13 @@ Horatio.Generator.prototype = {
    * Exeunt
    */
   visitExeunt: function(presence, arg) {
-    // - No characters on stage
-    // x Only 1 character exeunting
-    // x characters are the same
+    var Command = function() {
+      return function() {
+        this.exeuntStage();
+      };
+    };
     
-    if (presence.character_1 ? !presence.character_2 : presence.character_2) {
-      throw new Error("Semantic Error - Either 2 or no characters can be defined, not one.");
-    }
-    
-    if (presence.character_1 && presence.character_2) {
-      var c1 = presence.character_1.visit(this, {declared: true, on_stage: true});
-      var c2 = presence.character_2.visit(this, {declared: true, on_stage: true});
-      
-      if (c1.sequence === c2.sequence) {
-        throw new Error("Semantic Error - Characters are the same.");
-      }
-      
-      this.toggleStage(c1.sequence);
-      this.toggleStage(c2.sequence);
-      
-    } else {
-      this.exeuntStage();  
-    }
+    this.program.addCommand(arg.act, arg.scene, new Command());
     
     return null;
   },
@@ -1100,15 +1090,12 @@ Horatio.Generator.prototype = {
   visitLine: function(line, arg) {
     var self = this;
 
-    var c = line.character.visit(this, {declared: true, on_stage: true});
-    
-    if (line.sentences.length === 0) {
-      throw new Error("Semantic Error - Line cannot have no sentences.");
-    } else {
-      line.sentences.forEach(function(sentence) {
-        sentence.visit(self, arg);
-      });
-    }
+    var c = line.character.sequence;
+    arg.character = c;
+        
+    line.sentences.forEach(function(sentence) {
+      sentence.visit(self, arg);
+    });
     
     return null;
   },
@@ -1121,10 +1108,6 @@ Horatio.Generator.prototype = {
   visitGoto: function(goto, arg) {
     var n = goto.numeral.visit(this, arg);
     
-    if (!this.sceneExists(arg.act, arg.scene)) {
-      throw new Error("Semantic Error - Scene specified by Goto does not exist in this act.");
-    }
-    
     return null;
   },
   
@@ -1134,7 +1117,20 @@ Horatio.Generator.prototype = {
    * Assignment Sentence
    */
   visitAssignmentSentence: function(assignment, arg) {
-    assignment.value.visit(this, arg);
+    var Command = function(target, value) {
+      var t = target;
+      var v = value;
+      
+      return function() {
+        var val = v();
+        this.characters[t].setValue(val);
+      };
+    };
+    
+    var target = assignment.be.visit(this, arg);
+    var value = assignment.value.visit(this, arg);
+    
+    this.program.addCommand(arg.act, arg.command, new Command(target, value));
     
     return null;
   },
@@ -1145,8 +1141,23 @@ Horatio.Generator.prototype = {
    * Question Sentence
    */
   visitQuestionSentence: function(question, arg) {
-    question.comparison.visit(this, arg);
-    question.value.visit(this, arg);
+    var Command = function(be, comparative, value) {
+      var b = be;
+      var c = comparative;
+      var v = value;
+      
+      return function() {
+        var a = this.characters[b].value();
+        var val = v();
+        var result = c(a,val);
+      };
+    };
+    
+    var be          = question.be.visit(this, arg);
+    var comparative = question.comparison.visit(this, arg);
+    var value       = question.value.visit(this, arg);
+    
+    this.program.addCommand(arg.act, arg.scene, new Command(be, comparative, value));
     
     return null;
   },
@@ -1219,7 +1230,19 @@ Horatio.Generator.prototype = {
    * Remember Sentence
    */
   visitRememberSentence: function(remember, arg) {
+    var Command = function(pronoun) {
+      var speaking = arg.character;
+      var p = pronoun;
+      
+      return function() {
+        var value = this.characters[p].value();
+        this.characters[speaking].remember(value);
+      };
+    };
+    
     var p = remember.pronoun.visit(this, arg);
+    
+    this.program.addCommand(arg.act, arg.scene, new Command(p));
     
     return null;
   },
@@ -1230,7 +1253,17 @@ Horatio.Generator.prototype = {
    * Recall Sentence
    */
   visitRecallSentence: function(recall, arg) {
-    recall.comment.visit(this, arg);
+    var Command = function() {
+      var speaking = arg.character;
+      
+      return function() {
+        this.interlocutor(speaking).recall();
+      };
+    };
+        
+    this.program.addCommand(arg.act, arg.scene, new Command());
+    
+    return null;
   },
   
   
@@ -1239,25 +1272,17 @@ Horatio.Generator.prototype = {
    * Positive Constant Value
    */
   visitPositiveConstantValue: function(pc_val, arg) {
-    var self = this;
+    var Command = function(num_adjectives) {
+      var exp = num_adjectives;
+      
+      return function() {
+        return Math.pow(2, exp);
+      };
+    };
     
-    var n;
-    if (!(pc_val.noun instanceof Horatio.AST.PositiveNoun) || !(pc_val.noun instanceof Horatio.AST.NeutralNoun)) {
-      throw new Error("Semantic Error - Positive Constants must use a positive or neutral noun");
-    } else {
-      n = pc_val.noun.visit(this, arg);
-    }
-    pc_val.noun.visit(this, arg);
-    pc_val.adjectives.forEach(function(adjective) {
-      if (!(adjective instanceof Horatio.AST.PositiveAdjective) || !(adjective instanceof Horatio.AST.NeutralAdjective)) {
-        throw new Error("Semantic Error - Positive Constants must use positive of neutral adjectives.");
-      } else {
-        adjective.visit(this, arg);
-      }
-    });
+    var adjectives = pc_val.adjectives;
     
-    //return Math.pow(2, pc_val.adjectives.length);
-    return 0; // placeholder
+    return new Command(adjectives.length);
   },
   
   
@@ -1266,25 +1291,17 @@ Horatio.Generator.prototype = {
    * Negative Constant Value
    */
   visitNegativeConstantValue: function(nc_val, arg) {
-    var self = this;
+    var Command = function(num_adjectives) {
+      var exp = num_adjectives;
+      
+      return function() {
+        return (-1*Math.pow(2, exp));
+      };
+    };
     
-    var n;
-    if (!(nc_val.noun instanceof Horatio.AST.NegativeNoun) || !(nc_val.noun instanceof Horatio.AST.NeutralNoun)) {
-      throw new Error("Semantic Error - Negative Constants must use a negative or neutral noun");
-    } else {
-      n = nc_val.noun.visit(this, arg);
-    }
-    nc_val.noun.visit(this, arg);
-    nc_val.adjectives.forEach(function(adjective) {
-      if (!(adjective instanceof Horatio.AST.NegativeAdjective) || !(adjective instanceof Horatio.AST.NeutralAdjective)) {
-        throw new Error("Semantic Error - Negative Constants must use negative of neutral adjectives.");
-      } else {
-        adjective.visit(this, arg);
-      }
-    });
+    var adjectives = nc_val.adjectives;
     
-    //return (-1 * Math.pow(2, nc_val.adjectives.length));
-    return 0; // placeholder
+    return new Command(adjectives.length);
   },
   
   
@@ -1293,10 +1310,20 @@ Horatio.Generator.prototype = {
    * Unary Operation Value
    */
   visitUnaryOperationValue: function(unary, arg) {
+    var Command = function(operator, value) {
+      var o = operator;
+      var v = value;
+      
+      return function() {
+        var val = v();
+        return o(val);
+      };
+    };
+    
     var o = unary.operator.visit(this, arg);
     var v = unary.value.visit(this, arg);
     
-    return 0; // placeholder
+    return new Command(o,v);
   },
   
   
@@ -1305,11 +1332,23 @@ Horatio.Generator.prototype = {
    * Arithmetic Operation Value
    */
   visitArithmeticOperationValue: function(arithmetic, arg) {
+    var Command = function(operator, value1, value2) {
+      var o = operator;
+      var v1 = value1;
+      var v2 = value2;
+      
+      return function() {
+        var val1 = v1();
+        var val2 = v2();
+        return o(val1, val2);
+      };
+    };
+    
     var o = arithmetic.operator.visit(this, arg);
     var v1 = arithmetic.value_1.visit(this, arg);
     var v2 = arithmetic.value_2.visit(this, arg);
     
-    return 0; //placeholder
+    return new Command(o, v1, v2);
   },
   
   
@@ -1329,9 +1368,13 @@ Horatio.Generator.prototype = {
    * Greater Than Comparison
    */
   visitGreaterThanComparison: function(comparison, arg) {
-    var c = comparison.comparative.visit(this, arg);
+    var Command = function() {
+      return function(a, b) {
+        return (a > b);
+      };
+    };
     
-    return c;
+    return new Command();
   },
   
   
@@ -1340,9 +1383,13 @@ Horatio.Generator.prototype = {
    * Lesser Than Comparison
    */
   visitLesserThanComparison: function(comparison, arg) {
-    var c = comparison.comparative.visit(this, arg);
+    var Command = function() {
+      return function(a, b) {
+        return (a < b);
+      };
+    };
     
-    return null;
+    return new Command();
   },
   
   
@@ -1351,9 +1398,13 @@ Horatio.Generator.prototype = {
    * Equal To Comparison
    */
   visitEqualToComparison: function(comparison, arg) {
-    comparison.adjective.visit(this, arg);
+    var Command = function() {
+      return function(a, b) {
+        return (a === b);
+      };
+    };
     
-    return null;
+    return new Command();
   },
   
   
@@ -1362,9 +1413,17 @@ Horatio.Generator.prototype = {
    * Inverse Comparison
    */
   visitInverseComparison: function(comparison, arg) {
+    var Command = function(comparison) {
+      var c = comparison;
+      
+      return function(a, b) {
+        return (!c(a,b));
+      };
+    };
+    
     var c = comparison.comparison.visit(this, arg);
     
-    return c;
+    return new Command(c);
   },
   
   
@@ -1373,8 +1432,12 @@ Horatio.Generator.prototype = {
    * First Person Pronoun
    */
   visitFirstPersonPronoun: function(fpp, arg) {
+    var Command = function() {
+      var speaking = arg.character;
+      return speaking;
+    };
     
-    return null;
+    return new Command();
   },
   
   
@@ -1383,68 +1446,13 @@ Horatio.Generator.prototype = {
    * Second Person Pronoun
    */
   visitSecondPersonPronoun: function(spp, arg) {
+    var Command = function() {
+      var speaking = arg.character;
+      var target = this.program.interlocutor(speaking).name();
+      return target;
+    };
     
-    return null;
-  },
-  
-  
-  
-  /**
-   * Positive Noun
-   */
-  visitPositiveNoun: function(noun, arg) {
-    
-    return null;
-  },
-  
-  
-  
-  /**
-   * Neutral Noun
-   */
-  visitNeutralNoun: function(noun, arg) {
-    
-    return null;
-  },
-  
-  
-  
-  /**
-   * Negative Noun
-   */
-  visitNegativeNoun: function(noun, arg) {
-    
-    return null;
-  },
-  
-  
-  
-  /**
-   * Positive Adjective
-   */
-  visitPositiveAdjective: function(adjective, arg) {
-    
-    return null;
-  },
-  
-  
-  
-  /**
-   * Neutral Adjective
-   */
-  visitNeutralAdjective: function(adjective, arg) {
-    
-    return null;
-  },
-  
-  
-  
-  /**
-   * Negative Adjective
-   */
-  visitNegativeAdjective: function(adjective, arg) {
-    
-    return null;
+    return new Command();
   },
   
   
@@ -1453,8 +1461,43 @@ Horatio.Generator.prototype = {
    * Unary Operator
    */
   visitUnaryOperator: function(operator, arg) {
+    var Command = function(operator) {
+      var o = operator;
+      
+      switch(o) {
+      case "the square of":
+        return function(v) {
+          return Math.pow(v,2);
+        };
+      case "the cube of":
+        return function(v) {
+          return Math.pow(v,3);
+        };
+      case "the square root of":
+        return function(v) {
+          var sign = (v < 0) ? -1 : 1;
+          return sign*Math.floor(Math.sqrt(Math.abs(v)));
+        };
+      case "the factorial of":
+        return function(v) {
+          var sign = (v < 0) ? -1 : 1;
+          var num = Math.abs(v);
+          var fv = 1;
+          for (var i = 2; i<=num; i++) {
+            fv = fv*i;
+          }
+          return sign*fv;
+        };
+      case "twice":
+        return function(v) {
+          return 2*v;
+        };
+      }
+    };
     
-    return null;
+    var o = operator.sequence;
+    
+    return new Command(o);
   },
   
   
@@ -1463,28 +1506,36 @@ Horatio.Generator.prototype = {
    * Arithmetic Operator
    */
   visitArithmeticOperator: function(operator, arg) {
+    var Command = function(operator) {
+      var o = operator;
+      
+      switch(o) {
+      case "the sum of":
+        return function(a,b) {
+          return a+b;
+        };
+      case "the difference between":
+        return function(a,b) {
+          return a-b;
+        };
+      case "the product of":
+        return function(a,b) {
+          return a*b;
+        };
+      case "the quotient between":
+        return function(a,b) {
+          return Math.round(a/b);
+        };
+      case "the remainder of the quotient between":
+        return function(a,b) {
+          return a%b;
+        };
+      }
+    };
     
-    return null;
-  },
-  
-  
-  
-  /**
-   * Positive Comparative
-   */
-  visitPositiveComparative: function(comparative, arg) {
+    var o = operator.sequence;
     
-    return null;
-  },
-  
-  
-  
-  /**
-   * Negative Comparative
-   */
-  visitNegativeComparative: function(comparative, arg) {
-    
-    return null;
+    return new Command(o);
   }
   
 };
@@ -1680,7 +1731,8 @@ Horatio.AST = {
    * @memberof Horatio.AST
    * @constructor
    */
-  AssignmentSentence: function(value) {
+  AssignmentSentence: function(be, value) {
+    this.be = be;
     this.value = value;
     
     // visit
@@ -1693,7 +1745,8 @@ Horatio.AST = {
    * @memberof Horatio.AST
    * @constructor
    */
-  QuestionSentence: function(comparison, value) {
+  QuestionSentence: function(be, comparison, value) {
+    this.be         = be;
     this.comparison = comparison;
     this.value      = value;
     
@@ -2126,6 +2179,32 @@ Horatio.AST = {
     this.visit = function(visitor, arg) {
       return visitor.visitNegativeComparative(this, arg);
     };
+  },
+  
+  /**
+   * @memberof Horatio.AST
+   * @constructor
+   */
+  Be: function(sequence) {
+    this.sequence = sequence;
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitBe(this, arg);
+    };
+  },
+  
+  /**
+   * @memberof Horatio.AST
+   * @constructor
+   */
+  BeComparative: function(sequence) {
+    this.sequence = sequence;
+    
+    // visit
+    this.visit = function(visitor, arg) {
+      return visitor.visitBeComparative(this, arg);
+    };
   }
   
 };
@@ -2520,15 +2599,25 @@ Horatio.Parser.prototype = {
   },
   
   
+  parseBe: function() {
+    var be;
+    if (this.currentToken.kind===Horatio.Token.BE) {
+      be = new Horatio.AST.Be(this.currentToken.sequence);
+      this.acceptIt();
+    }
+    return be;
+  },
+  
+  
   parseAssignment: function() {
-    this.accept(Horatio.Token.BE);
+    var be = this.parseBe();
     if (this.currentToken.kind===Horatio.Token.AS) {
       this.acceptIt();
       this.parseAdjective();
       this.accept(Horatio.Token.AS);
     }
     var value = this.parseValue();
-    return new Horatio.AST.AssignmentSentence(value);
+    return new Horatio.AST.AssignmentSentence(be, value);
   },
   
   
@@ -2649,10 +2738,19 @@ Horatio.Parser.prototype = {
   
   
   parseQuestion: function() {
-    this.accept(Horatio.Token.BE_COMPARATIVE);
+    var be         = this.parseBeComparative();
     var comparison = this.parseComparative();
     var value      = this.parseValue();
     return new Horatio.AST.QuestionSentence(comparison, value);
+  },
+  
+  
+  parseBeComparative: function() {
+    var be_comparative;
+    if (this.currentToken.kind===Horatio.Token.BE_COMPARATIVE) {
+      be_comparative = new Horatio.AST.BeComparative(this.currentToken.sequence);
+    }
+    return be_comparative;
   },
   
   
@@ -2802,16 +2900,17 @@ Horatio.Compiler.prototype = {
     var parser = new Horatio.Parser(input);
     
     // Generate AST
-    var AST = parser.parse();
+    var ast = parser.parse();
     
     // Semantic Check
     var checker = new Horatio.Checker();
-    checker.check(AST);
+    checker.check(ast);
     
     // Code Generation
     var encoder = new Horatio.Encoder();
+    encoder.encode(ast);
     
-    return AST;
+    return ast;
   }
   
 };
@@ -2888,6 +2987,8 @@ Horatio.Checker.prototype.sceneExists = function(act, scene) {
 };
 Horatio.Encoder = function() {
   //Horatio.Visitor.call(this);
+  
+  this.program = new Horatio.Program();
 };
 
 // inherit visitor prototype
@@ -2900,6 +3001,15 @@ Horatio.Encoder.prototype = new Horatio.Generator();
  */
 Horatio.Encoder.prototype.encode = function(program) {
   program.visit(this, null);
+};
+
+
+
+/**
+ * Get index number from roman numeral
+ */
+Horatio.Encoder.prototype.numeralIndex = function(numeral) {
+  return Horatio.Wordlists.roman_numerals.indexOf(numeral);
 };
 Horatio.Wordlists.act   = ['Act'];
 Horatio.Wordlists.scene = ['Scene'];

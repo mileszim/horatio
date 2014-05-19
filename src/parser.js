@@ -255,15 +255,25 @@ Horatio.Parser.prototype = {
   },
   
   
+  parseBe: function() {
+    var be;
+    if (this.currentToken.kind===Horatio.Token.BE) {
+      be = new Horatio.AST.Be(this.currentToken.sequence);
+      this.acceptIt();
+    }
+    return be;
+  },
+  
+  
   parseAssignment: function() {
-    this.accept(Horatio.Token.BE);
+    var be = this.parseBe();
     if (this.currentToken.kind===Horatio.Token.AS) {
       this.acceptIt();
       this.parseAdjective();
       this.accept(Horatio.Token.AS);
     }
     var value = this.parseValue();
-    return new Horatio.AST.AssignmentSentence(value);
+    return new Horatio.AST.AssignmentSentence(be, value);
   },
   
   
@@ -384,10 +394,19 @@ Horatio.Parser.prototype = {
   
   
   parseQuestion: function() {
-    this.accept(Horatio.Token.BE_COMPARATIVE);
+    var be         = this.parseBeComparative();
     var comparison = this.parseComparative();
     var value      = this.parseValue();
     return new Horatio.AST.QuestionSentence(comparison, value);
+  },
+  
+  
+  parseBeComparative: function() {
+    var be_comparative;
+    if (this.currentToken.kind===Horatio.Token.BE_COMPARATIVE) {
+      be_comparative = new Horatio.AST.BeComparative(this.currentToken.sequence);
+    }
+    return be_comparative;
   },
   
   
