@@ -59,3 +59,16 @@ Horatio.Checker.prototype.exeuntStage = function() {
     this.characters[c].on_stage = false;
   }
 };
+
+
+
+/**
+ * Scene exists
+ */
+Horatio.Checker.prototype.sceneExists = function(act, scene) {
+  if (!this.parts[act]) {
+    return false;
+  } else {
+    return (this.parts[act].indexOf(scene) === -1);
+  }
+};

@@ -118,15 +118,19 @@ Horatio.Visitor.prototype = {
   visitPart: function(part, arg) {
     var self = this;
     
-    part.numeral.visit(this, arg);
+    var n = part.numeral.visit(this, arg);
     part.comment.visit(this, arg);
     
-    if (part.subparts.length > 0) {
-      part.subparts.forEach(function(subpart) {
-        subpart.visit(self, arg);
-      });
-    } else {
+    if (this.parts[n]) {
+      throw new Error("Semantic Error - Act already defined.");
+    } else
+    if (part.subparts.length === 0) {
       throw new Error("Semantic Error - No subparts defined.");
+    } else {
+      this.parts[n] = [];
+      part.subparts.forEach(function(subpart) {
+        subpart.visit(self, {act: n});
+      });
     }
     
     return null;
@@ -139,10 +143,11 @@ Horatio.Visitor.prototype = {
    */
   visitNumeral: function(numeral, arg) {
     if (numeral.sequence) {
-      return null;
+      return numeral.sequence;
     } else {
       throw new Error("Semantic Error - Numeral malformed.");
     }
+    return null;
   },
   
   
@@ -151,9 +156,16 @@ Horatio.Visitor.prototype = {
    * Subparts
    */
   visitSubpart: function(subpart, arg) {
-    subpart.numeral.visit(this, arg);
-    subpart.comment.visit(this, arg);
-    subpart.stage.visit(this, arg);
+    var n = subpart.numeral.visit(this, arg);
+    
+    if (this.sceneExists(arg.act, n)) {
+      throw new Error("Semantic Error - Scene already defined.");
+    } else {
+      this.parts[arg.act].push(n);
+      subpart.comment.visit(this, arg);
+      subpart.stage.visit(this, {act: arg.act, scene: n});
+    }
+    
     return null;
   },
   
@@ -274,6 +286,380 @@ Horatio.Visitor.prototype = {
         sentence.visit(self, arg);
       });
     }
+    
+    return null;
+  },
+  
+  
+  
+  /**
+   * Goto
+   */
+  visitGoto: function(goto, arg) {
+    var n = goto.numeral.visit(this, arg);
+    
+    if (!this.sceneExists(arg.act, arg.scene)) {
+      throw new Error("Semantic Error - Scene specified by Goto does not exist in this act.");
+    }
+    
+    return null;
+  },
+  
+  
+  
+  /**
+   * Assignment Sentence
+   */
+  visitAssignmentSentence: function(assignment, arg) {
+    assignment.value.visit(this, arg);
+    
+    return null;
+  },
+  
+  
+  
+  /**
+   * Question Sentence
+   */
+  visitQuestionSentence: function(question, arg) {
+    question.comparison.visit(this, arg);
+    question.value.visit(this, arg);
+    
+    return null;
+  },
+  
+  
+  
+  /**
+   * Response Sentence
+   */
+  visitResponseSentence: function(response, arg) {
+    response.goto.visit(this, arg);
+    
+    return null;
+  },
+  
+  
+  
+  /**
+   * Goto Sentence
+   */
+  visitGotoSentence: function(goto, arg) {
+    goto.goto.visit(this, arg);
+    
+    return null;
+  },
+  
+  
+  
+  /**
+   * Integer Input Sentence
+   */
+  visitIntegerInputSentence: function(integer_input, arg) {
+    
+    return null;
+  },
+  
+  
+  
+  /**
+   * Char Input Sentence
+   */
+  visitCharInputSentence: function(char_input, arg) {
+    
+    return null;
+  },
+  
+  
+  
+  /**
+   * Integer Output Sentence
+   */
+  visitIntegerOutputSentence: function(integer_output, arg) {
+    
+    return null;
+  },
+  
+  
+  
+  /**
+   * Char Output Sentence
+   */
+  visitCharOutputSentence: function(char_output, arg) {
+    
+    return null;
+  },
+  
+  
+  
+  /**
+   * Remember Sentence
+   */
+  visitRememberSentence: function(remember, arg) {
+    var p = remember.pronoun.visit(this, arg);
+    
+    return null;
+  },
+  
+  
+  
+  /**
+   * Recall Sentence
+   */
+  visitRecallSentence: function(recall, arg) {
+    recall.comment.visit(this, arg);
+  },
+  
+  
+  
+  /**
+   * Positive Constant Value
+   */
+  visitPositiveConstantValue: function(pc_val, arg) {
+    var self = this;
+    
+    var n;
+    if (!(pc_val.noun instanceof Horatio.AST.PositiveNoun) || !(pc_val.noun instanceof Horatio.AST.NeutralNoun)) {
+      throw new Error("Semantic Error - Positive Constants must use a positive or neutral noun");
+    } else {
+      n = pc_val.noun.visit(this, arg);
+    }
+    pc_val.noun.visit(this, arg);
+    pc_val.adjectives.forEach(function(adjective) {
+      if (!(adjective instanceof Horatio.AST.PositiveAdjective) || !(adjective instanceof Horatio.AST.NeutralAdjective)) {
+        throw new Error("Semantic Error - Positive Constants must use positive of neutral adjectives.");
+      } else {
+        adjective.visit(this, arg);
+      }
+    });
+    
+    //return Math.pow(2, pc_val.adjectives.length);
+    return 0; // placeholder
+  },
+  
+  
+  
+  /**
+   * Negative Constant Value
+   */
+  visitNegativeConstantValue: function(nc_val, arg) {
+    var self = this;
+    
+    var n;
+    if (!(nc_val.noun instanceof Horatio.AST.NegativeNoun) || !(nc_val.noun instanceof Horatio.AST.NeutralNoun)) {
+      throw new Error("Semantic Error - Negative Constants must use a negative or neutral noun");
+    } else {
+      n = nc_val.noun.visit(this, arg);
+    }
+    nc_val.noun.visit(this, arg);
+    nc_val.adjectives.forEach(function(adjective) {
+      if (!(adjective instanceof Horatio.AST.NegativeAdjective) || !(adjective instanceof Horatio.AST.NeutralAdjective)) {
+        throw new Error("Semantic Error - Negative Constants must use negative of neutral adjectives.");
+      } else {
+        adjective.visit(this, arg);
+      }
+    });
+    
+    //return (-1 * Math.pow(2, nc_val.adjectives.length));
+    return 0; // placeholder
+  },
+  
+  
+  
+  /**
+   * Unary Operation Value
+   */
+  visitUnaryOperationValue: function(unary, arg) {
+    var o = unary.operator.visit(this, arg);
+    var v = unary.value.visit(this, arg);
+    
+    return 0; // placeholder
+  },
+  
+  
+  
+  /**
+   * Arithmetic Operation Value
+   */
+  visitArithmeticOperationValue: function(arithmetic, arg) {
+    var o = arithmetic.operator.visit(this, arg);
+    var v1 = arithmetic.value_1.visit(this, arg);
+    var v2 = arithmetic.value_2.visit(this, arg);
+    
+    return 0; //placeholder
+  },
+  
+  
+  
+  /**
+   * Pronoun Value
+   */
+  visitPronounValue: function(pronoun, arg) {
+    var p = pronoun.pronoun.visit(this, arg);
+    
+    return p;
+  },
+  
+  
+  
+  /**
+   * Greater Than Comparison
+   */
+  visitGreaterThanComparison: function(comparison, arg) {
+    var c = comparison.comparative.visit(this, arg);
+    
+    return c;
+  },
+  
+  
+  
+  /**
+   * Lesser Than Comparison
+   */
+  visitLesserThanComparison: function(comparison, arg) {
+    var c = comparison.comparative.visit(this, arg);
+    
+    return null;
+  },
+  
+  
+  
+  /**
+   * Equal To Comparison
+   */
+  visitEqualToComparison: function(comparison, arg) {
+    comparison.adjective.visit(this, arg);
+    
+    return null;
+  },
+  
+  
+  
+  /**
+   * Inverse Comparison
+   */
+  visitInverseComparison: function(comparison, arg) {
+    var c = comparison.comparison.visit(this, arg);
+    
+    return c;
+  },
+  
+  
+  
+  /**
+   * First Person Pronoun
+   */
+  visitFirstPersonPronoun: function(fpp, arg) {
+    
+    return null;
+  },
+  
+  
+  
+  /**
+   * Second Person Pronoun
+   */
+  visitSecondPersonPronoun: function(spp, arg) {
+    
+    return null;
+  },
+  
+  
+  
+  /**
+   * Positive Noun
+   */
+  visitPositiveNoun: function(noun, arg) {
+    
+    return null;
+  },
+  
+  
+  
+  /**
+   * Neutral Noun
+   */
+  visitNeutralNoun: function(noun, arg) {
+    
+    return null;
+  },
+  
+  
+  
+  /**
+   * Negative Noun
+   */
+  visitNegativeNoun: function(noun, arg) {
+    
+    return null;
+  },
+  
+  
+  
+  /**
+   * Positive Adjective
+   */
+  visitPositiveAdjective: function(adjective, arg) {
+    
+    return null;
+  },
+  
+  
+  
+  /**
+   * Neutral Adjective
+   */
+  visitNeutralAdjective: function(adjective, arg) {
+    
+    return null;
+  },
+  
+  
+  
+  /**
+   * Negative Adjective
+   */
+  visitNegativeAdjective: function(adjective, arg) {
+    
+    return null;
+  },
+  
+  
+  
+  /**
+   * Unary Operator
+   */
+  visitUnaryOperator: function(operator, arg) {
+    
+    return null;
+  },
+  
+  
+  
+  /**
+   * Arithmetic Operator
+   */
+  visitArithmeticOperator: function(operator, arg) {
+    
+    return null;
+  },
+  
+  
+  
+  /**
+   * Positive Comparative
+   */
+  visitPositiveComparative: function(comparative, arg) {
+    
+    return null;
+  },
+  
+  
+  
+  /**
+   * Negative Comparative
+   */
+  visitNegativeComparative: function(comparative, arg) {
     
     return null;
   }

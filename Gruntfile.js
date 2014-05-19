@@ -104,5 +104,6 @@ module.exports = function(grunt) {
 
   // Default task.
   grunt.registerTask('default', ['jshint', 'concat', 'uglify', 'jsdoc']);
+  grunt.registerTask('check', ['jshint:before_concat']);
 
 };
