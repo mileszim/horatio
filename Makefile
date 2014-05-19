@@ -1,9 +1,7 @@
-all: full min documentation
+all: full
 
 full:
-	grunt jshint:before_concat
-	grunt concat
-	grunt jshint:after_concat
+	grunt
 
 min:
 	grunt uglify
@@ -15,4 +13,4 @@ install:
 	npm install
 
 documentation:
-	grunt jsdoc
+	grunt docs

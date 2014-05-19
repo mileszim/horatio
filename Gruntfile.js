@@ -107,7 +107,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-jsdoc');
 
   // Default task.
-  grunt.registerTask('default', ['jshint', 'concat', 'uglify', 'jsdoc']);
+  grunt.registerTask('default', ['jshint:before_concat', 'concat', 'jshint:after_concat', 'uglify']);
   grunt.registerTask('check', ['jshint:before_concat']);
+  grunt.registerTask('docs', ['jsdoc']);
 
 };
