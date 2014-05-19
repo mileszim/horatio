@@ -296,6 +296,16 @@ Horatio.Generator.prototype = {
    * Integer Output Sentence
    */
   visitIntegerOutputSentence: function(integer_output, arg) {
+    var Command = function() {
+      var speaker = arg.character;
+      
+      return function() {
+        var val = this.interlocutor(speaker).value();
+        this.io.print(val);
+      };
+    };
+    
+    this.program.addCommand(arg.act, arg.scene, new Command());
     
     return null;
   },
@@ -306,6 +316,16 @@ Horatio.Generator.prototype = {
    * Char Output Sentence
    */
   visitCharOutputSentence: function(char_output, arg) {
+    var Command = function() {
+      var speaker = arg.character;
+      
+      return function() {
+        var val = this.interlocutor(speaker).value();
+        this.io.print(String.fromCharCode(val));
+      };
+    };
+    
+    this.program.addCommand(arg.act, arg.scene, new Command());
     
     return null;
   },
@@ -321,7 +341,8 @@ Horatio.Generator.prototype = {
       var p = pronoun;
       
       return function() {
-        var value = this.characters[p].value();
+        var pn = p();
+        var value = this.characters[pn].value();
         this.characters[speaking].remember(value);
       };
     };
@@ -443,9 +464,17 @@ Horatio.Generator.prototype = {
    * Pronoun Value
    */
   visitPronounValue: function(pronoun, arg) {
+    var Command = function(p) {
+      var pronoun = p;
+            
+      return function() {
+        var p = pronoun.call(this);
+        return this.characters[p].value();
+      };
+    };
     var p = pronoun.pronoun.visit(this, arg);
         
-    return p;
+    return new Command(p);
   },
   
   
@@ -520,7 +549,10 @@ Horatio.Generator.prototype = {
   visitFirstPersonPronoun: function(fpp, arg) {
     var Command = function() {
       var speaking = arg.character;
-      return speaking;
+      
+      return function() {
+        return speaking;
+      };
     };
     
     return new Command();
@@ -534,8 +566,10 @@ Horatio.Generator.prototype = {
   visitSecondPersonPronoun: function(spp, arg) {
     var Command = function() {
       var speaking = arg.character;
-      var target = this.interlocutor.call(this,speaking).name();
-      return target;
+      
+      return function() {
+        return this.interlocutor(speaking).name();
+      };
     };
     
     return new Command();
@@ -551,20 +585,20 @@ Horatio.Generator.prototype = {
       var o = operator;
       
       switch(o) {
-      case "the square of":
+      case "square of":
         return function(v) {
           return Math.pow(v,2);
         };
-      case "the cube of":
+      case "cube of":
         return function(v) {
           return Math.pow(v,3);
         };
-      case "the square root of":
+      case "square root of":
         return function(v) {
           var sign = (v < 0) ? -1 : 1;
           return sign*Math.floor(Math.sqrt(Math.abs(v)));
         };
-      case "the factorial of":
+      case "factorial of":
         return function(v) {
           var sign = (v < 0) ? -1 : 1;
           var num = Math.abs(v);
@@ -596,23 +630,23 @@ Horatio.Generator.prototype = {
       var o = operator;
       
       switch(o) {
-      case "the sum of":
+      case "sum of":
         return function(a,b) {
           return a+b;
         };
-      case "the difference between":
+      case "difference between":
         return function(a,b) {
           return a-b;
         };
-      case "the product of":
+      case "product of":
         return function(a,b) {
           return a*b;
         };
-      case "the quotient between":
+      case "quotient between":
         return function(a,b) {
           return Math.round(a/b);
         };
-      case "the remainder of the quotient between":
+      case "remainder of the quotient between":
         return function(a,b) {
           return a%b;
         };
@@ -637,6 +671,7 @@ Horatio.Generator.prototype = {
       switch(b) {
       case "Thou art":
       case "You are":
+      case "You":
         return function() {
           return this.interlocutor(speaking).name();
         };

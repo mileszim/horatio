@@ -309,6 +309,7 @@ Horatio.Semantics.prototype = {
    */
   visitAssignmentSentence: function(assignment, arg) {
     assignment.be.visit(this, arg);
+    
     assignment.value.visit(this, arg);
     
     return null;
@@ -355,7 +356,9 @@ Horatio.Semantics.prototype = {
    * Integer Input Sentence
    */
   visitIntegerInputSentence: function(integer_input, arg) {
-    
+    if (this.solo(arg.character)) {
+      throw new Error("Semantic Error - Input calls require two characters on stage.");
+    }
     return null;
   },
   
@@ -365,7 +368,9 @@ Horatio.Semantics.prototype = {
    * Char Input Sentence
    */
   visitCharInputSentence: function(char_input, arg) {
-    
+    if (this.solo(arg.character)) {
+      throw new Error("Semantic Error - Input calls require two characters on stage.");
+    }
     return null;
   },
   
@@ -375,7 +380,9 @@ Horatio.Semantics.prototype = {
    * Integer Output Sentence
    */
   visitIntegerOutputSentence: function(integer_output, arg) {
-    
+    if (this.solo(arg.character)) {
+      throw new Error("Semantic Error - Output calls require two characters on stage.");
+    }
     return null;
   },
   
@@ -385,7 +392,9 @@ Horatio.Semantics.prototype = {
    * Char Output Sentence
    */
   visitCharOutputSentence: function(char_output, arg) {
-    
+    if (this.solo(arg.character)) {
+      throw new Error("Semantic Error - Output calls require two characters on stage.");
+    }
     return null;
   },
   
@@ -416,7 +425,7 @@ Horatio.Semantics.prototype = {
    */
   visitPositiveConstantValue: function(pc_val, arg) {
     var self = this;
-    
+        
     var n;    
     if (!(pc_val.noun instanceof Horatio.AST.PositiveNoun) && !(pc_val.noun instanceof Horatio.AST.NeutralNoun)) {
       throw new Error("Semantic Error - Positive Constants must use a positive or neutral noun");
@@ -669,7 +678,7 @@ Horatio.Semantics.prototype = {
    * Be
    */
   visitBe: function(be, arg) {
-    if (be.sequence==="You are" || be.sequence==="Thou art") {
+    if (be.sequence==="You are" || be.sequence==="Thou art" || be.sequence==="You") {
       if (this.solo(arg.character)) {
         console.log("solo");
         throw new Error("Semantic Error - Cannot assign value to interlocutor, only 1 character is on stage.");

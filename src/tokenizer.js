@@ -56,7 +56,14 @@ Horatio.Tokenizer.prototype = {
     while (input_array.length > 0) {
       var current = input_array.shift();
       if (this.dictionary[current]) {
-        this.tokens.push(new Horatio.Token(this.dictionary[current], current));
+        var check_next = current+" "+input_array[0];
+        if (this.dictionary[check_next]) {
+          current = check_next;
+          this.tokens.push(new Horatio.Token(this.dictionary[current], current));
+          input_array.splice(0,1);
+        } else {
+          this.tokens.push(new Horatio.Token(this.dictionary[current], current));
+        }
       } else {
         
         // check if further appends will find match

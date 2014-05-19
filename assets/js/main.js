@@ -6,32 +6,26 @@ $(function() {
     	editor.getSession().setUseSoftTabs(true);
     	//editor.getSession().setMode("ace/mode/javascript");
   
-  var jqconsole = $('#console').jqconsole();
-  jqconsole.SetPromptLabel('>')
-  var startPrompt = function () {
-    // Start the prompt with history enabled.
-    jqconsole.Prompt(true, function (input) {
-      
-      // Output input with the class jqconsole-output.
-      jqconsole.Write(input + '\n', 'jqconsole-output');
-      // Restart the prompt.
-      startPrompt();
-    });
-  };
+  var io = new IO();
+  var compiler = new Horatio.Compiler(io);
   
   $('#run_program').click(function() {
-    jqconsole.Reset();
-    jqconsole.Write('Compiling...\n', 'jqconsole-output');
-    
     var spl_input = editor.getValue();
-    var compiler = new Horatio.Compiler();
     
-    var output;
+    var program;
     try {
-      output = compiler.compile(spl_input);
-      jqconsole.Write(output.comment.sequence+"\n", 'jqconsole-output');
-    } catch (Error) {
-      jqconsole.Write(Error+'\n', 'jqconsole-output');
+      io.compile();
+      program = compiler.compile(spl_input);
+    } catch (e) {
+      io.print(e);
+    }
+
+    try {
+      io.run();
+      program.run();
+      io.print("\n(execution finished)");
+    } catch (e) {
+      io.print(e);
     }
     
   });

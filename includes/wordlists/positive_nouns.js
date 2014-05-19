@@ -13,5 +13,10 @@ Horatio.Wordlists.positive_nouns = [
   'rose',
   'kingdom',
   'pony',
-  'cat'
+  'cat',
+  'town',
+  'purse',
+  'sky',
+  'hamster',
+  'nose'
 ];

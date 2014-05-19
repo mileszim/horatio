@@ -1,10 +1,8 @@
 /**
  * Horatio Encoder
  */
-Horatio.Encoder = function() {
-  //Horatio.Visitor.call(this);
-  
-  this.program = new Horatio.Program();
+Horatio.Encoder = function(io) {
+  this.program = new Horatio.Program(io);
 };
 
 // inherit visitor prototype

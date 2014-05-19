@@ -38,6 +38,7 @@ Horatio.Parser.prototype = {
   parse: function() {
     this.currentToken = this.tokenizer.nextToken();
     var program = this.parseProgram();
+    //console.log(program);
     if (this.currentToken !== -1) {
       throw new Error("Syntax Error - unexpected end of program");
     }
@@ -211,7 +212,8 @@ Horatio.Parser.prototype = {
       
       case Horatio.Token.BE:
         sentence = this.parseAssignment();
-        this.accept(Horatio.Token.PERIOD);
+        //this.accept(Horatio.Token.PERIOD);
+        this.acceptIt();
         break;
         
       case Horatio.Token.BE_COMPARATIVE:
@@ -279,6 +281,9 @@ Horatio.Parser.prototype = {
   
   parseValue: function() {
     var value, pronoun;
+    if (this.currentToken.kind===Horatio.Token.ARTICLE) {
+      this.acceptIt();
+    }
     switch (this.currentToken.kind) {
       
       case Horatio.Token.UNARY_OPERATOR:
@@ -290,11 +295,11 @@ Horatio.Parser.prototype = {
         break;
       
       case Horatio.Token.POSITIVE_ADJECTIVE:
+      case Horatio.Token.NEUTRAL_ADJECTIVE:
       case Horatio.Token.NEGATIVE_ADJECTIVE:
       case Horatio.Token.POSITIVE_NOUN:
       case Horatio.Token.NEUTRAL_NOUN:
       case Horatio.Token.NEGATIVE_NOUN:
-      case Horatio.Token.ARTICLE:
         value = this.parseConstant();
         break;
         
@@ -309,7 +314,7 @@ Horatio.Parser.prototype = {
         this.acceptIt();
         break;
       default:
-        throw new Error("Syntax Error - Unknown Token");
+        throw new Error("Syntax Error - Unknown Token: "+this.currentToken.sequence);
     }
     return value;
   },
@@ -324,6 +329,9 @@ Horatio.Parser.prototype = {
   
   
   parseArithmeticOperation: function() {
+    if (this.currentToken.kind===Horatio.Token.ARTICLE) {
+      this.acceptIt();
+    }
     var operator = new Horatio.AST.ArithmeticOperator(this.currentToken.sequence);
     this.accept(Horatio.Token.ARITHMETIC_OPERATOR);
     var value_1 = this.parseValue();
@@ -352,7 +360,7 @@ Horatio.Parser.prototype = {
         return this.parseNegativeConstant();
         
       default:
-        throw new Error("Syntax Error - Unknown Token");
+        throw new Error("Syntax Error - Unknown Token: "+this.currentToken.sequence);
         
     }
   },

@@ -349,7 +349,7 @@ Horatio.AST = {
     
     // visit
     this.visit = function(visitor, arg) {
-      return visitor.visitPositiveConstantValue(this, arg);
+      return visitor.visitNegativeConstantValue(this, arg);
     };
   },
   

@@ -20,11 +20,11 @@ Horatio.Wordlists = {};
 Horatio.Wordlists.act   = ['Act'];
 Horatio.Wordlists.scene = ['Scene'];
 Horatio.Wordlists.arithmetic_operators = [
-  'the sum of',
-  'the difference between',
-  'the product of',
-  'the quotient between',
-  'the remainder of the quotient between'
+  'sum of',
+  'difference between',
+  'product of',
+  'quotient between',
+  'remainder of the quotient between'
 ];
 Horatio.Wordlists.articles = [
   'a',
@@ -34,7 +34,8 @@ Horatio.Wordlists.articles = [
 Horatio.Wordlists.be = [
   'Thou art',
   'You are',
-  'I am'
+  'I am',
+  'You'
   //'am',
   //'are',
   //'art',
@@ -325,17 +326,14 @@ Horatio.Wordlists.neutral_adjectives = [
   'old',
   'purple',
   'red',
-  'rural',
   'small',
   'tiny',
-  'white',
   'yellow'
 ];
 Horatio.Wordlists.neutral_nouns = [
   'animal',
   'aunt',
   'brother',
-  'cat',
   'chihuahua',
   'cousin',
   'cow',
@@ -349,7 +347,6 @@ Horatio.Wordlists.neutral_nouns = [
   'grandmother',
   'grandson',
   'hair',
-  'hamster',
   'horse',
   'lamp',
   'lantern',
@@ -359,17 +356,13 @@ Horatio.Wordlists.neutral_nouns = [
   'mother',
   'nephew',
   'niece',
-  'nose',
-  'purse',
   'road',
   'roman',
   'sister',
-  'sky',
   'son',
   'squirrel',
   'stone wall',
   'thing',
-  'town',
   'tree',
   'uncle',
   'wind'
@@ -418,7 +411,8 @@ Horatio.Wordlists.positive_adjectives = [
   'sweetest',
   'trustworthy',
   'tiny',
-  'warm'
+  'warm',
+  'white'
 ];
 Horatio.Wordlists.positive_comparatives = [
   'better',
@@ -442,7 +436,12 @@ Horatio.Wordlists.positive_nouns = [
   'rose',
   'kingdom',
   'pony',
-  'cat'
+  'cat',
+  'town',
+  'purse',
+  'sky',
+  'hamster',
+  'nose'
 ];
 Horatio.Wordlists.first_person_pronouns = [
   //'I',
@@ -453,6 +452,7 @@ Horatio.Wordlists.first_person_pronouns = [
 Horatio.Wordlists.second_person_pronouns = [
   'you',
   'yourself',
+  'thyself',
   'thy',
   'thee',
   'thou'
@@ -510,10 +510,10 @@ Horatio.Wordlists.third_person_possessive = [
   'their'
 ];
 Horatio.Wordlists.unary_operators = [
-  'the square of',
-  'the cube of',
-  'the square root of',
-  'the factorial of',
+  'square of',
+  'cube of',
+  'square root of',
+  'factorial of',
   'twice'
 ];
 Horatio.Token = function(kind, sequence) {
@@ -648,7 +648,8 @@ Horatio.Character.prototype = {
   
   
 };
-Horatio.Program = function() {
+Horatio.Program = function(io) {
+  this.io = io;
   this.characters = {};
   this.parts = [];
   this.stage = [];
@@ -658,7 +659,6 @@ Horatio.Program = function() {
 Horatio.Program.prototype = {
   
   run: function() {
-    console.log("running?");
     var self = this;
     
     for (var a = 0; a < self.parts.length; a++) {
@@ -1044,6 +1044,7 @@ Horatio.Semantics.prototype = {
    */
   visitAssignmentSentence: function(assignment, arg) {
     assignment.be.visit(this, arg);
+    
     assignment.value.visit(this, arg);
     
     return null;
@@ -1090,7 +1091,9 @@ Horatio.Semantics.prototype = {
    * Integer Input Sentence
    */
   visitIntegerInputSentence: function(integer_input, arg) {
-    
+    if (this.solo(arg.character)) {
+      throw new Error("Semantic Error - Input calls require two characters on stage.");
+    }
     return null;
   },
   
@@ -1100,7 +1103,9 @@ Horatio.Semantics.prototype = {
    * Char Input Sentence
    */
   visitCharInputSentence: function(char_input, arg) {
-    
+    if (this.solo(arg.character)) {
+      throw new Error("Semantic Error - Input calls require two characters on stage.");
+    }
     return null;
   },
   
@@ -1110,7 +1115,9 @@ Horatio.Semantics.prototype = {
    * Integer Output Sentence
    */
   visitIntegerOutputSentence: function(integer_output, arg) {
-    
+    if (this.solo(arg.character)) {
+      throw new Error("Semantic Error - Output calls require two characters on stage.");
+    }
     return null;
   },
   
@@ -1120,7 +1127,9 @@ Horatio.Semantics.prototype = {
    * Char Output Sentence
    */
   visitCharOutputSentence: function(char_output, arg) {
-    
+    if (this.solo(arg.character)) {
+      throw new Error("Semantic Error - Output calls require two characters on stage.");
+    }
     return null;
   },
   
@@ -1151,7 +1160,7 @@ Horatio.Semantics.prototype = {
    */
   visitPositiveConstantValue: function(pc_val, arg) {
     var self = this;
-    
+        
     var n;    
     if (!(pc_val.noun instanceof Horatio.AST.PositiveNoun) && !(pc_val.noun instanceof Horatio.AST.NeutralNoun)) {
       throw new Error("Semantic Error - Positive Constants must use a positive or neutral noun");
@@ -1404,7 +1413,7 @@ Horatio.Semantics.prototype = {
    * Be
    */
   visitBe: function(be, arg) {
-    if (be.sequence==="You are" || be.sequence==="Thou art") {
+    if (be.sequence==="You are" || be.sequence==="Thou art" || be.sequence==="You") {
       if (this.solo(arg.character)) {
         console.log("solo");
         throw new Error("Semantic Error - Cannot assign value to interlocutor, only 1 character is on stage.");
@@ -1724,6 +1733,16 @@ Horatio.Generator.prototype = {
    * Integer Output Sentence
    */
   visitIntegerOutputSentence: function(integer_output, arg) {
+    var Command = function() {
+      var speaker = arg.character;
+      
+      return function() {
+        var val = this.interlocutor(speaker).value();
+        this.io.print(val);
+      };
+    };
+    
+    this.program.addCommand(arg.act, arg.scene, new Command());
     
     return null;
   },
@@ -1734,6 +1753,16 @@ Horatio.Generator.prototype = {
    * Char Output Sentence
    */
   visitCharOutputSentence: function(char_output, arg) {
+    var Command = function() {
+      var speaker = arg.character;
+      
+      return function() {
+        var val = this.interlocutor(speaker).value();
+        this.io.print(String.fromCharCode(val));
+      };
+    };
+    
+    this.program.addCommand(arg.act, arg.scene, new Command());
     
     return null;
   },
@@ -1749,7 +1778,8 @@ Horatio.Generator.prototype = {
       var p = pronoun;
       
       return function() {
-        var value = this.characters[p].value();
+        var pn = p();
+        var value = this.characters[pn].value();
         this.characters[speaking].remember(value);
       };
     };
@@ -1871,9 +1901,17 @@ Horatio.Generator.prototype = {
    * Pronoun Value
    */
   visitPronounValue: function(pronoun, arg) {
+    var Command = function(p) {
+      var pronoun = p;
+            
+      return function() {
+        var p = pronoun.call(this);
+        return this.characters[p].value();
+      };
+    };
     var p = pronoun.pronoun.visit(this, arg);
         
-    return p;
+    return new Command(p);
   },
   
   
@@ -1948,7 +1986,10 @@ Horatio.Generator.prototype = {
   visitFirstPersonPronoun: function(fpp, arg) {
     var Command = function() {
       var speaking = arg.character;
-      return speaking;
+      
+      return function() {
+        return speaking;
+      };
     };
     
     return new Command();
@@ -1962,8 +2003,10 @@ Horatio.Generator.prototype = {
   visitSecondPersonPronoun: function(spp, arg) {
     var Command = function() {
       var speaking = arg.character;
-      var target = this.interlocutor.call(this,speaking).name();
-      return target;
+      
+      return function() {
+        return this.interlocutor(speaking).name();
+      };
     };
     
     return new Command();
@@ -1979,20 +2022,20 @@ Horatio.Generator.prototype = {
       var o = operator;
       
       switch(o) {
-      case "the square of":
+      case "square of":
         return function(v) {
           return Math.pow(v,2);
         };
-      case "the cube of":
+      case "cube of":
         return function(v) {
           return Math.pow(v,3);
         };
-      case "the square root of":
+      case "square root of":
         return function(v) {
           var sign = (v < 0) ? -1 : 1;
           return sign*Math.floor(Math.sqrt(Math.abs(v)));
         };
-      case "the factorial of":
+      case "factorial of":
         return function(v) {
           var sign = (v < 0) ? -1 : 1;
           var num = Math.abs(v);
@@ -2024,23 +2067,23 @@ Horatio.Generator.prototype = {
       var o = operator;
       
       switch(o) {
-      case "the sum of":
+      case "sum of":
         return function(a,b) {
           return a+b;
         };
-      case "the difference between":
+      case "difference between":
         return function(a,b) {
           return a-b;
         };
-      case "the product of":
+      case "product of":
         return function(a,b) {
           return a*b;
         };
-      case "the quotient between":
+      case "quotient between":
         return function(a,b) {
           return Math.round(a/b);
         };
-      case "the remainder of the quotient between":
+      case "remainder of the quotient between":
         return function(a,b) {
           return a%b;
         };
@@ -2065,6 +2108,7 @@ Horatio.Generator.prototype = {
       switch(b) {
       case "Thou art":
       case "You are":
+      case "You":
         return function() {
           return this.interlocutor(speaking).name();
         };
@@ -2457,7 +2501,7 @@ Horatio.AST = {
     
     // visit
     this.visit = function(visitor, arg) {
-      return visitor.visitPositiveConstantValue(this, arg);
+      return visitor.visitNegativeConstantValue(this, arg);
     };
   },
   
@@ -2832,7 +2876,14 @@ Horatio.Tokenizer.prototype = {
     while (input_array.length > 0) {
       var current = input_array.shift();
       if (this.dictionary[current]) {
-        this.tokens.push(new Horatio.Token(this.dictionary[current], current));
+        var check_next = current+" "+input_array[0];
+        if (this.dictionary[check_next]) {
+          current = check_next;
+          this.tokens.push(new Horatio.Token(this.dictionary[current], current));
+          input_array.splice(0,1);
+        } else {
+          this.tokens.push(new Horatio.Token(this.dictionary[current], current));
+        }
       } else {
         
         // check if further appends will find match
@@ -2954,6 +3005,7 @@ Horatio.Parser.prototype = {
   parse: function() {
     this.currentToken = this.tokenizer.nextToken();
     var program = this.parseProgram();
+    //console.log(program);
     if (this.currentToken !== -1) {
       throw new Error("Syntax Error - unexpected end of program");
     }
@@ -3127,7 +3179,8 @@ Horatio.Parser.prototype = {
       
       case Horatio.Token.BE:
         sentence = this.parseAssignment();
-        this.accept(Horatio.Token.PERIOD);
+        //this.accept(Horatio.Token.PERIOD);
+        this.acceptIt();
         break;
         
       case Horatio.Token.BE_COMPARATIVE:
@@ -3195,6 +3248,9 @@ Horatio.Parser.prototype = {
   
   parseValue: function() {
     var value, pronoun;
+    if (this.currentToken.kind===Horatio.Token.ARTICLE) {
+      this.acceptIt();
+    }
     switch (this.currentToken.kind) {
       
       case Horatio.Token.UNARY_OPERATOR:
@@ -3206,11 +3262,11 @@ Horatio.Parser.prototype = {
         break;
       
       case Horatio.Token.POSITIVE_ADJECTIVE:
+      case Horatio.Token.NEUTRAL_ADJECTIVE:
       case Horatio.Token.NEGATIVE_ADJECTIVE:
       case Horatio.Token.POSITIVE_NOUN:
       case Horatio.Token.NEUTRAL_NOUN:
       case Horatio.Token.NEGATIVE_NOUN:
-      case Horatio.Token.ARTICLE:
         value = this.parseConstant();
         break;
         
@@ -3225,7 +3281,7 @@ Horatio.Parser.prototype = {
         this.acceptIt();
         break;
       default:
-        throw new Error("Syntax Error - Unknown Token");
+        throw new Error("Syntax Error - Unknown Token: "+this.currentToken.sequence);
     }
     return value;
   },
@@ -3240,6 +3296,9 @@ Horatio.Parser.prototype = {
   
   
   parseArithmeticOperation: function() {
+    if (this.currentToken.kind===Horatio.Token.ARTICLE) {
+      this.acceptIt();
+    }
     var operator = new Horatio.AST.ArithmeticOperator(this.currentToken.sequence);
     this.accept(Horatio.Token.ARITHMETIC_OPERATOR);
     var value_1 = this.parseValue();
@@ -3268,7 +3327,7 @@ Horatio.Parser.prototype = {
         return this.parseNegativeConstant();
         
       default:
-        throw new Error("Syntax Error - Unknown Token");
+        throw new Error("Syntax Error - Unknown Token: "+this.currentToken.sequence);
         
     }
   },
@@ -3560,10 +3619,8 @@ Horatio.Checker.prototype.sceneExists = function(act, scene) {
     return (this.parts[act].indexOf(scene) !== -1);
   }
 };
-Horatio.Encoder = function() {
-  //Horatio.Visitor.call(this);
-  
-  this.program = new Horatio.Program();
+Horatio.Encoder = function(io) {
+  this.program = new Horatio.Program(io);
 };
 
 // inherit visitor prototype
@@ -3587,7 +3644,9 @@ Horatio.Encoder.prototype.encode = function(program) {
 Horatio.Encoder.prototype.numeralIndex = function(numeral) {
   return Horatio.Wordlists.roman_numerals.indexOf(numeral);
 };
-Horatio.Compiler = function() {};
+Horatio.Compiler = function(io) {
+  this.io = io;
+};
 
 
 Horatio.Compiler.prototype = {
@@ -3608,7 +3667,7 @@ Horatio.Compiler.prototype = {
     checker.check(ast);
     
     // Code Generation
-    var encoder = new Horatio.Encoder();
+    var encoder = new Horatio.Encoder(this.io);
     var program = encoder.encode(ast);
     
     return program;

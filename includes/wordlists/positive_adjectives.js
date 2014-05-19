@@ -39,5 +39,6 @@ Horatio.Wordlists.positive_adjectives = [
   'sweetest',
   'trustworthy',
   'tiny',
-  'warm'
+  'warm',
+  'white'
 ];

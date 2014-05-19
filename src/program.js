@@ -1,7 +1,8 @@
 /**
  * A Horatio Program
  */
-Horatio.Program = function() {
+Horatio.Program = function(io) {
+  this.io = io;
   this.characters = {};
   this.parts = [];
   this.stage = [];
@@ -11,7 +12,6 @@ Horatio.Program = function() {
 Horatio.Program.prototype = {
   
   run: function() {
-    console.log("running?");
     var self = this;
     
     for (var a = 0; a < self.parts.length; a++) {

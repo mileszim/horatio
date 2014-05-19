@@ -3,7 +3,9 @@
  * @memberof Horatio
  * @constructor
  */
-Horatio.Compiler = function() {};
+Horatio.Compiler = function(io) {
+  this.io = io;
+};
 
 
 Horatio.Compiler.prototype = {
@@ -24,7 +26,7 @@ Horatio.Compiler.prototype = {
     checker.check(ast);
     
     // Code Generation
-    var encoder = new Horatio.Encoder();
+    var encoder = new Horatio.Encoder(this.io);
     var program = encoder.encode(ast);
     
     return program;

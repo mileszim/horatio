@@ -2,7 +2,8 @@
 Horatio.Wordlists.be = [
   'Thou art',
   'You are',
-  'I am'
+  'I am',
+  'You'
   //'am',
   //'are',
   //'art',

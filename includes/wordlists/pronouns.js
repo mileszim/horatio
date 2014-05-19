@@ -7,6 +7,7 @@ Horatio.Wordlists.first_person_pronouns = [
 Horatio.Wordlists.second_person_pronouns = [
   'you',
   'yourself',
+  'thyself',
   'thy',
   'thee',
   'thou'

@@ -13,9 +13,7 @@ Horatio.Wordlists.neutral_adjectives = [
   'old',
   'purple',
   'red',
-  'rural',
   'small',
   'tiny',
-  'white',
   'yellow'
 ];
