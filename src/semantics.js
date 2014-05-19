@@ -421,14 +421,14 @@ Horatio.Semantics.prototype = {
     if (!(pc_val.noun instanceof Horatio.AST.PositiveNoun) && !(pc_val.noun instanceof Horatio.AST.NeutralNoun)) {
       throw new Error("Semantic Error - Positive Constants must use a positive or neutral noun");
     } else {
-      n = pc_val.noun.visit(this, arg);
+      n = pc_val.noun.visit(self, arg);
     }
     pc_val.noun.visit(this, arg);
     pc_val.adjectives.forEach(function(adjective) {
       if (!(adjective instanceof Horatio.AST.PositiveAdjective) && !(adjective instanceof Horatio.AST.NeutralAdjective)) {
         throw new Error("Semantic Error - Positive Constants must use positive of neutral adjectives.");
       } else {
-        adjective.visit(this, arg);
+        adjective.visit(self, arg);
       }
     });
     
@@ -448,14 +448,14 @@ Horatio.Semantics.prototype = {
     if (!(nc_val.noun instanceof Horatio.AST.NegativeNoun) && !(nc_val.noun instanceof Horatio.AST.NeutralNoun)) {
       throw new Error("Semantic Error - Negative Constants must use a negative or neutral noun");
     } else {
-      n = nc_val.noun.visit(this, arg);
+      n = nc_val.noun.visit(self, arg);
     }
     nc_val.noun.visit(this, arg);
     nc_val.adjectives.forEach(function(adjective) {
       if (!(adjective instanceof Horatio.AST.NegativeAdjective) && !(adjective instanceof Horatio.AST.NeutralAdjective)) {
         throw new Error("Semantic Error - Negative Constants must use negative of neutral adjectives.");
       } else {
-        adjective.visit(this, arg);
+        adjective.visit(self, arg);
       }
     });
     

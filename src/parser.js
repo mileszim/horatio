@@ -289,6 +289,8 @@ Horatio.Parser.prototype = {
         value = this.parseArithmeticOperation();
         break;
       
+      case Horatio.Token.POSITIVE_ADJECTIVE:
+      case Horatio.Token.NEGATIVE_ADJECTIVE:
       case Horatio.Token.POSITIVE_NOUN:
       case Horatio.Token.NEUTRAL_NOUN:
       case Horatio.Token.NEGATIVE_NOUN:
@@ -306,6 +308,8 @@ Horatio.Parser.prototype = {
         value   = new Horatio.AST.PronounValue(pronoun);
         this.acceptIt();
         break;
+      default:
+        throw new Error("Syntax Error - Unknown Token");
     }
     return value;
   },
@@ -335,6 +339,10 @@ Horatio.Parser.prototype = {
     }
     switch (this.currentToken.kind) {
       
+      case Horatio.Token.NEUTRAL_ADJECTIVE:
+      case Horatio.Token.NEUTRAL_NOUN:
+        throw new Error("Syntax Error - Constant Value cannot start with neutral adjective or noun.");
+      
       case Horatio.Token.POSITIVE_ADJECTIVE:
       case Horatio.Token.POSITIVE_NOUN:
         return this.parsePositiveConstant();
@@ -342,6 +350,9 @@ Horatio.Parser.prototype = {
       case Horatio.Token.NEGATIVE_ADJECTIVE:
       case Horatio.Token.NEGATIVE_NOUN:
         return this.parseNegativeConstant();
+        
+      default:
+        throw new Error("Syntax Error - Unknown Token");
         
     }
   },
@@ -362,6 +373,8 @@ Horatio.Parser.prototype = {
           adjectives.push(adjective);
           this.acceptIt();
           break;
+        case Horatio.Token.NEGATIVE_ADJECTIVE:
+          throw new Error("Syntax Error - Cannot mix positive and negative words in constant assignment.");
       }
     }
     var noun = new Horatio.AST.PositiveNoun(this.currentToken.sequence);
@@ -385,6 +398,8 @@ Horatio.Parser.prototype = {
           adjectives.push(adjective);
           this.acceptIt();
           break;
+        case Horatio.Token.POSITIVE_ADJECTIVE:
+          throw new Error("Syntax Error - Cannot mix positive and negative words in constant assignment.");
       }
     }
     var noun = new Horatio.AST.NegativeNoun(this.currentToken.sequence);

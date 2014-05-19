@@ -4,7 +4,6 @@ Horatio.Wordlists.positive_adjectives = [
   'beautiful',
   'blossoming',
   'bold',
-  'black',
   'brave',
   'charming',
   'clearest',

@@ -444,7 +444,7 @@ Horatio.Generator.prototype = {
    */
   visitPronounValue: function(pronoun, arg) {
     var p = pronoun.pronoun.visit(this, arg);
-    
+        
     return p;
   },
   
@@ -667,11 +667,11 @@ Horatio.Generator.prototype = {
       case "Art thou":
       case "Are you":
         return function() {
-          this.interlocutor(speaking).name();
+          return this.interlocutor(speaking).name();
         };
       case "Am I":
         return function() {
-          this.characters[speaking].name();
+          return this.characters[speaking].name();
         };
       }
     };

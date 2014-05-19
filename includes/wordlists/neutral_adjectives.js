@@ -1,5 +1,4 @@
 Horatio.Wordlists.neutral_adjectives = [
-  'big',
   'black',
   'blue',
   'bluest',

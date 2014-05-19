@@ -11,6 +11,7 @@ Horatio.Program = function() {
 Horatio.Program.prototype = {
   
   run: function() {
+    console.log("running?");
     var self = this;
     
     for (var a = 0; a < self.parts.length; a++) {
@@ -20,6 +21,8 @@ Horatio.Program.prototype = {
         }
       }
     }
+    
+    console.log(this);
     
     return 0;
   },
@@ -74,7 +77,7 @@ Horatio.Program.prototype = {
   
   interlocutor: function(character_name) {
     var c = this.characters[character_name];
-    var i = this.stage.filter(function(n) { return n === c; });
+    var i = this.stage.filter(function(n) { return n !== c; });
     return i[0];
   },
   

@@ -311,7 +311,6 @@ Horatio.Wordlists.negative_nouns = [
   'wolf'
 ];
 Horatio.Wordlists.neutral_adjectives = [
-  'big',
   'black',
   'blue',
   'bluest',
@@ -384,7 +383,6 @@ Horatio.Wordlists.positive_adjectives = [
   'beautiful',
   'blossoming',
   'bold',
-  'black',
   'brave',
   'charming',
   'clearest',
@@ -660,6 +658,7 @@ Horatio.Program = function() {
 Horatio.Program.prototype = {
   
   run: function() {
+    console.log("running?");
     var self = this;
     
     for (var a = 0; a < self.parts.length; a++) {
@@ -669,6 +668,8 @@ Horatio.Program.prototype = {
         }
       }
     }
+    
+    console.log(this);
     
     return 0;
   },
@@ -723,7 +724,7 @@ Horatio.Program.prototype = {
   
   interlocutor: function(character_name) {
     var c = this.characters[character_name];
-    var i = this.stage.filter(function(n) { return n === c; });
+    var i = this.stage.filter(function(n) { return n !== c; });
     return i[0];
   },
   
@@ -1155,14 +1156,14 @@ Horatio.Semantics.prototype = {
     if (!(pc_val.noun instanceof Horatio.AST.PositiveNoun) && !(pc_val.noun instanceof Horatio.AST.NeutralNoun)) {
       throw new Error("Semantic Error - Positive Constants must use a positive or neutral noun");
     } else {
-      n = pc_val.noun.visit(this, arg);
+      n = pc_val.noun.visit(self, arg);
     }
     pc_val.noun.visit(this, arg);
     pc_val.adjectives.forEach(function(adjective) {
       if (!(adjective instanceof Horatio.AST.PositiveAdjective) && !(adjective instanceof Horatio.AST.NeutralAdjective)) {
         throw new Error("Semantic Error - Positive Constants must use positive of neutral adjectives.");
       } else {
-        adjective.visit(this, arg);
+        adjective.visit(self, arg);
       }
     });
     
@@ -1182,14 +1183,14 @@ Horatio.Semantics.prototype = {
     if (!(nc_val.noun instanceof Horatio.AST.NegativeNoun) && !(nc_val.noun instanceof Horatio.AST.NeutralNoun)) {
       throw new Error("Semantic Error - Negative Constants must use a negative or neutral noun");
     } else {
-      n = nc_val.noun.visit(this, arg);
+      n = nc_val.noun.visit(self, arg);
     }
     nc_val.noun.visit(this, arg);
     nc_val.adjectives.forEach(function(adjective) {
       if (!(adjective instanceof Horatio.AST.NegativeAdjective) && !(adjective instanceof Horatio.AST.NeutralAdjective)) {
         throw new Error("Semantic Error - Negative Constants must use negative of neutral adjectives.");
       } else {
-        adjective.visit(this, arg);
+        adjective.visit(self, arg);
       }
     });
     
@@ -1871,7 +1872,7 @@ Horatio.Generator.prototype = {
    */
   visitPronounValue: function(pronoun, arg) {
     var p = pronoun.pronoun.visit(this, arg);
-    
+        
     return p;
   },
   
@@ -2094,11 +2095,11 @@ Horatio.Generator.prototype = {
       case "Art thou":
       case "Are you":
         return function() {
-          this.interlocutor(speaking).name();
+          return this.interlocutor(speaking).name();
         };
       case "Am I":
         return function() {
-          this.characters[speaking].name();
+          return this.characters[speaking].name();
         };
       }
     };
@@ -3204,6 +3205,8 @@ Horatio.Parser.prototype = {
         value = this.parseArithmeticOperation();
         break;
       
+      case Horatio.Token.POSITIVE_ADJECTIVE:
+      case Horatio.Token.NEGATIVE_ADJECTIVE:
       case Horatio.Token.POSITIVE_NOUN:
       case Horatio.Token.NEUTRAL_NOUN:
       case Horatio.Token.NEGATIVE_NOUN:
@@ -3221,6 +3224,8 @@ Horatio.Parser.prototype = {
         value   = new Horatio.AST.PronounValue(pronoun);
         this.acceptIt();
         break;
+      default:
+        throw new Error("Syntax Error - Unknown Token");
     }
     return value;
   },
@@ -3250,6 +3255,10 @@ Horatio.Parser.prototype = {
     }
     switch (this.currentToken.kind) {
       
+      case Horatio.Token.NEUTRAL_ADJECTIVE:
+      case Horatio.Token.NEUTRAL_NOUN:
+        throw new Error("Syntax Error - Constant Value cannot start with neutral adjective or noun.");
+      
       case Horatio.Token.POSITIVE_ADJECTIVE:
       case Horatio.Token.POSITIVE_NOUN:
         return this.parsePositiveConstant();
@@ -3257,6 +3266,9 @@ Horatio.Parser.prototype = {
       case Horatio.Token.NEGATIVE_ADJECTIVE:
       case Horatio.Token.NEGATIVE_NOUN:
         return this.parseNegativeConstant();
+        
+      default:
+        throw new Error("Syntax Error - Unknown Token");
         
     }
   },
@@ -3277,6 +3289,8 @@ Horatio.Parser.prototype = {
           adjectives.push(adjective);
           this.acceptIt();
           break;
+        case Horatio.Token.NEGATIVE_ADJECTIVE:
+          throw new Error("Syntax Error - Cannot mix positive and negative words in constant assignment.");
       }
     }
     var noun = new Horatio.AST.PositiveNoun(this.currentToken.sequence);
@@ -3300,6 +3314,8 @@ Horatio.Parser.prototype = {
           adjectives.push(adjective);
           this.acceptIt();
           break;
+        case Horatio.Token.POSITIVE_ADJECTIVE:
+          throw new Error("Syntax Error - Cannot mix positive and negative words in constant assignment.");
       }
     }
     var noun = new Horatio.AST.NegativeNoun(this.currentToken.sequence);

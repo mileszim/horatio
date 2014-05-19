@@ -3,8 +3,9 @@
     <script src="./dist/horatio.js"></script>
     <script>
       var c = new Horatio.Compiler();
-      var r = c.compile("Some test comment here. Romeo, a test character. Juliet, another test character. Act I: A test act. Scene I: a test scene. [Enter Romeo & Juliet] Romeo: You are as beautiful as a flower. [Exeunt] Scene II: Another scene. [Enter Romeo] Romeo: Open your heart! [Exit Romeo]");
+      var r = c.compile("Some test comment here. Romeo, a test character. Juliet, another test character. Act I: A test act. Scene I: a test scene. [Enter Romeo & Juliet] Romeo: You are as beautiful as a bold black flower. [Exeunt] Scene II: Another scene. [Enter Romeo] Romeo: Open your heart! [Exit Romeo]");
       r.run();
+      //console.log(r.parts.toString());
     </script>
   </head>
 </html>
