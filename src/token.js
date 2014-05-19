@@ -21,10 +21,8 @@ Horatio.Token = function(kind, sequence) {
 /** @static */ Horatio.Token.EXIT                  = 16;
 /** @static */ Horatio.Token.EXEUNT                = 17;
 
-///** @static */ Horatio.Token.INPUT                 = 20;
 /** @static */ Horatio.Token.INPUT_INTEGER         = 21;
 /** @static */ Horatio.Token.INPUT_CHAR            = 22;
-///** @static */ Horatio.Token.OUTPUT                = 23;
 /** @static */ Horatio.Token.OUTPUT_INTEGER        = 24;
 /** @static */ Horatio.Token.OUTPUT_CHAR           = 25;
   
