@@ -1,11 +1,12 @@
 import Generator from 'generator';
+import Program   from 'program';
 
 /**
  * Horatio Encoder
  */
 export default class Encoder extends Generator {
   constructor(io) {
-    this.program = new Horatio.Program(io);
+    this.program = new Program(io);
   }
 
   /**

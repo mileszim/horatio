@@ -39,7 +39,7 @@ export default class Checker extends Semantics {
    */
   solo(character) {
     if (this.declared(character) && this.characters[character]) {
-      for (var k in this.characters) {
+      for (let k in this.characters) {
         if ((k!==character) && (this.characters[k]===true)) {
           return false;
         }
@@ -62,7 +62,7 @@ export default class Checker extends Semantics {
    * Exeunt all
    */
   exeuntStage() {
-    for (var c in this.characters) {
+    for (let c in this.characters) {
       this.characters[c] = false;
     }
   }

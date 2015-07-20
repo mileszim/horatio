@@ -1,589 +1,569 @@
 /**
  * Horatio Generation Visitor
  */
-Horatio.Generator = function() {};
+export default class Generator {
 
-Horatio.Generator.prototype = {
-  
   /**
    * Program
    */
-  visitProgram: function(program, arg) {    
-    var self = this;
-    
+  visitProgram(program, arg) {
+    let self = this;
+
     // declarations
     program.declarations.forEach(function(declaration) {
       declaration.visit(self, null);
     });
-    
+
     // parts
     program.parts.forEach(function(part) {
       part.visit(self, null);
     });
-    
+
     return null;
-  },
-  
-  
-  
+  }
+
+
   /**
    * Declaration
    */
-  visitDeclaration: function(declaration, arg) {
-    var c = declaration.character.sequence;
+  visitDeclaration(declaration, arg) {
+    let c = declaration.character.sequence;
     this.program.declareCharacter(c);
-
     return null;
-  },
-  
-  
-  
+  }
+
+
   /**
    * Numeral
    */
-  visitNumeral: function(numeral, arg) {
-    var n = this.numeralIndex(numeral.sequence);
-    
+  visitNumeral(numeral, arg) {
+    let n = this.numeralIndex(numeral.sequence);
     return n;
-  },
-  
-  
-  
+  }
+
+
   /**
    * Part
    */
-  visitPart: function(part, arg) {
-    var self = this;
-    
-    var n = part.numeral.visit(this, arg);
-    var act = this.program.newAct();
+  visitPart(part, arg) {
+    let self = this;
+
+    let n = part.numeral.visit(this, arg);
+    let act = this.program.newAct();
     part.subparts.forEach(function(subpart) {
       subpart.visit(self, {act: act});
     });
-    
+
     return null;
-  },
-  
-  
-  
+  }
+
+
   /**
    * Subparts
    */
-  visitSubpart: function(subpart, arg) {
-    var n = subpart.numeral.visit(this, arg);
-    var scene = this.program.newScene(arg.act);
+  visitSubpart(subpart, arg) {
+    let n = subpart.numeral.visit(this, arg);
+    let scene = this.program.newScene(arg.act);
     subpart.stage.visit(this, {act: arg.act, scene: scene});
-    
+
     return null;
-  },
-  
-  
-  
+  }
+
+
   /**
    * Stage
    */
-  visitStage: function(stage, arg) {
+  visitStage(stage, arg) {
     if (stage.start_presence) stage.start_presence.visit(this, arg);
     if (stage.dialogue) stage.dialogue.visit(this, arg);
     if (stage.end_presence) stage.end_presence.visit(this, arg);
-    
+
     return null;
-  },
-  
-  
-  
+  }
+
+
   /**
    * Enter
    */
-  visitEnter: function(presence, arg) {
-    var Command = function(cname) {
-      var c = cname;
+  visitEnter(presence, arg) {
+    let Command = function(cname) {
+      let c = cname;
       return function() {
         this.enterStage(c);
       };
     };
-    
-    var c1 = presence.character_1.sequence;
-        
+
+    let c1 = presence.character_1.sequence;
+
     this.program.addCommand(arg.act, arg.scene, new Command(c1));
-    
+
     if (presence.character_2) {
-      var c2 = presence.character_2.sequence;
-      
+      let c2 = presence.character_2.sequence;
+
       this.program.addCommand(arg.act, arg.scene, new Command(c2));
     }
-        
+
     return null;
-  },
-  
-  
-  
+  }
+
+
   /**
    * Exit
    */
-  visitExit: function(presence, arg) {
-    var Command = function(cname) {
-      var c = cname;
+  visitExit(presence, arg) {
+    let Command = function(cname) {
+      let c = cname;
       return function() {
         this.exitStage(c);
       };
     };
-    
-    var c = presence.character.sequence;
-    
+
+    let c = presence.character.sequence;
+
     this.program.addCommand(arg.act, arg.scene, new Command(c));
-    
+
     return null;
-  },
-  
-  
-  
+  }
+
+
   /**
    * Exeunt
    */
-  visitExeunt: function(presence, arg) {
-    var Command = function() {
+  visitExeunt(presence, arg) {
+    let Command = function() {
       return function() {
         this.exeuntStage();
       };
     };
-    
+
     this.program.addCommand(arg.act, arg.scene, new Command());
-    
+
     return null;
-  },
-  
-  
-  
+  }
+
+
   /**
    * Dialogue
    */
-  visitDialogue: function(dialogue, arg) {
-    var self = this;
+  visitDialogue(dialogue, arg) {
+    let self = this;
     dialogue.lines.forEach(function(line) {
       line.visit(self, arg);
     });
     return null;
-  },
-  
-  
-  
+  }
+
+
   /**
    * Line
    */
-  visitLine: function(line, arg) {
-    var self = this;
+  visitLine(line, arg) {
+    let self = this;
 
-    var c = line.character.sequence;
+    let c = line.character.sequence;
     arg.character = c;
-        
+
     line.sentences.forEach(function(sentence) {
       sentence.visit(self, arg);
     });
-    
+
     return null;
-  },
-  
-  
-  
+  }
+
+
   /**
    * Goto
    */
-  visitGoto: function(goto, arg) {
-    var n = goto.numeral.visit(this, arg);
-    
+  visitGoto(goto, arg) {
+    let n = goto.numeral.visit(this, arg);
+
     return null;
-  },
-  
-  
-  
+  }
+
+
   /**
    * Assignment Sentence
    */
-  visitAssignmentSentence: function(assignment, arg) {
-    var Command = function(target, value) {
-      var t = target;
-      var v = value;
-      
+  visitAssignmentSentence(assignment, arg) {
+    let Command = function(target, value) {
+      let t = target;
+      let v = value;
+
       return function() {
-        var target = t.call(this);
-        var val = v.call(this);
+        let target = t.call(this);
+        let val = v.call(this);
         this.characters[target].setValue(val);
       };
     };
-    
-    var target = assignment.be.visit(this, arg);
-    var value = assignment.value.visit(this, arg);
-    
+
+    let target = assignment.be.visit(this, arg);
+    let value = assignment.value.visit(this, arg);
+
     this.program.addCommand(arg.act, arg.scene, new Command(target, value));
-    
+
     return null;
-  },
-  
-  
-  
+  }
+
+
   /**
    * Question Sentence
    */
-  visitQuestionSentence: function(question, arg) {
-    var Command = function(be, comparative, value) {
-      var b = be;
-      var c = comparative;
-      var v = value;
-      
+  visitQuestionSentence(question, arg) {
+    let Command = function(be, comparative, value) {
+      let b = be;
+      let c = comparative;
+      let v = value;
+
       return function() {
-        var character = b.call(this);
-        var a = this.characters[b].value();
-        var val = v.call(this);
-        var result = c.call(this,a,val);
+        let character = b.call(this);
+        let a = this.characters[b].value();
+        let val = v.call(this);
+        let result = c.call(this,a,val);
       };
     };
-    
-    var be          = question.be.visit(this, arg);
-    var comparative = question.comparison.visit(this, arg);
-    var value       = question.value.visit(this, arg);
-    
+
+    let be          = question.be.visit(this, arg);
+    let comparative = question.comparison.visit(this, arg);
+    let value       = question.value.visit(this, arg);
+
     this.program.addCommand(arg.act, arg.scene, new Command(be, comparative, value));
-    
+
     return null;
-  },
-  
-  
-  
+  }
+
+
   /**
    * Response Sentence
    */
-  visitResponseSentence: function(response, arg) {
+  visitResponseSentence(response, arg) {
     response.goto.visit(this, arg);
-    
+
     return null;
-  },
-  
-  
-  
+  }
+
+
   /**
    * Goto Sentence
    */
-  visitGotoSentence: function(goto, arg) {
+  visitGotoSentence(goto, arg) {
     goto.goto.visit(this, arg);
-    
+
     return null;
-  },
-  
-  
-  
+  }
+
+
   /**
    * Integer Input Sentence
    */
-  visitIntegerInputSentence: function(integer_input, arg) {
-    
+  visitIntegerInputSentence(integer_input, arg) {
+
     return null;
-  },
-  
-  
-  
+  }
+
+
+
   /**
    * Char Input Sentence
    */
-  visitCharInputSentence: function(char_input, arg) {
-    
+  visitCharInputSentence(char_input, arg) {
+
     return null;
-  },
-  
-  
-  
+  }
+
+
+
   /**
    * Integer Output Sentence
    */
-  visitIntegerOutputSentence: function(integer_output, arg) {
-    var Command = function() {
-      var speaker = arg.character;
-      
+  visitIntegerOutputSentence(integer_output, arg) {
+    let Command = function() {
+      let speaker = arg.character;
+
       return function() {
-        var val = this.interlocutor(speaker).value();
+        let val = this.interlocutor(speaker).value();
         this.io.print(val);
       };
     };
-    
+
     this.program.addCommand(arg.act, arg.scene, new Command());
-    
+
     return null;
-  },
-  
-  
-  
+  }
+
+
+
   /**
    * Char Output Sentence
    */
-  visitCharOutputSentence: function(char_output, arg) {
-    var Command = function() {
-      var speaker = arg.character;
-      
+  visitCharOutputSentence(char_output, arg) {
+    let Command = function() {
+      let speaker = arg.character;
+
       return function() {
-        var val = this.interlocutor(speaker).value();
+        let val = this.interlocutor(speaker).value();
         this.io.print(String.fromCharCode(val));
       };
     };
-    
+
     this.program.addCommand(arg.act, arg.scene, new Command());
-    
+
     return null;
-  },
-  
-  
-  
+  }
+
+
+
   /**
    * Remember Sentence
    */
-  visitRememberSentence: function(remember, arg) {
-    var Command = function(pronoun) {
-      var speaking = arg.character;
-      var p = pronoun;
-      
+  visitRememberSentence(remember, arg) {
+    let Command = function(pronoun) {
+      let speaking = arg.character;
+      let p = pronoun;
+
       return function() {
-        var pn = p();
-        var value = this.characters[pn].value();
+        let pn = p();
+        let value = this.characters[pn].value();
         this.characters[speaking].remember(value);
       };
     };
-    
-    var p = remember.pronoun.visit(this, arg);
-    
+
+    let p = remember.pronoun.visit(this, arg);
+
     this.program.addCommand(arg.act, arg.scene, new Command(p));
-    
+
     return null;
-  },
-  
-  
-  
+  }
+
+
+
   /**
    * Recall Sentence
    */
-  visitRecallSentence: function(recall, arg) {
-    var Command = function() {
-      var speaking = arg.character;
-      
+  visitRecallSentence(recall, arg) {
+    let Command = function() {
+      let speaking = arg.character;
+
       return function() {
         this.interlocutor(speaking).recall();
       };
     };
-        
+
     this.program.addCommand(arg.act, arg.scene, new Command());
-    
+
     return null;
-  },
-  
-  
-  
+  }
+
+
+
   /**
    * Positive Constant Value
    */
-  visitPositiveConstantValue: function(pc_val, arg) {
-    var Command = function(num_adjectives) {
-      var exp = num_adjectives;
-      
+  visitPositiveConstantValue(pc_val, arg) {
+    let Command = function(num_adjectives) {
+      let exp = num_adjectives;
+
       return function() {
         return Math.pow(2, exp);
       };
     };
-    
-    var adjectives = pc_val.adjectives;
-    
+
+    let adjectives = pc_val.adjectives;
+
     return new Command(adjectives.length);
-  },
-  
-  
-  
+  }
+
+
+
   /**
    * Negative Constant Value
    */
-  visitNegativeConstantValue: function(nc_val, arg) {
-    var Command = function(num_adjectives) {
-      var exp = num_adjectives;
-      
+  visitNegativeConstantValue(nc_val, arg) {
+    let Command = function(num_adjectives) {
+      let exp = num_adjectives;
+
       return function() {
         return (-1*Math.pow(2, exp));
       };
     };
-    
-    var adjectives = nc_val.adjectives;
-    
+
+    let adjectives = nc_val.adjectives;
+
     return new Command(adjectives.length);
-  },
-  
-  
-  
+  }
+
+
+
   /**
    * Unary Operation Value
    */
-  visitUnaryOperationValue: function(unary, arg) {
-    var Command = function(operator, value) {
-      var o = operator;
-      var v = value;
-      
+  visitUnaryOperationValue(unary, arg) {
+    let Command = function(operator, value) {
+      let o = operator;
+      let v = value;
+
       return function() {
-        var val = v.call(this);
+        let val = v.call(this);
         return o.call(this,val);
       };
     };
-    
-    var o = unary.operator.visit(this, arg);
-    var v = unary.value.visit(this, arg);
-    
+
+    let o = unary.operator.visit(this, arg);
+    let v = unary.value.visit(this, arg);
+
     return new Command(o,v);
-  },
-  
-  
-  
+  }
+
+
+
   /**
    * Arithmetic Operation Value
    */
-  visitArithmeticOperationValue: function(arithmetic, arg) {
-    var Command = function(operator, value1, value2) {
-      var o = operator;
-      var v1 = value1;
-      var v2 = value2;
-      
+  visitArithmeticOperationValue(arithmetic, arg) {
+    let Command = function(operator, value1, value2) {
+      let o = operator;
+      let v1 = value1;
+      let v2 = value2;
+
       return function() {
-        var val1 = v1.call(this);
-        var val2 = v2.call(this);
+        let val1 = v1.call(this);
+        let val2 = v2.call(this);
         return o.call(this,val1, val2);
       };
     };
-    
-    var o = arithmetic.operator.visit(this, arg);
-    var v1 = arithmetic.value_1.visit(this, arg);
-    var v2 = arithmetic.value_2.visit(this, arg);
-    
+
+    let o = arithmetic.operator.visit(this, arg);
+    let v1 = arithmetic.value_1.visit(this, arg);
+    let v2 = arithmetic.value_2.visit(this, arg);
+
     return new Command(o, v1, v2);
-  },
-  
-  
-  
+  }
+
+
+
   /**
    * Pronoun Value
    */
-  visitPronounValue: function(pronoun, arg) {
-    var Command = function(p) {
-      var pronoun = p;
-            
+  visitPronounValue(pronoun, arg) {
+    let Command = function(p) {
+      let pronoun = p;
+
       return function() {
-        var p = pronoun.call(this);
+        let p = pronoun.call(this);
         return this.characters[p].value();
       };
     };
-    var p = pronoun.pronoun.visit(this, arg);
-        
+    let p = pronoun.pronoun.visit(this, arg);
+
     return new Command(p);
-  },
-  
-  
-  
+  }
+
+
+
   /**
    * Greater Than Comparison
    */
-  visitGreaterThanComparison: function(comparison, arg) {
-    var Command = function() {
+  visitGreaterThanComparison(comparison, arg) {
+    let Command = function() {
       return function(a, b) {
         return (a > b);
       };
     };
-    
+
     return new Command();
-  },
-  
-  
-  
+  }
+
+
+
   /**
    * Lesser Than Comparison
    */
-  visitLesserThanComparison: function(comparison, arg) {
-    var Command = function() {
+  visitLesserThanComparison(comparison, arg) {
+    let Command = function() {
       return function(a, b) {
         return (a < b);
       };
     };
-    
+
     return new Command();
-  },
-  
-  
-  
+  }
+
+
+
   /**
    * Equal To Comparison
    */
-  visitEqualToComparison: function(comparison, arg) {
-    var Command = function() {
+  visitEqualToComparison(comparison, arg) {
+    let Command = function() {
       return function(a, b) {
         return (a === b);
       };
     };
-    
+
     return new Command();
-  },
-  
-  
-  
+  }
+
+
+
   /**
    * Inverse Comparison
    */
-  visitInverseComparison: function(comparison, arg) {
-    var Command = function(comparison) {
-      var c = comparison;
-      
+  visitInverseComparison(comparison, arg) {
+    let Command = function(comparison) {
+      let c = comparison;
+
       return function(a, b) {
         return (!c(a,b));
       };
     };
-    
-    var c = comparison.comparison.visit(this, arg);
-    
+
+    let c = comparison.comparison.visit(this, arg);
+
     return new Command(c);
-  },
-  
-  
-  
+  }
+
+
+
   /**
    * First Person Pronoun
    */
-  visitFirstPersonPronoun: function(fpp, arg) {
-    var Command = function() {
-      var speaking = arg.character;
-      
+  visitFirstPersonPronoun(fpp, arg) {
+    let Command = function() {
+      let speaking = arg.character;
+
       return function() {
         return speaking;
       };
     };
-    
+
     return new Command();
-  },
-  
-  
-  
+  }
+
+
+
   /**
    * Second Person Pronoun
    */
-  visitSecondPersonPronoun: function(spp, arg) {
-    var Command = function() {
-      var speaking = arg.character;
-      
+  visitSecondPersonPronoun(spp, arg) {
+    let Command = function() {
+      let speaking = arg.character;
+
       return function() {
         return this.interlocutor(speaking).name();
       };
     };
-    
+
     return new Command();
-  },
-  
-  
-  
+  }
+
+
+
   /**
    * Unary Operator
    */
-  visitUnaryOperator: function(operator, arg) {
-    var Command = function(operator) {
-      var o = operator;
-      
+  visitUnaryOperator(operator, arg) {
+    let Command = function(operator) {
+      let o = operator;
+
       switch(o) {
       case "square of":
         return function(v) {
@@ -595,15 +575,15 @@ Horatio.Generator.prototype = {
         };
       case "square root of":
         return function(v) {
-          var sign = (v < 0) ? -1 : 1;
+          let sign = (v < 0) ? -1 : 1;
           return sign*Math.floor(Math.sqrt(Math.abs(v)));
         };
       case "factorial of":
         return function(v) {
-          var sign = (v < 0) ? -1 : 1;
-          var num = Math.abs(v);
-          var fv = 1;
-          for (var i = 2; i<=num; i++) {
+          let sign = (v < 0) ? -1 : 1;
+          let num = Math.abs(v);
+          let fv = 1;
+          for (let i = 2; i<=num; i++) {
             fv = fv*i;
           }
           return sign*fv;
@@ -614,21 +594,21 @@ Horatio.Generator.prototype = {
         };
       }
     };
-    
-    var o = operator.sequence;
-    
+
+    let o = operator.sequence;
+
     return new Command(o);
-  },
-  
-  
-  
+  }
+
+
+
   /**
    * Arithmetic Operator
    */
-  visitArithmeticOperator: function(operator, arg) {
-    var Command = function(operator) {
-      var o = operator;
-      
+  visitArithmeticOperator(operator, arg) {
+    let Command = function(operator) {
+      let o = operator;
+
       switch(o) {
       case "sum of":
         return function(a,b) {
@@ -652,22 +632,22 @@ Horatio.Generator.prototype = {
         };
       }
     };
-    
-    var o = operator.sequence;
-    
+
+    let o = operator.sequence;
+
     return new Command(o);
-  },
-  
-  
-  
+  }
+
+
+
   /**
    * Be
    */
-  visitBe: function(be, arg) {
-    var Command = function(be) {
-      var b = be;
-      var speaking = arg.character;
-      
+  visitBe(be, arg) {
+    let Command = function(be) {
+      let b = be;
+      let speaking = arg.character;
+
       switch(b) {
       case "Thou art":
       case "You are":
@@ -681,23 +661,23 @@ Horatio.Generator.prototype = {
         };
       }
     };
-    
-    var b = be.sequence;
-    
+
+    let b = be.sequence;
+
     return new Command(b);
-  },
-  
-  
-  
+  }
+
+
+
   /**
    * Be Comparative
    */
-  visitBeComparative: function(be, arg) {
-    var Command = function(be) {
-      var b = be;
-      var speaking = arg.character;
-      var t;
-      
+  visitBeComparative(be, arg) {
+    let Command = function(be) {
+      let b = be;
+      let speaking = arg.character;
+      let t;
+
       switch(b) {
       case "Art thou":
       case "Are you":
@@ -710,11 +690,9 @@ Horatio.Generator.prototype = {
         };
       }
     };
-    
-    var b = be.sequence;
-    
+
+    let b = be.sequence;
+
     return new Command(b);
   }
-   
-  
-};
+}

@@ -1,3 +1,5 @@
+import Character from 'character';
+
 /**
  * A Horatio Program
  */
@@ -33,7 +35,7 @@ export default class Program {
   }
 
   declareCharacter(character_name) {
-    this.characters[character_name] = new Horatio.Character(character_name);
+    this.characters[character_name] = new Character(character_name);
   }
 
   newAct() {
@@ -65,7 +67,7 @@ export default class Program {
     var i = this.stage.filter(function(n) { return n !== c; });
     return i[0];
   }
-  
+
   addCommand(act, scene, command) {
     this.parts[act][scene].push(command);
     var self = this;
