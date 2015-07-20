@@ -1,90 +1,80 @@
+import Semantics from 'semantics';
+
 /**
  * Horatio Checker
  */
-Horatio.Checker = function() {
-  //Horatio.Visitor.call(this);
-  this.characters = {};
-  this.parts = {};
-};
-
-// inherit visitor prototype
-Horatio.Checker.prototype = new Horatio.Semantics();
-
-
-
-/**
- * Check
- */
-Horatio.Checker.prototype.check = function(program) {
-  program.visit(this, null);
-};
-
-
-
-/**
- * Character exists
- */
-Horatio.Checker.prototype.declared = function(character) {
-  return this.characters.hasOwnProperty(character);
-};
-
-
-/**
- * Character on stage
- */
-Horatio.Checker.prototype.onStage = function(character) {
-  if (this.declared(character)) {
-    return this.characters[character];
-  } else {
-    return false;
+export default class Checker extends Semantics {
+  constructor() {
+    this.characters = {};
+    this.parts = {};
   }
-};
 
+  /**
+   * Check
+   */
+  check(program) {
+    program.visit(this, null);
+  }
 
-/**
- * Solo on stage?
- */
-Horatio.Checker.prototype.solo = function(character) {
-  if (this.declared(character) && this.characters[character]) {
-    for (var k in this.characters) {
-      if ((k!==character) && (this.characters[k]===true)) {
-        return false;
-      }
+  /**
+   * Character exists
+   */
+  declared(character) {
+    return this.characters.hasOwnProperty(character);
+  }
+
+  /**
+   * Character on stage
+   */
+  onStage(character) {
+    if (this.declared(character)) {
+      return this.characters[character];
+    } else {
+      return false;
     }
-    return true;
   }
-  return false;
-};
 
-
-/**
- * Toggle Stage presence
- */
-Horatio.Checker.prototype.toggleStage = function(character) {
-  if (this.declared(character)) {
-    this.characters[character] = !this.characters[character];
-  }
-};
-
-
-/**
- * Exeunt all
- */
-Horatio.Checker.prototype.exeuntStage = function() {
-  for (var c in this.characters) {
-    this.characters[c] = false;
-  }
-};
-
-
-
-/**
- * Scene exists
- */
-Horatio.Checker.prototype.sceneExists = function(act, scene) {
-  if (!this.parts[act]) {
+  /**
+   * Solo on stage?
+   */
+  solo(character) {
+    if (this.declared(character) && this.characters[character]) {
+      for (var k in this.characters) {
+        if ((k!==character) && (this.characters[k]===true)) {
+          return false;
+        }
+      }
+      return true;
+    }
     return false;
-  } else {
-    return (this.parts[act].indexOf(scene) !== -1);
   }
-};
+
+  /**
+   * Toggle Stage presence
+   */
+  toggleStage(character) {
+    if (this.declared(character)) {
+      this.characters[character] = !this.characters[character];
+    }
+  }
+
+  /**
+   * Exeunt all
+   */
+  exeuntStage() {
+    for (var c in this.characters) {
+      this.characters[c] = false;
+    }
+  }
+
+  /**
+   * Scene exists
+   */
+  sceneExists(act, scene) {
+    if (!this.parts[act]) {
+      return false;
+    } else {
+      return (this.parts[act].indexOf(scene) !== -1);
+    }
+  }
+}
