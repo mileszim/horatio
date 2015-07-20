@@ -5,6 +5,7 @@ import Semantics from 'semantics';
  */
 export default class Checker extends Semantics {
   constructor() {
+    super();
     this.characters = {};
     this.parts = {};
   }

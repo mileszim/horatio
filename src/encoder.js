@@ -6,6 +6,7 @@ import Program   from 'program';
  */
 export default class Encoder extends Generator {
   constructor(io) {
+    super();
     this.program = new Program(io);
   }
 
