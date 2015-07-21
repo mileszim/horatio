@@ -20,7 +20,6 @@ export default class Program {
         }
       }
     }
-    console.log(this);
     return 0;
   }
 

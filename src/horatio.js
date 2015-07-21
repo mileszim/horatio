@@ -6,7 +6,7 @@ import Compiler from './compiler';
  *
  * @author Miles Zimmerman
  */
-export class Horatio extends Compiler {
+window.Horatio = class Horatio extends Compiler {
   constructor(io) {
     super(io);
   }

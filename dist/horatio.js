@@ -1413,6 +1413,10 @@ var _program = require('./program');
 
 var _program2 = _interopRequireDefault(_program);
 
+var _wordlists = require('./wordlists');
+
+var _wordlists2 = _interopRequireDefault(_wordlists);
+
 /**
  * Horatio Encoder
  */
@@ -1444,7 +1448,7 @@ var Encoder = (function (_Generator) {
      * Get index number from roman numeral
      */
     value: function numeralIndex(numeral) {
-      return Horatio.Wordlists.roman_numerals.indexOf(numeral);
+      return _wordlists2['default'].roman_numerals.indexOf(numeral);
     }
   }]);
 
@@ -1454,7 +1458,7 @@ var Encoder = (function (_Generator) {
 exports['default'] = Encoder;
 module.exports = exports['default'];
 
-},{"./generator":6,"./program":9}],6:[function(require,module,exports){
+},{"./generator":6,"./program":9,"./wordlists":13}],6:[function(require,module,exports){
 /**
  * Horatio Generation Visitor
  */
@@ -2195,10 +2199,6 @@ module.exports = exports["default"];
 },{}],7:[function(require,module,exports){
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-
 var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -2217,8 +2217,7 @@ var _compiler2 = _interopRequireDefault(_compiler);
  *
  * @author Miles Zimmerman
  */
-
-var Horatio = (function (_Compiler) {
+window.Horatio = (function (_Compiler) {
   _inherits(Horatio, _Compiler);
 
   function Horatio(io) {
@@ -2229,8 +2228,6 @@ var Horatio = (function (_Compiler) {
 
   return Horatio;
 })(_compiler2['default']);
-
-exports.Horatio = Horatio;
 
 },{"./compiler":4}],8:[function(require,module,exports){
 'use strict';
@@ -2886,7 +2883,6 @@ var Program = (function () {
           }
         }
       }
-      console.log(this);
       return 0;
     }
   }, {
@@ -2958,9 +2954,6 @@ exports['default'] = Program;
 module.exports = exports['default'];
 
 },{"./character":2}],10:[function(require,module,exports){
-/**
- * Horatio Semantics Visitor
- */
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2969,7 +2962,17 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var _ast = require("./ast");
+
+var _ast2 = _interopRequireDefault(_ast);
+
+/**
+ * Horatio Semantics Visitor
+ */
 
 var Semantics = (function () {
   function Semantics() {
@@ -3052,7 +3055,7 @@ var Semantics = (function () {
         throw new Error("Semantic Error - Character undefined.");
       }
 
-      if (!(character instanceof AST.Character)) {
+      if (!(character instanceof _ast2["default"].Character)) {
         throw new Error("Semantic Error - Not of type Character.");
       }
 
@@ -3399,14 +3402,14 @@ var Semantics = (function () {
       var self = this;
 
       var n = undefined;
-      if (!(pc_val.noun instanceof AST.PositiveNoun) && !(pc_val.noun instanceof AST.NeutralNoun)) {
+      if (!(pc_val.noun instanceof _ast2["default"].PositiveNoun) && !(pc_val.noun instanceof _ast2["default"].NeutralNoun)) {
         throw new Error("Semantic Error - Positive Constants must use a positive or neutral noun");
       } else {
         n = pc_val.noun.visit(self, arg);
       }
       pc_val.noun.visit(this, arg);
       pc_val.adjectives.forEach(function (adjective) {
-        if (!(adjective instanceof AST.PositiveAdjective) && !(adjective instanceof AST.NeutralAdjective)) {
+        if (!(adjective instanceof _ast2["default"].PositiveAdjective) && !(adjective instanceof _ast2["default"].NeutralAdjective)) {
           throw new Error("Semantic Error - Positive Constants must use positive of neutral adjectives.");
         } else {
           adjective.visit(self, arg);
@@ -3426,14 +3429,14 @@ var Semantics = (function () {
       var self = this;
 
       var n = undefined;
-      if (!(nc_val.noun instanceof AST.NegativeNoun) && !(nc_val.noun instanceof AST.NeutralNoun)) {
+      if (!(nc_val.noun instanceof _ast2["default"].NegativeNoun) && !(nc_val.noun instanceof _ast2["default"].NeutralNoun)) {
         throw new Error("Semantic Error - Negative Constants must use a negative or neutral noun");
       } else {
         n = nc_val.noun.visit(self, arg);
       }
       nc_val.noun.visit(this, arg);
       nc_val.adjectives.forEach(function (adjective) {
-        if (!(adjective instanceof AST.NegativeAdjective) && !(adjective instanceof AST.NeutralAdjective)) {
+        if (!(adjective instanceof _ast2["default"].NegativeAdjective) && !(adjective instanceof _ast2["default"].NeutralAdjective)) {
           throw new Error("Semantic Error - Negative Constants must use negative of neutral adjectives.");
         } else {
           adjective.visit(self, arg);
@@ -3680,7 +3683,7 @@ var Semantics = (function () {
 exports["default"] = Semantics;
 module.exports = exports["default"];
 
-},{}],11:[function(require,module,exports){
+},{"./ast":1}],11:[function(require,module,exports){
 /**
  * SPL Tokens
  * @memberof Horatio
@@ -4311,8 +4314,8 @@ exports['default'] = {
   output_char: _wordlistsInput_output.output_char,
   as: _wordlistsMisc.as,
   not: _wordlistsMisc.not,
-  then: _wordlistsMisc.then, then: _wordlistsMisc.then,
-  if_so: _wordlistsMisc.if_so, if_so: _wordlistsMisc.if_so,
+  than: _wordlistsMisc.than,
+  if_so: _wordlistsMisc.if_so,
   and: _wordlistsMisc.and,
   negative_adjectives: _wordlistsNegative_adjectives.negative_adjectives,
   negative_comparatives: _wordlistsNegative_comparatives.negative_comparatives,

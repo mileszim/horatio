@@ -1,3 +1,5 @@
+import AST from './ast';
+
 /**
  * Horatio Semantics Visitor
  */

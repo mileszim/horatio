@@ -1,5 +1,6 @@
 import Generator from './generator';
 import Program   from './program';
+import Wordlists from './wordlists';
 
 /**
  * Horatio Encoder
@@ -22,6 +23,6 @@ export default class Encoder extends Generator {
    * Get index number from roman numeral
    */
   numeralIndex(numeral) {
-    return Horatio.Wordlists.roman_numerals.indexOf(numeral);
+    return Wordlists.roman_numerals.indexOf(numeral);
   }
 }
