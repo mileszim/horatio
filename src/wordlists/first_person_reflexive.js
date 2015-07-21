@@ -1,4 +1,4 @@
 /** First Person Reflexive */
-export first_person_reflexive = [
+export const first_person_reflexive = [
   'myself'
 ];

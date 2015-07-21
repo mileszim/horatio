@@ -1,3 +1,3 @@
 /** Act and Scene */
-export act   = ['Act'];
-export scene = ['Scene'];
+export const act   = ['Act'];
+export const scene = ['Scene'];

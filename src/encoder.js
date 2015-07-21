@@ -1,5 +1,5 @@
-import Generator from 'generator';
-import Program   from 'program';
+import Generator from './generator';
+import Program   from './program';
 
 /**
  * Horatio Encoder

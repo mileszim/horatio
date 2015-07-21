@@ -1,5 +1,5 @@
 /** Negative Comparatives */
-export negative_comparatives = [
+export const negative_comparatives = [
   'punier',
   'smaller',
   'worse'

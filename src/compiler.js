@@ -1,6 +1,6 @@
-import Parser  from 'parser';
-import Checker from 'checker';
-import Encoder from 'encoder';
+import Parser  from './parser';
+import Checker from './checker';
+import Encoder from './encoder';
 
 /**
  * Compiles SPL into javascript

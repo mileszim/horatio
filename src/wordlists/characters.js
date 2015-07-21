@@ -1,5 +1,5 @@
 /** Characters */
-export characters = [
+export const characters = [
   'Achilles',
   'Adonis',
   'Adriana',

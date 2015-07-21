@@ -1,6 +1,6 @@
-import Token     from 'token';
-import Tokenizer from 'tokenizer';
-import AST       from 'ast';
+import Token     from './token';
+import Tokenizer from './tokenizer';
+import AST       from './ast';
 
 /**
  * Parses an SPL program and generates an AST.

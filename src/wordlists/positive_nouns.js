@@ -1,5 +1,5 @@
 /** Positive Nouns */
-export positive_nouns = [
+export const positive_nouns = [
   'Heaven',
   'King',
   'Lord',

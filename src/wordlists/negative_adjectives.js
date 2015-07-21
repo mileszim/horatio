@@ -1,5 +1,5 @@
 /** Negative Adjective */
-export negative_adjectives = [
+export const negative_adjectives = [
   'bad',
   'big',
   'cowardly',

@@ -1,5 +1,5 @@
-import Wordlists from 'wordlists';
-import Token     from 'token';
+import Wordlists from './wordlists';
+import Token     from './token';
 
 /**
  * SPL Tokenizer

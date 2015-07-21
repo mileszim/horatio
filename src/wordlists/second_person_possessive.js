@@ -1,5 +1,5 @@
 /** Second Person Possessive */
-export second_person_possessive = [
+export const second_person_possessive = [
   'thine',
   'thy',
   'your'

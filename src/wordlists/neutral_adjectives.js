@@ -1,4 +1,4 @@
-export neutral_adjectives = [
+export const neutral_adjectives = [
   'black',
   'blue',
   'bluest',

@@ -1,5 +1,5 @@
 /** Nothing */
-export nothing = [
+export const nothing = [
   'nothing',
   'zero'
 ];

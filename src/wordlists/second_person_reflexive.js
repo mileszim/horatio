@@ -1,5 +1,5 @@
 /** Second Person Reflexive */
-export second_person_reflexive = [
+export const second_person_reflexive = [
   'thyself',
   'yourself'
 ];

@@ -1,4 +1,4 @@
-import Compiler from 'compiler';
+import Compiler from './compiler';
 
 /**
  * Horatio
@@ -11,3 +11,5 @@ export default class Horatio extends Compiler {
     super(io);
   }
 }
+
+module.exports = Horatio;

@@ -1,5 +1,5 @@
 /** Second Person */
-export second_person = [
+export const second_person = [
   'thee',
   'thou',
   'you'

@@ -1,4 +1,4 @@
-import Semantics from 'semantics';
+import Semantics from './semantics';
 
 /**
  * Horatio Checker

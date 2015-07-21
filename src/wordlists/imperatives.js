@@ -1,4 +1,4 @@
-export imperatives = [
+export const imperatives = [
   'Let us',
   'let us',
   'We shall',
@@ -7,9 +7,9 @@ export imperatives = [
   'we must'
 ];
 
-export to = ['to'];
+export const to = ['to'];
 
-export proceed = [
+export const proceed = [
   'proceed',
   'return'
 ];

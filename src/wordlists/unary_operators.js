@@ -1,4 +1,4 @@
-export unary_operators = [
+export const unary_operators = [
   'square of',
   'cube of',
   'square root of',

@@ -1,4 +1,4 @@
-import Character from 'character';
+import Character from './character';
 
 /**
  * A Horatio Program

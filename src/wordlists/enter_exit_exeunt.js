@@ -1,4 +1,4 @@
 /** Enter, Exit, and Exeunt */
-export enter  = ['Enter'];
-export exit   = ['Exit'];
-export exeunt = ['Exeunt'];
+export const enter  = ['Enter'];
+export const exit   = ['Exit'];
+export const exeunt = ['Exeunt'];

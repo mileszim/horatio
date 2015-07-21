@@ -1,5 +1,5 @@
 /** Positive Adjectives */
-export positive_adjectives = [
+export const positive_adjectives = [
   'amazing',
   'beautiful',
   'blossoming',

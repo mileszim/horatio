@@ -1,5 +1,5 @@
 /** Articles **/
-export articles = [
+export const articles = [
   'a',
   'an',
   'the'

@@ -1,5 +1,5 @@
 /** Be */
-export be = [
+export const be = [
   'Thou art',
   'You are',
   'I am',
@@ -11,7 +11,7 @@ export be = [
   //'is'
 ];
 
-export be_comparatives = [
+export const be_comparatives = [
   'Art thou',
   'Are you',
   'Am I'

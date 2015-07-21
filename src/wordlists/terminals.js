@@ -1,5 +1,5 @@
 /** Terminals
-export terminals = [
+export const terminals = [
   ":",
   ",",
   "[",
@@ -8,21 +8,21 @@ export terminals = [
   "]"
 ];
 
-export line_terminals = [
+export const line_terminals = [
   '\\.',
   "?",
   "!",
   '\\]'
 ];
 
-export character_terminal = ",";
+export const character_terminal = ",";
 */
 
-export colon             = ['COLON'];
-export comma             = ['COMMA'];
-export period            = ['PERIOD'];
-export exclamation_point = ['EXCLAMATION_POINT'];
-export question_mark     = ['QUESTION_MARK'];
-export ampersand         = ['&'];
-export left_bracket      = ['LEFT_BRACKET'];
-export right_bracket     = ['RIGHT_BRACKET'];
+export const colon             = ['COLON'];
+export const comma             = ['COMMA'];
+export const period            = ['PERIOD'];
+export const exclamation_point = ['EXCLAMATION_POINT'];
+export const question_mark     = ['QUESTION_MARK'];
+export const ampersand         = ['&'];
+export const left_bracket      = ['LEFT_BRACKET'];
+export const right_bracket     = ['RIGHT_BRACKET'];

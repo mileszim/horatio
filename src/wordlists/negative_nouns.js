@@ -1,5 +1,5 @@
 /** Negative Nouns */
-export negative_nouns = [
+export const negative_nouns = [
   'Hell',
   'Microsoft',
   'bastard',

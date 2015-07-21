@@ -1,5 +1,5 @@
 /** First Person */
-export first_person = [
+export const first_person = [
   'I',
   'i',
   'me'

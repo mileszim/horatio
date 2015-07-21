@@ -1,5 +1,5 @@
 /** Positive Comparatives */
-export positive_comparatives = [
+export const positive_comparatives = [
   'better',
   'bigger',
   'fresher',
