@@ -1,5 +1,5 @@
 /** First Person Possessive */
-Horatio.Wordlists.first_person_possessive = [
+export first_person_possessive = [
   'mine',
   'my'
 ];

@@ -1,4 +1,4 @@
-Horatio.Wordlists.imperatives = [
+export imperatives = [
   'Let us',
   'let us',
   'We shall',
@@ -7,9 +7,9 @@ Horatio.Wordlists.imperatives = [
   'we must'
 ];
 
-Horatio.Wordlists.to = ['to'];
+export to = ['to'];
 
-Horatio.Wordlists.return = [
+export proceed = [
   'proceed',
   'return'
 ];

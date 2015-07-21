@@ -1,5 +1,5 @@
 /** Third Person Possessive */
-Horatio.Wordlists.third_person_possessive = [
+export third_person_possessive = [
   'his',
   'her',
   'its',

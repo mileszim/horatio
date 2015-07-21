@@ -110,7 +110,7 @@ export default class Tokenizer {
 
     wl.imperatives           .forEach(function(w) { self.dictionary[w] = 30; });
     wl.to                    .forEach(function(w) { self.dictionary[w] = 31; });
-    wl.return                .forEach(function(w) { self.dictionary[w] = 32; });
+    wl.proceed               .forEach(function(w) { self.dictionary[w] = 32; });
 
     wl.positive_comparatives .forEach(function(w) { self.dictionary[w] = 40; });
     wl.negative_comparatives .forEach(function(w) { self.dictionary[w] = 41; });

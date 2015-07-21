@@ -1,5 +1,5 @@
 /** Negative Adjective */
-Horatio.Wordlists.negative_adjectives = [
+export negative_adjectives = [
   'bad',
   'big',
   'cowardly',

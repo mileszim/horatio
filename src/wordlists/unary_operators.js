@@ -1,4 +1,4 @@
-Horatio.Wordlists.unary_operators = [
+export unary_operators = [
   'square of',
   'cube of',
   'square root of',

@@ -1,10 +1,10 @@
-Horatio.Wordlists.first_person_pronouns = [
+export first_person_pronouns = [
   //'I',
   'myself',
   'me'
 ];
 
-Horatio.Wordlists.second_person_pronouns = [
+export second_person_pronouns = [
   'you',
   'yourself',
   'thyself',

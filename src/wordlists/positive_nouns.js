@@ -1,5 +1,5 @@
 /** Positive Nouns */
-Horatio.Wordlists.positive_nouns = [
+export positive_nouns = [
   'Heaven',
   'King',
   'Lord',

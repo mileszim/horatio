@@ -1,5 +1,5 @@
 /** Nothing */
-Horatio.Wordlists.nothing = [
+export nothing = [
   'nothing',
   'zero'
 ];

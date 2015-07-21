@@ -1,4 +1,4 @@
-Horatio.Wordlists.neutral_adjectives = [
+export neutral_adjectives = [
   'black',
   'blue',
   'bluest',
