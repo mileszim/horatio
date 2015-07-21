@@ -1,0 +1,29 @@
+{
+  "name": "horatio",
+  "version": "0.0.0",
+  "description": "A javascript compiler for the Shakespeare Programming Language",
+  "main": "dist/horatio.js",
+  "dependencies": {},
+  "devDependencies": {
+    "babelify": "^6.1.3",
+    "grunt": "^0.4.5",
+    "grunt-browserify": "^3.8.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mileszim/horatio.git"
+  },
+  "keywords": [
+    "shakespeare",
+    "shakespearelang"
+  ],
+  "author": "Miles Zimmerman",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mileszim/horatio/issues"
+  },
+  "homepage": "https://github.com/mileszim/horatio"
+}

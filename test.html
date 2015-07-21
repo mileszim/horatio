@@ -1,0 +1,12 @@
+<html>
+  <head>
+    <script src="./dist/horatio.js"></script>
+    <script>
+    var konsole = console;
+    konsole.print = console.log;
+      var c = new Horatio(konsole);
+      var r = c.compile("Some test comment here. Romeo, a test character. Juliet, another test character. Act I: A test act. Scene I: a test scene. [Enter Romeo & Juliet] Romeo: You are as beautiful as a bold black flower. Open your heart! [Exeunt]");
+      r.run();
+    </script>
+  </head>
+</html>
