@@ -1,199 +1,201 @@
+import Token     from './token';
+import Tokenizer from './tokenizer';
+import AST       from './ast';
+
 /**
  * Parses an SPL program and generates an AST.
  * @memberof Horatio
  * @param {string} input - The SPL program to parse
- * @constructor
  */
-Horatio.Parser = function(input) {
-  this.tokenizer    = new Horatio.Tokenizer(input);
-  this.currentToken = null;
-};
+export default class Parser {
+  constructor(input) {
+    this.tokenizer    = new Tokenizer(input);
+    this.currentToken = null;
+  }
 
-Horatio.Parser.prototype = {
-  
   /**
    * Accept the current token if it matches an expected kind
    * @param  {number}      expectedKind - The byte value of the expected token
    * @throws {SyntaxError}              - Throws syntax error if current token kind does not match expected token kind.
    */
-  accept: function(expectedKind) {
+  accept(expectedKind) {
     if (this.currentToken.kind === expectedKind) {
       this.currentToken = this.tokenizer.nextToken();
     } else {
       throw new Error("Syntax Error - Unexpected Token: " + JSON.stringify(this.currentToken));
     }
-  },
-  
+  }
+
   /**
    * Accept the current token regardless of kind
    */
-  acceptIt: function() {
+  acceptIt() {
     this.currentToken = this.tokenizer.nextToken();
-  },
-  
+  }
+
   /**
    * Parse the SPL program and return an AST
-   * @returns {Horatio.AST.Program} - The program AST.
+   * @returns {AST.Program} - The program AST.
    */
-  parse: function() {
+  parse() {
     this.currentToken = this.tokenizer.nextToken();
-    var program = this.parseProgram();
+    let program = this.parseProgram();
     //console.log(program);
     if (this.currentToken !== -1) {
       throw new Error("Syntax Error - unexpected end of program");
     }
     return program;
-  },
-  
-  
-  
+  }
+
+
+
   /* Parsers */
-  parseProgram: function() {
-    var comment = this.parseComment();
-    this.accept(Horatio.Token.PERIOD);
-    var declarations = [this.parseDeclaration()];
-    while (this.currentToken.kind===Horatio.Token.CHARACTER) {
+  parseProgram() {
+    let comment = this.parseComment();
+    this.accept(Token.PERIOD);
+    let declarations = [this.parseDeclaration()];
+    while (this.currentToken.kind===Token.CHARACTER) {
       declarations.push(this.parseDeclaration());
     }
-    var parts = [this.parsePart()];
-    while (this.currentToken.kind===Horatio.Token.ACT) {
+    let parts = [this.parsePart()];
+    while (this.currentToken.kind===Token.ACT) {
       parts.push(this.parsePart());
     }
-    return new Horatio.AST.Program(comment, declarations, parts);
-  },
-  
-  
-  parseComment: function() {
-    var comment = "";
-    while (this.currentToken.kind!==Horatio.Token.PERIOD) {
+    return new AST.Program(comment, declarations, parts);
+  }
+
+
+  parseComment() {
+    let comment = "";
+    while (this.currentToken.kind!==Token.PERIOD) {
       comment += this.currentToken.sequence + " ";
       this.acceptIt();
     }
-    return new Horatio.AST.Comment(comment.trim());
-  },
-  
-  
-  parseDeclaration: function() {
-    var character = new Horatio.AST.Character(this.currentToken.sequence);
-    this.accept(Horatio.Token.CHARACTER);
-    this.accept(Horatio.Token.COMMA);
-    var comment = this.parseComment();
-    this.accept(Horatio.Token.PERIOD);
-    return new Horatio.AST.Declaration(character, comment);
-  },
-  
-  
-  parsePart: function() {
-    this.accept(Horatio.Token.ACT);
-    var numeral = new Horatio.AST.Numeral(this.currentToken.sequence);
-    this.accept(Horatio.Token.ROMAN_NUMERAL);
-    this.accept(Horatio.Token.COLON);
-    var comment = this.parseComment();
-    this.accept(Horatio.Token.PERIOD);
-    var subparts = [this.parseSubPart()];
-    while (this.currentToken.kind===Horatio.Token.SCENE) {
+    return new AST.Comment(comment.trim());
+  }
+
+
+  parseDeclaration() {
+    let character = new AST.Character(this.currentToken.sequence);
+    this.accept(Token.CHARACTER);
+    this.accept(Token.COMMA);
+    let comment = this.parseComment();
+    this.accept(Token.PERIOD);
+    return new AST.Declaration(character, comment);
+  }
+
+
+  parsePart() {
+    this.accept(Token.ACT);
+    let numeral = new AST.Numeral(this.currentToken.sequence);
+    this.accept(Token.ROMAN_NUMERAL);
+    this.accept(Token.COLON);
+    let comment = this.parseComment();
+    this.accept(Token.PERIOD);
+    let subparts = [this.parseSubPart()];
+    while (this.currentToken.kind===Token.SCENE) {
       subparts.push(this.parseSubPart());
     }
-    return new Horatio.AST.Part(numeral, comment, subparts);
-  },
-  
-  
-  parseSubPart: function() {
-    this.accept(Horatio.Token.SCENE);
-    var numeral = new Horatio.AST.Numeral(this.currentToken.sequence);
-    this.accept(Horatio.Token.ROMAN_NUMERAL);
-    this.accept(Horatio.Token.COLON);
-    var comment = this.parseComment();
-    this.accept(Horatio.Token.PERIOD);
-    var stage = this.parseStage();
-    return new Horatio.AST.Subpart(numeral, comment, stage);
-  },
-  
-  
-  parseStage: function() {
-    var start_presence, end_presence;
-    if (this.currentToken.kind===Horatio.Token.LEFT_BRACKET) {
+    return new AST.Part(numeral, comment, subparts);
+  }
+
+
+  parseSubPart() {
+    this.accept(Token.SCENE);
+    let numeral = new AST.Numeral(this.currentToken.sequence);
+    this.accept(Token.ROMAN_NUMERAL);
+    this.accept(Token.COLON);
+    let comment = this.parseComment();
+    this.accept(Token.PERIOD);
+    let stage = this.parseStage();
+    return new AST.Subpart(numeral, comment, stage);
+  }
+
+
+  parseStage() {
+    let start_presence, end_presence;
+    if (this.currentToken.kind===Token.LEFT_BRACKET) {
       start_presence = this.parsePresence();
     }
-    var dialogue = this.parseDialogue();
-    if (this.currentToken.kind===Horatio.Token.LEFT_BRACKET) {
+    let dialogue = this.parseDialogue();
+    if (this.currentToken.kind===Token.LEFT_BRACKET) {
       end_presence = this.parsePresence();
     }
-    return new Horatio.AST.Stage(dialogue, start_presence, end_presence);
-  },
-  
-  
-  parsePresence: function() {
-    this.accept(Horatio.Token.LEFT_BRACKET);
-    var c1, c2, ret;
+    return new AST.Stage(dialogue, start_presence, end_presence);
+  }
+
+
+  parsePresence() {
+    this.accept(Token.LEFT_BRACKET);
+    let c1, c2, ret;
     switch (this.currentToken.kind) {
-      
-      case Horatio.Token.ENTER:
+
+      case Token.ENTER:
         this.acceptIt();
-        c1 = new Horatio.AST.Character(this.currentToken.sequence);
+        c1 = new AST.Character(this.currentToken.sequence);
         c2 = null;
-        this.accept(Horatio.Token.CHARACTER);
-        if (this.currentToken.kind===Horatio.Token.AMPERSAND) {
+        this.accept(Token.CHARACTER);
+        if (this.currentToken.kind===Token.AMPERSAND) {
           this.acceptIt();
-          c2 = new Horatio.AST.Character(this.currentToken.sequence);
-          this.accept(Horatio.Token.CHARACTER);
+          c2 = new AST.Character(this.currentToken.sequence);
+          this.accept(Token.CHARACTER);
         }
-        ret = new Horatio.AST.Enter(c1, c2);
+        ret = new AST.Enter(c1, c2);
         break;
-        
-      case Horatio.Token.EXIT:
+
+      case Token.EXIT:
         this.acceptIt();
-        var character = new Horatio.AST.Character(this.currentToken.sequence);
-        this.accept(Horatio.Token.CHARACTER);
-        ret = new Horatio.AST.Exit(character);
+        let character = new AST.Character(this.currentToken.sequence);
+        this.accept(Token.CHARACTER);
+        ret = new AST.Exit(character);
         break;
-      
-      case Horatio.Token.EXEUNT:
+
+      case Token.EXEUNT:
         this.acceptIt();
-        if (this.currentToken.kind===Horatio.Token.CHARACTER) {
-          c1 = new Horatio.AST.Character(this.currentToken.sequence);
+        if (this.currentToken.kind===Token.CHARACTER) {
+          c1 = new AST.Character(this.currentToken.sequence);
           this.acceptIt();
-          this.accept(Horatio.Token.AMPERSAND);
-          c2 = new Horatio.AST.Character(this.currentToken.sequence);
-          this.accept(Horatio.Token.CHARACTER);
-          ret = new Horatio.AST.Exeunt(c1, c2);
+          this.accept(Token.AMPERSAND);
+          c2 = new AST.Character(this.currentToken.sequence);
+          this.accept(Token.CHARACTER);
+          ret = new AST.Exeunt(c1, c2);
         } else {
-          ret = new Horatio.AST.Exeunt();
+          ret = new AST.Exeunt();
         }
         break;
     }
-    this.accept(Horatio.Token.RIGHT_BRACKET);
+    this.accept(Token.RIGHT_BRACKET);
     return ret;
-  },
-  
-  
-  parseDialogue: function() {
-    var lines = [this.parseLine()];
-    while (this.currentToken.kind===Horatio.Token.CHARACTER) {
+  }
+
+
+  parseDialogue() {
+    let lines = [this.parseLine()];
+    while (this.currentToken.kind===Token.CHARACTER) {
       lines.push(this.parseLine());
     }
-    return new Horatio.AST.Dialogue(lines);
-  },
-  
-  
-  parseLine: function() {
-    var character = new Horatio.AST.Character(this.currentToken.sequence);
-    this.accept(Horatio.Token.CHARACTER);
-    this.accept(Horatio.Token.COLON);
-    var sentences = [this.parseSentence()];
-    
+    return new AST.Dialogue(lines);
+  }
+
+
+  parseLine() {
+    let character = new AST.Character(this.currentToken.sequence);
+    this.accept(Token.CHARACTER);
+    this.accept(Token.COLON);
+    let sentences = [this.parseSentence()];
+
     function isSentence(token) {
       switch(token) {
-        case Horatio.Token.BE:
-        case Horatio.Token.BE_COMPARATIVE:
-        case Horatio.Token.IF_SO:
-        case Horatio.Token.IMPERATIVE:
-        case Horatio.Token.INPUT_INTEGER:
-        case Horatio.Token.INPUT_CHAR:
-        case Horatio.Token.OUTPUT_INTEGER:
-        case Horatio.Token.OUTPUT_CHAR:
-        case Horatio.Token.REMEMBER:
-        case Horatio.Token.RECALL:
+        case Token.BE:
+        case Token.BE_COMPARATIVE:
+        case Token.IF_SO:
+        case Token.IMPERATIVE:
+        case Token.INPUT_INTEGER:
+        case Token.INPUT_CHAR:
+        case Token.OUTPUT_INTEGER:
+        case Token.OUTPUT_CHAR:
+        case Token.REMEMBER:
+        case Token.RECALL:
           return true;
         default:
           return false;
@@ -202,366 +204,365 @@ Horatio.Parser.prototype = {
     while (isSentence(this.currentToken.kind)) {
       sentences.push(this.parseSentence());
     }
-    return new Horatio.AST.Line(character, sentences);
-  },
-  
-  
-  parseSentence: function() {
-    var sentence;
+    return new AST.Line(character, sentences);
+  }
+
+
+  parseSentence() {
+    let sentence;
     switch (this.currentToken.kind) {
-      
-      case Horatio.Token.BE:
+
+      case Token.BE:
         sentence = this.parseAssignment();
-        //this.accept(Horatio.Token.PERIOD);
+        //this.accept(Token.PERIOD);
         this.acceptIt();
         break;
-        
-      case Horatio.Token.BE_COMPARATIVE:
+
+      case Token.BE_COMPARATIVE:
         sentence = this.parseQuestion();
-        this.accept(Horatio.Token.QUESTION_MARK);
+        this.accept(Token.QUESTION_MARK);
         break;
-      
-      case Horatio.Token.IF_SO:
+
+      case Token.IF_SO:
         sentence = this.parseResponse();
-        this.accept(Horatio.Token.PERIOD);
+        this.accept(Token.PERIOD);
         break;
-      
-      case Horatio.Token.IMPERATIVE:
+
+      case Token.IMPERATIVE:
         sentence = this.parseGoto();
-        this.accept(Horatio.Token.PERIOD);
+        this.accept(Token.PERIOD);
         break;
-      
-      case Horatio.Token.INPUT_INTEGER:
-      case Horatio.Token.INPUT_CHAR:
+
+      case Token.INPUT_INTEGER:
+      case Token.INPUT_CHAR:
         sentence = this.parseInput();
-        this.accept(Horatio.Token.EXCLAMATION_POINT);
+        this.accept(Token.EXCLAMATION_POINT);
         break;
-      
-      case Horatio.Token.OUTPUT_INTEGER:
-      case Horatio.Token.OUTPUT_CHAR:
+
+      case Token.OUTPUT_INTEGER:
+      case Token.OUTPUT_CHAR:
         sentence = this.parseOutput();
-        this.accept(Horatio.Token.EXCLAMATION_POINT);
+        this.accept(Token.EXCLAMATION_POINT);
         break;
-      
-      case Horatio.Token.REMEMBER:
+
+      case Token.REMEMBER:
         sentence = this.parseRemember();
-        this.accept(Horatio.Token.EXCLAMATION_POINT);
+        this.accept(Token.EXCLAMATION_POINT);
         break;
-      
-      case Horatio.Token.RECALL:
+
+      case Token.RECALL:
         sentence = this.parseRecall();
-        this.accept(Horatio.Token.EXCLAMATION_POINT);
+        this.accept(Token.EXCLAMATION_POINT);
         break;
     }
     return sentence;
-  },
-  
-  
-  parseBe: function() {
-    var be;
-    if (this.currentToken.kind===Horatio.Token.BE) {
-      be = new Horatio.AST.Be(this.currentToken.sequence);
+  }
+
+
+  parseBe() {
+    let be;
+    if (this.currentToken.kind===Token.BE) {
+      be = new AST.Be(this.currentToken.sequence);
       this.acceptIt();
     }
     return be;
-  },
-  
-  
-  parseAssignment: function() {
-    var be = this.parseBe();
-    if (this.currentToken.kind===Horatio.Token.AS) {
+  }
+
+
+  parseAssignment() {
+    let be = this.parseBe();
+    if (this.currentToken.kind===Token.AS) {
       this.acceptIt();
       this.parseAdjective();
-      this.accept(Horatio.Token.AS);
+      this.accept(Token.AS);
     }
-    var value = this.parseValue();
-    return new Horatio.AST.AssignmentSentence(be, value);
-  },
-  
-  
-  parseValue: function() {
-    var value, pronoun;
-    if (this.currentToken.kind===Horatio.Token.ARTICLE) {
+    let value = this.parseValue();
+    return new AST.AssignmentSentence(be, value);
+  }
+
+
+  parseValue() {
+    let value, pronoun;
+    if (this.currentToken.kind===Token.ARTICLE) {
       this.acceptIt();
     }
     switch (this.currentToken.kind) {
-      
-      case Horatio.Token.UNARY_OPERATOR:
+
+      case Token.UNARY_OPERATOR:
         value = this.parseUnaryOperation();
         break;
-      
-      case Horatio.Token.ARITHMETIC_OPERATOR:
+
+      case Token.ARITHMETIC_OPERATOR:
         value = this.parseArithmeticOperation();
         break;
-      
-      case Horatio.Token.POSITIVE_ADJECTIVE:
-      case Horatio.Token.NEUTRAL_ADJECTIVE:
-      case Horatio.Token.NEGATIVE_ADJECTIVE:
-      case Horatio.Token.POSITIVE_NOUN:
-      case Horatio.Token.NEUTRAL_NOUN:
-      case Horatio.Token.NEGATIVE_NOUN:
+
+      case Token.POSITIVE_ADJECTIVE:
+      case Token.NEUTRAL_ADJECTIVE:
+      case Token.NEGATIVE_ADJECTIVE:
+      case Token.POSITIVE_NOUN:
+      case Token.NEUTRAL_NOUN:
+      case Token.NEGATIVE_NOUN:
         value = this.parseConstant();
         break;
-        
-      case Horatio.Token.FIRST_PERSON_PRONOUN:
-        pronoun = new Horatio.AST.FirstPersonPronoun(this.currentToken.sequence);
-        value   = new Horatio.AST.PronounValue(pronoun);
+
+      case Token.FIRST_PERSON_PRONOUN:
+        pronoun = new AST.FirstPersonPronoun(this.currentToken.sequence);
+        value   = new AST.PronounValue(pronoun);
         this.acceptIt();
         break;
-      case Horatio.Token.SECOND_PERSON_PRONOUN:
-        pronoun = new Horatio.AST.SecondPersonPronoun(this.currentToken.sequence);
-        value   = new Horatio.AST.PronounValue(pronoun);
+      case Token.SECOND_PERSON_PRONOUN:
+        pronoun = new AST.SecondPersonPronoun(this.currentToken.sequence);
+        value   = new AST.PronounValue(pronoun);
         this.acceptIt();
         break;
       default:
         throw new Error("Syntax Error - Unknown Token: "+this.currentToken.sequence);
     }
     return value;
-  },
-  
-  
-  parseUnaryOperation: function() {
-    var operator = new Horatio.AST.UnaryOperator(this.currentToken.sequence);
-    this.accept(Horatio.Token.UNARY_OPERATOR);
-    var value = this.parseValue();
-    return new Horatio.AST.UnaryOperationValue(operator, value);
-  },
-  
-  
-  parseArithmeticOperation: function() {
-    if (this.currentToken.kind===Horatio.Token.ARTICLE) {
+  }
+
+
+  parseUnaryOperation() {
+    let operator = new AST.UnaryOperator(this.currentToken.sequence);
+    this.accept(Token.UNARY_OPERATOR);
+    let value = this.parseValue();
+    return new AST.UnaryOperationValue(operator, value);
+  }
+
+
+  parseArithmeticOperation() {
+    if (this.currentToken.kind===Token.ARTICLE) {
       this.acceptIt();
     }
-    var operator = new Horatio.AST.ArithmeticOperator(this.currentToken.sequence);
-    this.accept(Horatio.Token.ARITHMETIC_OPERATOR);
-    var value_1 = this.parseValue();
-    this.accept(Horatio.Token.AND);
-    var value_2 = this.parseValue();
-    return new Horatio.AST.ArithmeticOperationValue(operator, value_1, value_2);
-  },
-  
-  
-  parseConstant: function() {
-    if (this.currentToken.kind===Horatio.Token.ARTICLE) {
+    let operator = new AST.ArithmeticOperator(this.currentToken.sequence);
+    this.accept(Token.ARITHMETIC_OPERATOR);
+    let value_1 = this.parseValue();
+    this.accept(Token.AND);
+    let value_2 = this.parseValue();
+    return new AST.ArithmeticOperationValue(operator, value_1, value_2);
+  }
+
+
+  parseConstant() {
+    if (this.currentToken.kind===Token.ARTICLE) {
       this.acceptIt();
     }
     switch (this.currentToken.kind) {
-      
-      case Horatio.Token.NEUTRAL_ADJECTIVE:
-      case Horatio.Token.NEUTRAL_NOUN:
+
+      case Token.NEUTRAL_ADJECTIVE:
+      case Token.NEUTRAL_NOUN:
         throw new Error("Syntax Error - Constant Value cannot start with neutral adjective or noun.");
-      
-      case Horatio.Token.POSITIVE_ADJECTIVE:
-      case Horatio.Token.POSITIVE_NOUN:
+
+      case Token.POSITIVE_ADJECTIVE:
+      case Token.POSITIVE_NOUN:
         return this.parsePositiveConstant();
-      
-      case Horatio.Token.NEGATIVE_ADJECTIVE:
-      case Horatio.Token.NEGATIVE_NOUN:
+
+      case Token.NEGATIVE_ADJECTIVE:
+      case Token.NEGATIVE_NOUN:
         return this.parseNegativeConstant();
-        
+
       default:
         throw new Error("Syntax Error - Unknown Token: "+this.currentToken.sequence);
-        
+
     }
-  },
-  
-  
-  parsePositiveConstant: function() {
-    var adjectives = [];
-    var adjective;
-    while (this.currentToken.kind!==Horatio.Token.POSITIVE_NOUN) {
+  }
+
+
+  parsePositiveConstant() {
+    let adjectives = [];
+    let adjective;
+    while (this.currentToken.kind!==Token.POSITIVE_NOUN) {
       switch (this.currentToken.kind) {
-        case Horatio.Token.POSITIVE_ADJECTIVE:
-          adjective = new Horatio.AST.PositiveAdjective(this.currentToken.sequence);
+        case Token.POSITIVE_ADJECTIVE:
+          adjective = new AST.PositiveAdjective(this.currentToken.sequence);
           adjectives.push(adjective);
           this.acceptIt();
           break;
-        case Horatio.Token.NEUTRAL_ADJECTIVE:
-          adjective = new Horatio.AST.NeutralAdjective(this.currentToken.sequence);
+        case Token.NEUTRAL_ADJECTIVE:
+          adjective = new AST.NeutralAdjective(this.currentToken.sequence);
           adjectives.push(adjective);
           this.acceptIt();
           break;
-        case Horatio.Token.NEGATIVE_ADJECTIVE:
+        case Token.NEGATIVE_ADJECTIVE:
           throw new Error("Syntax Error - Cannot mix positive and negative words in constant assignment.");
       }
     }
-    var noun = new Horatio.AST.PositiveNoun(this.currentToken.sequence);
-    this.accept(Horatio.Token.POSITIVE_NOUN);
-    return new Horatio.AST.PositiveConstantValue(noun, adjectives);
-  },
-  
-  
-  parseNegativeConstant: function() {
-    var adjectives = [];
-    var adjective;
-    while (this.currentToken.kind!==Horatio.Token.NEGATIVE_NOUN) {
+    let noun = new AST.PositiveNoun(this.currentToken.sequence);
+    this.accept(Token.POSITIVE_NOUN);
+    return new AST.PositiveConstantValue(noun, adjectives);
+  }
+
+
+  parseNegativeConstant() {
+    let adjectives = [];
+    let adjective;
+    while (this.currentToken.kind!==Token.NEGATIVE_NOUN) {
       switch (this.currentToken.kind) {
-        case Horatio.Token.NEGATIVE_ADJECTIVE:
-          adjective = new Horatio.AST.NegativeAdjective(this.currentToken.sequence);
+        case Token.NEGATIVE_ADJECTIVE:
+          adjective = new AST.NegativeAdjective(this.currentToken.sequence);
           adjectives.push(adjective);
           this.acceptIt();
           break;
-        case Horatio.Token.NEUTRAL_ADJECTIVE:
-          adjective = new Horatio.AST.NeutralAdjective(this.currentToken.sequence);
+        case Token.NEUTRAL_ADJECTIVE:
+          adjective = new AST.NeutralAdjective(this.currentToken.sequence);
           adjectives.push(adjective);
           this.acceptIt();
           break;
-        case Horatio.Token.POSITIVE_ADJECTIVE:
+        case Token.POSITIVE_ADJECTIVE:
           throw new Error("Syntax Error - Cannot mix positive and negative words in constant assignment.");
       }
     }
-    var noun = new Horatio.AST.NegativeNoun(this.currentToken.sequence);
-    this.accept(Horatio.Token.NEGATIVE_NOUN);
-    return new Horatio.AST.NegativeConstantValue(noun, adjectives);
-  },
-  
-  
-  parseQuestion: function() {
-    var be         = this.parseBeComparative();
-    var comparison = this.parseComparative();
-    var value      = this.parseValue();
-    return new Horatio.AST.QuestionSentence(be, comparison, value);
-  },
-  
-  
-  parseBeComparative: function() {
-    var be_comparative;
-    if (this.currentToken.kind===Horatio.Token.BE_COMPARATIVE) {
-      be_comparative = new Horatio.AST.BeComparative(this.currentToken.sequence);
+    let noun = new AST.NegativeNoun(this.currentToken.sequence);
+    this.accept(Token.NEGATIVE_NOUN);
+    return new AST.NegativeConstantValue(noun, adjectives);
+  }
+
+
+  parseQuestion() {
+    let be         = this.parseBeComparative();
+    let comparison = this.parseComparative();
+    let value      = this.parseValue();
+    return new AST.QuestionSentence(be, comparison, value);
+  }
+
+
+  parseBeComparative() {
+    let be_comparative;
+    if (this.currentToken.kind===Token.BE_COMPARATIVE) {
+      be_comparative = new AST.BeComparative(this.currentToken.sequence);
     }
     return be_comparative;
-  },
-  
-  
-  parseComparative: function() {
-    var comparison, comparative, adjective;
+  }
+
+
+  parseComparative() {
+    let comparison, comparative, adjective;
     switch (this.currentToken.kind) {
-      
-      case Horatio.Token.POSITIVE_COMPARATIVE:
-        comparative = new Horatio.AST.PositiveComparative(this.currentToken.sequence);
-        comparison  = new Horatio.AST.GreaterThanComparison(comparative);
+
+      case Token.POSITIVE_COMPARATIVE:
+        comparative = new AST.PositiveComparative(this.currentToken.sequence);
+        comparison  = new AST.GreaterThanComparison(comparative);
         this.acceptIt();
-        this.accept(Horatio.Token.THAN);
+        this.accept(Token.THAN);
         break;
-      case Horatio.Token.NEGATIVE_COMPARATIVE:
-        comparative = new Horatio.AST.NegativeComparative(this.currentToken.sequence);
-        comparison  = new Horatio.AST.LesserThanComparison(comparative);
+      case Token.NEGATIVE_COMPARATIVE:
+        comparative = new AST.NegativeComparative(this.currentToken.sequence);
+        comparison  = new AST.LesserThanComparison(comparative);
         this.acceptIt();
-        this.accept(Horatio.Token.THAN);
+        this.accept(Token.THAN);
         break;
-        
-      case Horatio.Token.AS:
+
+      case Token.AS:
         this.acceptIt();
         adjective  = this.parseAdjective();
-        comparison = new Horatio.AST.EqualToComparison(adjective);
-        this.accept(Horatio.Token.AS);
+        comparison = new AST.EqualToComparison(adjective);
+        this.accept(Token.AS);
         break;
-      
-      case Horatio.Token.NOT:
+
+      case Token.NOT:
         this.acceptIt();
         comparative = this.parseComparative();
-        comparison  = new Horatio.AST.InverseComparison(comparative);
+        comparison  = new AST.InverseComparison(comparative);
         //switch (this.currentToken.kind) {
-        //  case Horatio.Token.POSITIVE_COMPARATIVE:
-        //  case Horatio.Token.NEGATIVE_COMPARATIVE:
+        //  case Token.POSITIVE_COMPARATIVE:
+        //  case Token.NEGATIVE_COMPARATIVE:
         //    this.acceptIt();
-        //    this.accept(Horatio.Token.THAN);
+        //    this.accept(Token.THAN);
         //    break;
         //}
         break;
     }
     return comparison;
-  },
-  
-  
-  parseResponse: function() {
-    this.accept(Horatio.Token.IF_SO);
-    this.accept(Horatio.Token.COMMA);
-    var goto = this.parseGoto();
-    return new Horatio.AST.ResponseSentence(goto);
-  },
-  
-  
-  parseGoto: function() {
-    this.accept(Horatio.Token.IMPERATIVE);
-    this.accept(Horatio.Token.RETURN);
-    this.accept(Horatio.Token.TO);
-    this.accept(Horatio.Token.SCENE);
-    var numeral = new Horatio.AST.Numeral(this.currentToken.sequence);
-    this.accept(Horatio.Token.ROMAN_NUMERAL);
-    return new Horatio.AST.Goto(numeral);
-  },
-  
-  
-  parseInput: function() {
-    var sequence = this.currentToken.sequence;
-    var ret;
+  }
+
+
+  parseResponse() {
+    this.accept(Token.IF_SO);
+    this.accept(Token.COMMA);
+    let goto = this.parseGoto();
+    return new AST.ResponseSentence(goto);
+  }
+
+
+  parseGoto() {
+    this.accept(Token.IMPERATIVE);
+    this.accept(Token.RETURN);
+    this.accept(Token.TO);
+    this.accept(Token.SCENE);
+    let numeral = new AST.Numeral(this.currentToken.sequence);
+    this.accept(Token.ROMAN_NUMERAL);
+    return new AST.Goto(numeral);
+  }
+
+
+  parseInput() {
+    let sequence = this.currentToken.sequence;
+    let ret;
     switch (this.currentToken.kind) {
-      case Horatio.Token.INPUT_INTEGER:
-        ret = new Horatio.AST.IntegerInputSentence(sequence);
+      case Token.INPUT_INTEGER:
+        ret = new AST.IntegerInputSentence(sequence);
         break;
-      case Horatio.Token.INPUT_CHAR:
-        ret = new Horatio.AST.CharInputSentence(sequence);
+      case Token.INPUT_CHAR:
+        ret = new AST.CharInputSentence(sequence);
         break;
     }
     this.acceptIt();
     return ret;
-  },
-  
-  
-  parseOutput: function() {
-    var sequence = this.currentToken.sequence;
-    var ret;
+  }
+
+
+  parseOutput() {
+    let sequence = this.currentToken.sequence;
+    let ret;
     switch (this.currentToken.kind) {
-      case Horatio.Token.OUTPUT_INTEGER:
-        ret = new Horatio.AST.IntegerOutputSentence(sequence);
+      case Token.OUTPUT_INTEGER:
+        ret = new AST.IntegerOutputSentence(sequence);
         break;
-      case Horatio.Token.OUTPUT_CHAR:
-        ret = new Horatio.AST.CharOutputSentence(sequence);
+      case Token.OUTPUT_CHAR:
+        ret = new AST.CharOutputSentence(sequence);
         break;
     }
     this.acceptIt();
     return ret;
-  },
-  
-  
-  parseRemember: function() {
-    this.accept(Horatio.Token.REMEMBER);
-    var pronoun;
+  }
+
+
+  parseRemember() {
+    this.accept(Token.REMEMBER);
+    let pronoun;
     switch (this.currentToken.kind) {
-      case Horatio.Token.FIRST_PERSON_PRONOUN:
-        pronoun = new Horatio.AST.FirstPersonPronoun(this.currentToken.sequence);
+      case Token.FIRST_PERSON_PRONOUN:
+        pronoun = new AST.FirstPersonPronoun(this.currentToken.sequence);
         this.acceptIt();
         break;
-      case Horatio.Token.SECOND_PERSON_PRONOUN:
-        pronoun = new Horatio.AST.SecondPersonPronoun(this.currentToken.sequence);
+      case Token.SECOND_PERSON_PRONOUN:
+        pronoun = new AST.SecondPersonPronoun(this.currentToken.sequence);
         this.acceptIt();
         break;
     }
-    return new Horatio.AST.RememberSentence(pronoun);
-  },
-  
-  
-  parseRecall: function() {
-    this.accept(Horatio.Token.RECALL);
-    this.accept(Horatio.Token.COMMA);
-    var comment = "";
-    while (this.currentToken.kind!==Horatio.Token.EXCLAMATION_POINT) {
+    return new AST.RememberSentence(pronoun);
+  }
+
+
+  parseRecall() {
+    this.accept(Token.RECALL);
+    this.accept(Token.COMMA);
+    let comment = "";
+    while (this.currentToken.kind!==Token.EXCLAMATION_POINT) {
       comment += this.currentToken.sequence + " ";
       this.acceptIt();
     }
-    return new Horatio.AST.RecallSentence(comment.trim());
-  },
-  
-  
-  parseAdjective: function() {
+    return new AST.RecallSentence(comment.trim());
+  }
+
+
+  parseAdjective() {
     switch (this.currentToken.kind) {
-      case Horatio.Token.POSITIVE_ADJECTIVE:
-      case Horatio.Token.NEUTRAL_ADJECTIVE:
-      case Horatio.Token.NEGATIVE_ADJECTIVE:
+      case Token.POSITIVE_ADJECTIVE:
+      case Token.NEUTRAL_ADJECTIVE:
+      case Token.NEGATIVE_ADJECTIVE:
         this.acceptIt();
         break;
     }
   }
-   
-};
+}

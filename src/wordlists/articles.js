@@ -1,5 +1,5 @@
 /** Articles **/
-Horatio.Wordlists.articles = [
+export const articles = [
   'a',
   'an',
   'the'

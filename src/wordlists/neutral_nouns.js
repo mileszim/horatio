@@ -1,4 +1,4 @@
-Horatio.Wordlists.neutral_nouns = [
+export const neutral_nouns = [
   'animal',
   'aunt',
   'brother',

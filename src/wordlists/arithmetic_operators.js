@@ -1,4 +1,4 @@
-Horatio.Wordlists.arithmetic_operators = [
+export const arithmetic_operators = [
   'sum of',
   'difference between',
   'product of',

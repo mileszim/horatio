@@ -1,5 +1,5 @@
 /** Negative Nouns */
-Horatio.Wordlists.negative_nouns = [
+export const negative_nouns = [
   'Hell',
   'Microsoft',
   'bastard',

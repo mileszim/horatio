@@ -1,28 +1,28 @@
+import Generator from './generator';
+import Program   from './program';
+import Wordlists from './wordlists';
+
 /**
  * Horatio Encoder
  */
-Horatio.Encoder = function(io) {
-  this.program = new Horatio.Program(io);
-};
+export default class Encoder extends Generator {
+  constructor(io) {
+    super();
+    this.program = new Program(io);
+  }
 
-// inherit visitor prototype
-Horatio.Encoder.prototype = new Horatio.Generator();
+  /**
+   * Encode
+   */
+  encode(program) {
+    program.visit(this, null);
+    return this.program;
+  }
 
-
-
-/**
- * Encode
- */
-Horatio.Encoder.prototype.encode = function(program) {
-  program.visit(this, null);
-  return this.program;
-};
-
-
-
-/**
- * Get index number from roman numeral
- */
-Horatio.Encoder.prototype.numeralIndex = function(numeral) {
-  return Horatio.Wordlists.roman_numerals.indexOf(numeral);
-};
+  /**
+   * Get index number from roman numeral
+   */
+  numeralIndex(numeral) {
+    return Wordlists.roman_numerals.indexOf(numeral);
+  }
+}

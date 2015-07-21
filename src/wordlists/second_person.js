@@ -1,5 +1,5 @@
 /** Second Person */
-Horatio.Wordlists.second_person = [
+export const second_person = [
   'thee',
   'thou',
   'you'

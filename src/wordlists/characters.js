@@ -1,5 +1,5 @@
 /** Characters */
-Horatio.Wordlists.characters = [
+export const characters = [
   'Achilles',
   'Adonis',
   'Adriana',

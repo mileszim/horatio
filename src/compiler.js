@@ -1,35 +1,35 @@
+import Parser  from './parser';
+import Checker from './checker';
+import Encoder from './encoder';
+
 /**
  * Compiles SPL into javascript
  * @memberof Horatio
- * @constructor
  */
-Horatio.Compiler = function(io) {
-  this.io = io;
-};
+export default class Compiler {
+  constructor(io) {
+    this.io = io;
+  }
 
-
-Horatio.Compiler.prototype = {
-  
   /**
    * Compile an SPL program
    * @param {string} input - The input SPL program
    */
-  compile: function(input) {
+  compile(input) {
     // Parse input
-    var parser = new Horatio.Parser(input);
-    
+    let parser = new Parser(input);
+
     // Generate AST
-    var ast = parser.parse();
-    
+    let ast = parser.parse();
+
     // Semantic Check
-    var checker = new Horatio.Checker();
+    let checker = new Checker();
     checker.check(ast);
-    
+
     // Code Generation
-    var encoder = new Horatio.Encoder(this.io);
-    var program = encoder.encode(ast);
-    
+    let encoder = new Encoder(this.io);
+    let program = encoder.encode(ast);
+
     return program;
   }
-  
-};
+}

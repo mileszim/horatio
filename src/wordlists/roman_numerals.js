@@ -1,5 +1,5 @@
 /** Roman Numerals */
-Horatio.Wordlists.roman_numerals = [
+export const roman_numerals = [
   'I',
   'II',
   'III',

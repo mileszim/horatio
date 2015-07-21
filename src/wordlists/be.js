@@ -1,5 +1,5 @@
 /** Be */
-Horatio.Wordlists.be = [
+export const be = [
   'Thou art',
   'You are',
   'I am',
@@ -11,7 +11,7 @@ Horatio.Wordlists.be = [
   //'is'
 ];
 
-Horatio.Wordlists.be_comparatives = [
+export const be_comparatives = [
   'Art thou',
   'Are you',
   'Am I'
