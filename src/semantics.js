@@ -7,7 +7,7 @@ export default class Semantics {
    * Program
    */
   visitProgram(program, arg) {
-    var self = this;
+    let self = this;
 
     // comment
     program.comment.visit(this, null);
@@ -52,7 +52,7 @@ export default class Semantics {
    * Declaration
    */
   visitDeclaration(declaration, arg) {
-    var c = declaration.character.visit(this, arg);
+    let c = declaration.character.visit(this, arg);
 
     if (this.characters[c.sequence]) {
       throw new Error("Semantic Error - Character already defined.");
@@ -70,7 +70,7 @@ export default class Semantics {
    * Character
    */
   visitCharacter(character, arg) {
-    var self = this;
+    let self = this;
 
     if (!character.sequence) {
       throw new Error("Semantic Error - Character undefined.");
@@ -111,9 +111,9 @@ export default class Semantics {
    * Part
    */
   visitPart(part, arg) {
-    var self = this;
+    let self = this;
 
-    var n = part.numeral.visit(this, arg);
+    let n = part.numeral.visit(this, arg);
     part.comment.visit(this, arg);
 
     if (this.parts[n]) {
@@ -151,7 +151,7 @@ export default class Semantics {
    * Subparts
    */
   visitSubpart(subpart, arg) {
-    var n = subpart.numeral.visit(this, arg);
+    let n = subpart.numeral.visit(this, arg);
 
     if (this.sceneExists(arg.act, n)) {
       throw new Error("Semantic Error - Scene already defined.");
@@ -186,11 +186,11 @@ export default class Semantics {
       throw new Error("Semantic Error - No characters entering.");
     }
 
-    var c1 = presence.character_1.visit(this, {declared: true, on_stage: false});
+    let c1 = presence.character_1.visit(this, {declared: true, on_stage: false});
     this.toggleStage(c1.sequence);
 
     if (presence.character_2) {
-      var c2 = presence.character_2.visit(this, {declared: true, on_stage: false});
+      let c2 = presence.character_2.visit(this, {declared: true, on_stage: false});
 
       if (c1.sequence === c2.sequence) {
         throw new Error("Semantic Error - Same character entering twice in same statement.");
@@ -212,7 +212,7 @@ export default class Semantics {
       throw new Error("Semantic Error - No character exiting.");
     }
 
-    var c = presence.character.visit(this, {declared: true, on_stage: true});
+    let c = presence.character.visit(this, {declared: true, on_stage: true});
     this.toggleStage(c.sequence);
 
     return null;
@@ -233,8 +233,8 @@ export default class Semantics {
     }
 
     if (presence.character_1 && presence.character_2) {
-      var c1 = presence.character_1.visit(this, {declared: true, on_stage: true});
-      var c2 = presence.character_2.visit(this, {declared: true, on_stage: true});
+      let c1 = presence.character_1.visit(this, {declared: true, on_stage: true});
+      let c2 = presence.character_2.visit(this, {declared: true, on_stage: true});
 
       if (c1.sequence === c2.sequence) {
         throw new Error("Semantic Error - Characters are the same.");
@@ -256,7 +256,7 @@ export default class Semantics {
    * Dialogue
    */
   visitDialogue(dialogue, arg) {
-    var self = this;
+    let self = this;
     dialogue.lines.forEach(function(line) {
       line.visit(self, arg);
     });
@@ -269,9 +269,9 @@ export default class Semantics {
    * Line
    */
   visitLine(line, arg) {
-    var self = this;
+    let self = this;
 
-    var c = line.character.visit(this, {declared: true, on_stage: true});
+    let c = line.character.visit(this, {declared: true, on_stage: true});
 
     if (line.sentences.length === 0) {
       throw new Error("Semantic Error - Line cannot have no sentences.");
@@ -291,7 +291,7 @@ export default class Semantics {
    * Goto
    */
   visitGoto(goto, arg) {
-    var n = goto.numeral.visit(this, arg);
+    let n = goto.numeral.visit(this, arg);
 
     if (!this.sceneExists(arg.act, arg.scene)) {
       throw new Error("Semantic Error - Scene specified by Goto does not exist in this act.");
@@ -402,7 +402,7 @@ export default class Semantics {
    * Remember Sentence
    */
   visitRememberSentence(remember, arg) {
-    var p = remember.pronoun.visit(this, arg);
+    let p = remember.pronoun.visit(this, arg);
 
     return null;
   }
@@ -422,9 +422,9 @@ export default class Semantics {
    * Positive Constant Value
    */
   visitPositiveConstantValue(pc_val, arg) {
-    var self = this;
+    let self = this;
 
-    var n;
+    let n;
     if (!(pc_val.noun instanceof AST.PositiveNoun) && !(pc_val.noun instanceof AST.NeutralNoun)) {
       throw new Error("Semantic Error - Positive Constants must use a positive or neutral noun");
     } else {
@@ -449,9 +449,9 @@ export default class Semantics {
    * Negative Constant Value
    */
   visitNegativeConstantValue(nc_val, arg) {
-    var self = this;
+    let self = this;
 
-    var n;
+    let n;
     if (!(nc_val.noun instanceof AST.NegativeNoun) && !(nc_val.noun instanceof AST.NeutralNoun)) {
       throw new Error("Semantic Error - Negative Constants must use a negative or neutral noun");
     } else {
@@ -476,8 +476,8 @@ export default class Semantics {
    * Unary Operation Value
    */
   visitUnaryOperationValue(unary, arg) {
-    var o = unary.operator.visit(this, arg);
-    var v = unary.value.visit(this, arg);
+    let o = unary.operator.visit(this, arg);
+    let v = unary.value.visit(this, arg);
 
     return 0; // placeholder
   }
@@ -488,9 +488,9 @@ export default class Semantics {
    * Arithmetic Operation Value
    */
   visitArithmeticOperationValue(arithmetic, arg) {
-    var o = arithmetic.operator.visit(this, arg);
-    var v1 = arithmetic.value_1.visit(this, arg);
-    var v2 = arithmetic.value_2.visit(this, arg);
+    let o = arithmetic.operator.visit(this, arg);
+    let v1 = arithmetic.value_1.visit(this, arg);
+    let v2 = arithmetic.value_2.visit(this, arg);
 
     return 0; //placeholder
   }
@@ -501,7 +501,7 @@ export default class Semantics {
    * Pronoun Value
    */
   visitPronounValue(pronoun, arg) {
-    var p = pronoun.pronoun.visit(this, arg);
+    let p = pronoun.pronoun.visit(this, arg);
 
     return p;
   }
@@ -512,7 +512,7 @@ export default class Semantics {
    * Greater Than Comparison
    */
   visitGreaterThanComparison(comparison, arg) {
-    var c = comparison.comparative.visit(this, arg);
+    let c = comparison.comparative.visit(this, arg);
 
     return c;
   }
@@ -523,7 +523,7 @@ export default class Semantics {
    * Lesser Than Comparison
    */
   visitLesserThanComparison(comparison, arg) {
-    var c = comparison.comparative.visit(this, arg);
+    let c = comparison.comparative.visit(this, arg);
 
     return null;
   }
@@ -545,7 +545,7 @@ export default class Semantics {
    * Inverse Comparison
    */
   visitInverseComparison(comparison, arg) {
-    var c = comparison.comparison.visit(this, arg);
+    let c = comparison.comparison.visit(this, arg);
 
     return c;
   }

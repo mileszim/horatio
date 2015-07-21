@@ -39,7 +39,7 @@ export default class Parser {
    */
   parse() {
     this.currentToken = this.tokenizer.nextToken();
-    var program = this.parseProgram();
+    let program = this.parseProgram();
     //console.log(program);
     if (this.currentToken !== -1) {
       throw new Error("Syntax Error - unexpected end of program");
@@ -51,13 +51,13 @@ export default class Parser {
 
   /* Parsers */
   parseProgram() {
-    var comment = this.parseComment();
+    let comment = this.parseComment();
     this.accept(Token.PERIOD);
-    var declarations = [this.parseDeclaration()];
+    let declarations = [this.parseDeclaration()];
     while (this.currentToken.kind===Token.CHARACTER) {
       declarations.push(this.parseDeclaration());
     }
-    var parts = [this.parsePart()];
+    let parts = [this.parsePart()];
     while (this.currentToken.kind===Token.ACT) {
       parts.push(this.parsePart());
     }
@@ -66,7 +66,7 @@ export default class Parser {
 
 
   parseComment() {
-    var comment = "";
+    let comment = "";
     while (this.currentToken.kind!==Token.PERIOD) {
       comment += this.currentToken.sequence + " ";
       this.acceptIt();
@@ -76,10 +76,10 @@ export default class Parser {
 
 
   parseDeclaration() {
-    var character = new AST.Character(this.currentToken.sequence);
+    let character = new AST.Character(this.currentToken.sequence);
     this.accept(Token.CHARACTER);
     this.accept(Token.COMMA);
-    var comment = this.parseComment();
+    let comment = this.parseComment();
     this.accept(Token.PERIOD);
     return new AST.Declaration(character, comment);
   }
@@ -87,12 +87,12 @@ export default class Parser {
 
   parsePart() {
     this.accept(Token.ACT);
-    var numeral = new AST.Numeral(this.currentToken.sequence);
+    let numeral = new AST.Numeral(this.currentToken.sequence);
     this.accept(Token.ROMAN_NUMERAL);
     this.accept(Token.COLON);
-    var comment = this.parseComment();
+    let comment = this.parseComment();
     this.accept(Token.PERIOD);
-    var subparts = [this.parseSubPart()];
+    let subparts = [this.parseSubPart()];
     while (this.currentToken.kind===Token.SCENE) {
       subparts.push(this.parseSubPart());
     }
@@ -102,22 +102,22 @@ export default class Parser {
 
   parseSubPart() {
     this.accept(Token.SCENE);
-    var numeral = new AST.Numeral(this.currentToken.sequence);
+    let numeral = new AST.Numeral(this.currentToken.sequence);
     this.accept(Token.ROMAN_NUMERAL);
     this.accept(Token.COLON);
-    var comment = this.parseComment();
+    let comment = this.parseComment();
     this.accept(Token.PERIOD);
-    var stage = this.parseStage();
+    let stage = this.parseStage();
     return new AST.Subpart(numeral, comment, stage);
   }
 
 
   parseStage() {
-    var start_presence, end_presence;
+    let start_presence, end_presence;
     if (this.currentToken.kind===Token.LEFT_BRACKET) {
       start_presence = this.parsePresence();
     }
-    var dialogue = this.parseDialogue();
+    let dialogue = this.parseDialogue();
     if (this.currentToken.kind===Token.LEFT_BRACKET) {
       end_presence = this.parsePresence();
     }
@@ -127,7 +127,7 @@ export default class Parser {
 
   parsePresence() {
     this.accept(Token.LEFT_BRACKET);
-    var c1, c2, ret;
+    let c1, c2, ret;
     switch (this.currentToken.kind) {
 
       case Token.ENTER:
@@ -145,7 +145,7 @@ export default class Parser {
 
       case Token.EXIT:
         this.acceptIt();
-        var character = new AST.Character(this.currentToken.sequence);
+        let character = new AST.Character(this.currentToken.sequence);
         this.accept(Token.CHARACTER);
         ret = new AST.Exit(character);
         break;
@@ -170,7 +170,7 @@ export default class Parser {
 
 
   parseDialogue() {
-    var lines = [this.parseLine()];
+    let lines = [this.parseLine()];
     while (this.currentToken.kind===Token.CHARACTER) {
       lines.push(this.parseLine());
     }
@@ -179,10 +179,10 @@ export default class Parser {
 
 
   parseLine() {
-    var character = new AST.Character(this.currentToken.sequence);
+    let character = new AST.Character(this.currentToken.sequence);
     this.accept(Token.CHARACTER);
     this.accept(Token.COLON);
-    var sentences = [this.parseSentence()];
+    let sentences = [this.parseSentence()];
 
     function isSentence(token) {
       switch(token) {
@@ -209,7 +209,7 @@ export default class Parser {
 
 
   parseSentence() {
-    var sentence;
+    let sentence;
     switch (this.currentToken.kind) {
 
       case Token.BE:
@@ -260,7 +260,7 @@ export default class Parser {
 
 
   parseBe() {
-    var be;
+    let be;
     if (this.currentToken.kind===Token.BE) {
       be = new AST.Be(this.currentToken.sequence);
       this.acceptIt();
@@ -270,19 +270,19 @@ export default class Parser {
 
 
   parseAssignment() {
-    var be = this.parseBe();
+    let be = this.parseBe();
     if (this.currentToken.kind===Token.AS) {
       this.acceptIt();
       this.parseAdjective();
       this.accept(Token.AS);
     }
-    var value = this.parseValue();
+    let value = this.parseValue();
     return new AST.AssignmentSentence(be, value);
   }
 
 
   parseValue() {
-    var value, pronoun;
+    let value, pronoun;
     if (this.currentToken.kind===Token.ARTICLE) {
       this.acceptIt();
     }
@@ -323,9 +323,9 @@ export default class Parser {
 
 
   parseUnaryOperation() {
-    var operator = new AST.UnaryOperator(this.currentToken.sequence);
+    let operator = new AST.UnaryOperator(this.currentToken.sequence);
     this.accept(Token.UNARY_OPERATOR);
-    var value = this.parseValue();
+    let value = this.parseValue();
     return new AST.UnaryOperationValue(operator, value);
   }
 
@@ -334,11 +334,11 @@ export default class Parser {
     if (this.currentToken.kind===Token.ARTICLE) {
       this.acceptIt();
     }
-    var operator = new AST.ArithmeticOperator(this.currentToken.sequence);
+    let operator = new AST.ArithmeticOperator(this.currentToken.sequence);
     this.accept(Token.ARITHMETIC_OPERATOR);
-    var value_1 = this.parseValue();
+    let value_1 = this.parseValue();
     this.accept(Token.AND);
-    var value_2 = this.parseValue();
+    let value_2 = this.parseValue();
     return new AST.ArithmeticOperationValue(operator, value_1, value_2);
   }
 
@@ -369,8 +369,8 @@ export default class Parser {
 
 
   parsePositiveConstant() {
-    var adjectives = [];
-    var adjective;
+    let adjectives = [];
+    let adjective;
     while (this.currentToken.kind!==Token.POSITIVE_NOUN) {
       switch (this.currentToken.kind) {
         case Token.POSITIVE_ADJECTIVE:
@@ -387,15 +387,15 @@ export default class Parser {
           throw new Error("Syntax Error - Cannot mix positive and negative words in constant assignment.");
       }
     }
-    var noun = new AST.PositiveNoun(this.currentToken.sequence);
+    let noun = new AST.PositiveNoun(this.currentToken.sequence);
     this.accept(Token.POSITIVE_NOUN);
     return new AST.PositiveConstantValue(noun, adjectives);
   }
 
 
   parseNegativeConstant() {
-    var adjectives = [];
-    var adjective;
+    let adjectives = [];
+    let adjective;
     while (this.currentToken.kind!==Token.NEGATIVE_NOUN) {
       switch (this.currentToken.kind) {
         case Token.NEGATIVE_ADJECTIVE:
@@ -412,22 +412,22 @@ export default class Parser {
           throw new Error("Syntax Error - Cannot mix positive and negative words in constant assignment.");
       }
     }
-    var noun = new AST.NegativeNoun(this.currentToken.sequence);
+    let noun = new AST.NegativeNoun(this.currentToken.sequence);
     this.accept(Token.NEGATIVE_NOUN);
     return new AST.NegativeConstantValue(noun, adjectives);
   }
 
 
   parseQuestion() {
-    var be         = this.parseBeComparative();
-    var comparison = this.parseComparative();
-    var value      = this.parseValue();
+    let be         = this.parseBeComparative();
+    let comparison = this.parseComparative();
+    let value      = this.parseValue();
     return new AST.QuestionSentence(be, comparison, value);
   }
 
 
   parseBeComparative() {
-    var be_comparative;
+    let be_comparative;
     if (this.currentToken.kind===Token.BE_COMPARATIVE) {
       be_comparative = new AST.BeComparative(this.currentToken.sequence);
     }
@@ -436,7 +436,7 @@ export default class Parser {
 
 
   parseComparative() {
-    var comparison, comparative, adjective;
+    let comparison, comparative, adjective;
     switch (this.currentToken.kind) {
 
       case Token.POSITIVE_COMPARATIVE:
@@ -479,7 +479,7 @@ export default class Parser {
   parseResponse() {
     this.accept(Token.IF_SO);
     this.accept(Token.COMMA);
-    var goto = this.parseGoto();
+    let goto = this.parseGoto();
     return new AST.ResponseSentence(goto);
   }
 
@@ -489,15 +489,15 @@ export default class Parser {
     this.accept(Token.RETURN);
     this.accept(Token.TO);
     this.accept(Token.SCENE);
-    var numeral = new AST.Numeral(this.currentToken.sequence);
+    let numeral = new AST.Numeral(this.currentToken.sequence);
     this.accept(Token.ROMAN_NUMERAL);
     return new AST.Goto(numeral);
   }
 
 
   parseInput() {
-    var sequence = this.currentToken.sequence;
-    var ret;
+    let sequence = this.currentToken.sequence;
+    let ret;
     switch (this.currentToken.kind) {
       case Token.INPUT_INTEGER:
         ret = new AST.IntegerInputSentence(sequence);
@@ -512,8 +512,8 @@ export default class Parser {
 
 
   parseOutput() {
-    var sequence = this.currentToken.sequence;
-    var ret;
+    let sequence = this.currentToken.sequence;
+    let ret;
     switch (this.currentToken.kind) {
       case Token.OUTPUT_INTEGER:
         ret = new AST.IntegerOutputSentence(sequence);
@@ -529,7 +529,7 @@ export default class Parser {
 
   parseRemember() {
     this.accept(Token.REMEMBER);
-    var pronoun;
+    let pronoun;
     switch (this.currentToken.kind) {
       case Token.FIRST_PERSON_PRONOUN:
         pronoun = new AST.FirstPersonPronoun(this.currentToken.sequence);
@@ -547,7 +547,7 @@ export default class Parser {
   parseRecall() {
     this.accept(Token.RECALL);
     this.accept(Token.COMMA);
-    var comment = "";
+    let comment = "";
     while (this.currentToken.kind!==Token.EXCLAMATION_POINT) {
       comment += this.currentToken.sequence + " ";
       this.acceptIt();

@@ -12,10 +12,10 @@ export default class Program {
   }
 
   run() {
-    var self = this;
-    for (var a = 0; a < self.parts.length; a++) {
-      for (var s = 0; s < self.parts[a].length; s++) {
-        for (var f = 0; f < self.parts[a][s].length; f++) {
+    let self = this;
+    for (let a = 0; a < self.parts.length; a++) {
+      for (let s = 0; s < self.parts[a].length; s++) {
+        for (let f = 0; f < self.parts[a][s].length; f++) {
           self.parts[a][s][f].call(self);
         }
       }
@@ -25,9 +25,9 @@ export default class Program {
   }
 
   runSub(act, start_scene, end_scene) {
-    var self = this;
-    for (var s = start_scene; s < end_scene; s++) {
-      for (var f = 0; f < self.parts[act][s].length; f++) {
+    let self = this;
+    for (let s = start_scene; s < end_scene; s++) {
+      for (let f = 0; f < self.parts[act][s].length; f++) {
         self.parts[act][s][f].call(self);
       }
     }
@@ -49,12 +49,12 @@ export default class Program {
   }
 
   enterStage(character_name) {
-    var c = this.characters[character_name];
+    let c = this.characters[character_name];
     this.stage.push(c);
   }
 
   exitStage(character_name) {
-    var c = this.characters[character_name];
+    let c = this.characters[character_name];
     this.stage.splice(this.stage.indexOf(c), 1);
   }
 
@@ -63,13 +63,13 @@ export default class Program {
   }
 
   interlocutor(character_name) {
-    var c = this.characters[character_name];
-    var i = this.stage.filter(function(n) { return n !== c; });
+    let c = this.characters[character_name];
+    let i = this.stage.filter(function(n) { return n !== c; });
     return i[0];
   }
 
   addCommand(act, scene, command) {
     this.parts[act][scene].push(command);
-    var self = this;
+    let self = this;
   }
 }

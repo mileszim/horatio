@@ -2195,7 +2195,17 @@ module.exports = exports["default"];
 },{}],7:[function(require,module,exports){
 'use strict';
 
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
 
 var _compiler = require('./compiler');
 
@@ -2207,13 +2217,20 @@ var _compiler2 = _interopRequireDefault(_compiler);
  *
  * @author Miles Zimmerman
  */
-// export class Horatio extends Compiler {
-//   constructor(io) {
-//     super(io);
-//   }
-// }
 
-var Horatio = _compiler2['default'];
+var Horatio = (function (_Compiler) {
+  _inherits(Horatio, _Compiler);
+
+  function Horatio(io) {
+    _classCallCheck(this, Horatio);
+
+    _get(Object.getPrototypeOf(Horatio.prototype), 'constructor', this).call(this, io);
+  }
+
+  return Horatio;
+})(_compiler2['default']);
+
+exports.Horatio = Horatio;
 
 },{"./compiler":4}],8:[function(require,module,exports){
 'use strict';
@@ -2361,7 +2378,8 @@ var Parser = (function () {
   }, {
     key: 'parseStage',
     value: function parseStage() {
-      var start_presence, end_presence;
+      var start_presence = undefined,
+          end_presence = undefined;
       if (this.currentToken.kind === _token2['default'].LEFT_BRACKET) {
         start_presence = this.parsePresence();
       }
@@ -2375,7 +2393,9 @@ var Parser = (function () {
     key: 'parsePresence',
     value: function parsePresence() {
       this.accept(_token2['default'].LEFT_BRACKET);
-      var c1, c2, ret;
+      var c1 = undefined,
+          c2 = undefined,
+          ret = undefined;
       switch (this.currentToken.kind) {
 
         case _token2['default'].ENTER:
@@ -2457,7 +2477,7 @@ var Parser = (function () {
   }, {
     key: 'parseSentence',
     value: function parseSentence() {
-      var sentence;
+      var sentence = undefined;
       switch (this.currentToken.kind) {
 
         case _token2['default'].BE:
@@ -2508,7 +2528,7 @@ var Parser = (function () {
   }, {
     key: 'parseBe',
     value: function parseBe() {
-      var be;
+      var be = undefined;
       if (this.currentToken.kind === _token2['default'].BE) {
         be = new _ast2['default'].Be(this.currentToken.sequence);
         this.acceptIt();
@@ -2530,7 +2550,8 @@ var Parser = (function () {
   }, {
     key: 'parseValue',
     value: function parseValue() {
-      var value, pronoun;
+      var value = undefined,
+          pronoun = undefined;
       if (this.currentToken.kind === _token2['default'].ARTICLE) {
         this.acceptIt();
       }
@@ -2618,7 +2639,7 @@ var Parser = (function () {
     key: 'parsePositiveConstant',
     value: function parsePositiveConstant() {
       var adjectives = [];
-      var adjective;
+      var adjective = undefined;
       while (this.currentToken.kind !== _token2['default'].POSITIVE_NOUN) {
         switch (this.currentToken.kind) {
           case _token2['default'].POSITIVE_ADJECTIVE:
@@ -2643,7 +2664,7 @@ var Parser = (function () {
     key: 'parseNegativeConstant',
     value: function parseNegativeConstant() {
       var adjectives = [];
-      var adjective;
+      var adjective = undefined;
       while (this.currentToken.kind !== _token2['default'].NEGATIVE_NOUN) {
         switch (this.currentToken.kind) {
           case _token2['default'].NEGATIVE_ADJECTIVE:
@@ -2675,7 +2696,7 @@ var Parser = (function () {
   }, {
     key: 'parseBeComparative',
     value: function parseBeComparative() {
-      var be_comparative;
+      var be_comparative = undefined;
       if (this.currentToken.kind === _token2['default'].BE_COMPARATIVE) {
         be_comparative = new _ast2['default'].BeComparative(this.currentToken.sequence);
       }
@@ -2684,7 +2705,9 @@ var Parser = (function () {
   }, {
     key: 'parseComparative',
     value: function parseComparative() {
-      var comparison, comparative, adjective;
+      var comparison = undefined,
+          comparative = undefined,
+          adjective = undefined;
       switch (this.currentToken.kind) {
 
         case _token2['default'].POSITIVE_COMPARATIVE:
@@ -2745,7 +2768,7 @@ var Parser = (function () {
     key: 'parseInput',
     value: function parseInput() {
       var sequence = this.currentToken.sequence;
-      var ret;
+      var ret = undefined;
       switch (this.currentToken.kind) {
         case _token2['default'].INPUT_INTEGER:
           ret = new _ast2['default'].IntegerInputSentence(sequence);
@@ -2761,7 +2784,7 @@ var Parser = (function () {
     key: 'parseOutput',
     value: function parseOutput() {
       var sequence = this.currentToken.sequence;
-      var ret;
+      var ret = undefined;
       switch (this.currentToken.kind) {
         case _token2['default'].OUTPUT_INTEGER:
           ret = new _ast2['default'].IntegerOutputSentence(sequence);
@@ -2777,7 +2800,7 @@ var Parser = (function () {
     key: 'parseRemember',
     value: function parseRemember() {
       this.accept(_token2['default'].REMEMBER);
-      var pronoun;
+      var pronoun = undefined;
       switch (this.currentToken.kind) {
         case _token2['default'].FIRST_PERSON_PRONOUN:
           pronoun = new _ast2['default'].FirstPersonPronoun(this.currentToken.sequence);
@@ -3375,7 +3398,7 @@ var Semantics = (function () {
     value: function visitPositiveConstantValue(pc_val, arg) {
       var self = this;
 
-      var n;
+      var n = undefined;
       if (!(pc_val.noun instanceof AST.PositiveNoun) && !(pc_val.noun instanceof AST.NeutralNoun)) {
         throw new Error("Semantic Error - Positive Constants must use a positive or neutral noun");
       } else {
@@ -3402,7 +3425,7 @@ var Semantics = (function () {
     value: function visitNegativeConstantValue(nc_val, arg) {
       var self = this;
 
-      var n;
+      var n = undefined;
       if (!(nc_val.noun instanceof AST.NegativeNoun) && !(nc_val.noun instanceof AST.NeutralNoun)) {
         throw new Error("Semantic Error - Negative Constants must use a negative or neutral noun");
       } else {

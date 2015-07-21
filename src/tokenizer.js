@@ -49,13 +49,13 @@ export default class Tokenizer {
     });
 
     // Split into array by spaces
-    var input_array = input.split(" ");
+    let input_array = input.split(" ");
 
     // tokenize
     while (input_array.length > 0) {
-      var current = input_array.shift();
+      let current = input_array.shift();
       if (this.dictionary[current]) {
-        var check_next = current+" "+input_array[0];
+        let check_next = current+" "+input_array[0];
         if (this.dictionary[check_next]) {
           current = check_next;
           this.tokens.push(new Token(this.dictionary[current], current));
@@ -66,8 +66,8 @@ export default class Tokenizer {
       } else {
 
         // check if further appends will find match
-        var br = 0;
-        var orig = current;
+        let br = 0;
+        let orig = current;
         while (!this.dictionary[current] && br < 6) {
           current = current + " " + input_array[br];
 
@@ -89,8 +89,8 @@ export default class Tokenizer {
    * Builds a hash of words -> byte codes for scanning
    */
   buildDictionary() {
-    var self = this;
-    var wl = Wordlists;
+    let self = this;
+    let wl = Wordlists;
 
     wl.characters            .forEach(function(w) { self.dictionary[w] = 10; });
     wl.articles              .forEach(function(w) { self.dictionary[w] = 11; });
