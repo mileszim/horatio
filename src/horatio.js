@@ -6,10 +6,8 @@ import Compiler from './compiler';
  *
  * @author Miles Zimmerman
  */
-export default class Horatio extends Compiler {
+export class Horatio extends Compiler {
   constructor(io) {
     super(io);
   }
 }
-
-module.exports = Horatio;
