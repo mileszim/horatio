@@ -6,7 +6,7 @@ import Encoder from 'encoder';
  * Compiles SPL into javascript
  * @memberof Horatio
  */
-exports default class Compiler {
+export default class Compiler {
   constructor(io) {
     this.io = io;
   }
