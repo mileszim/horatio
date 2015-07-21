@@ -1,17 +1,17 @@
 $(function() {
-  
+
   var editor = ace.edit("editor");
     	//editor.setTheme("ace/theme/github");
     	editor.getSession().setTabSize(2);
     	editor.getSession().setUseSoftTabs(true);
     	//editor.getSession().setMode("ace/mode/javascript");
-  
+
   var io = new IO();
-  var compiler = new Horatio.Compiler(io);
-  
+  var compiler = new Horatio(io);
+
   $('#run_program').click(function() {
     var spl_input = editor.getValue();
-    
+
     var program;
     try {
       io.compile();
@@ -27,7 +27,7 @@ $(function() {
     } catch (e) {
       io.print(e);
     }
-    
+
   });
 
 });
