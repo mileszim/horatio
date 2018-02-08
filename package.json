@@ -6,7 +6,7 @@
   "dependencies": {},
   "devDependencies": {
     "babelify": "^8.0.0",
-    "grunt": "^1.0.1",
+    "grunt": "^1.0.2",
     "grunt-browserify": "^5.2.0"
   },
   "scripts": {
