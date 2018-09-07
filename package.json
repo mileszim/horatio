@@ -5,7 +5,7 @@
   "main": "dist/horatio.js",
   "dependencies": {},
   "devDependencies": {
-    "babelify": "^8.0.0",
+    "babelify": "^10.0.0",
     "grunt": "^1.0.1",
     "grunt-browserify": "^5.2.0"
   },
